@@ -1,0 +1,97 @@
+/**
+ * Created by apple on 2019/7/2.
+ */
+import  Vue from 'vue'
+import Vuex from 'vuex'
+import axios from 'axios'
+
+//让ajax携带cookie
+axios.defaults.withCredentials = true;
+Vue.use(Vuex);
+
+
+const state = {
+  baseURL: 'http://192.168.0.215:8812',//'http://192.168.0.22'http://hjjk.nbumed.com
+  token : sessionStorage.getItem('_token'),
+  Isskip: 1,//是否跳转,
+  account:'',
+  doctorId:sessionStorage.getItem('doctorId'),
+  password:'',
+  getMoreData : (url,data,response) =>{
+    axios.get(state.baseURL+url,{params: data,headers: {'Content-Type':'application/json;charset=UTF-8','zcps_token':state.token}})
+      .then(res => {
+        let result = res.data;
+
+        if(result.code == 0){
+          response(result);
+        }else{
+          console.log(result.msg)
+        }
+
+      },err => {
+        console.log(err)
+      })
+  },
+  getDataForPromise:(url,data)=>{
+    return new Promise(function(resolve,reject){
+      axios.get(state.baseURL+url,{params: data,headers: {'Content-Type':'application/json;charset=UTF-8','zcps_token':state.token}}).then(
+        (res)=>{
+          resolve(res)
+        }
+      )
+    })
+  },
+  getListData:(url,query,response) => {
+    axios.get(state.baseURL+`${ url }?query=${ encodeURI(JSON.stringify(query)) }`,{headers: {'Content-Type':'application/json;charset=UTF-8','zcps_token':state.token}}).then(res =>{
+      let result = res.data;
+
+      if(result.code == 0){
+        response(result);
+      }else{
+        console.log(result.msg)
+      }
+    })
+  },
+  getMoreDataPost : (url,data,response) =>{
+    axios.post(state.baseURL+url,data,{headers: {'Content-Type':'application/json;charset=UTF-8','zcps_token':state.token}})
+      .then(res => {
+        let result = res.data;
+
+        if(result.code == 0){
+          response(result);
+        }else{
+          console.log(result.msg)
+        }
+
+      },err => {
+        console.log(err)
+      })
+  },
+  formatDate2(date) {
+    var y = date.substring(0, 4);
+    var m = date.substring(5, 7);
+    var d = date.substring(8, 10);
+
+    return y + "-" + m + "-" + d;
+  }
+
+};
+const mutations={
+  setNewToken: (state,token) => {
+    sessionStorage.setItem('_token',token);
+    state.token = token;
+  },
+  setNewIsskip: (state,Isskip) => {
+    state.Isskip = Isskip;
+  },
+  setNewDoctorId: (state,doctorId) => {
+    sessionStorage.setItem('doctorId',doctorId);
+    state.doctorId = doctorId;
+  }
+};
+
+
+export default new Vuex.Store({
+    state,
+  mutations
+})

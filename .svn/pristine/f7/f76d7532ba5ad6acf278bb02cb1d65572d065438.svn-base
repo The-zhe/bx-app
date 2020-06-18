@@ -1,0 +1,220 @@
+<template>
+    <div class="home">
+
+      <div class="header"></div>
+      <div class="content fs_24">
+
+        <div class="title_ flex_between">
+          <div class="fs_40 fw_600">热门产品</div>
+          <div class="c_gray_2 fs_28">更多</div>
+        </div>
+
+        <div class="part_ flex_between">
+          <div class="part_item c_gray_2" v-for="item in homeInfo.productLists">
+            <div class="img_border">
+              <img class="item_img" :src="item.imgUrl">
+              <div class="item_number c_white">{{ item.number }}人已预约</div>
+              <div class="item_title ali_center c_white">{{ item.title }}</div>
+            </div>
+
+            <div class="item_spec">
+              <div class="item_name c_black fs_32">{{ item.name }}</div>
+              <div class="item_subName overflow_2">{{ item.subName }}</div>
+              <div class="item_price">
+                <font class="c_red">￥{{ item.priceNow }}</font>
+                <font class="price_past fs_20">￥{{ item.pricePast }}</font>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="title_ flex_between">
+          <div class="fs_40 fw_600">健康资讯</div>
+          <div class="c_gray_2 fs_28">更多</div>
+        </div>
+
+        <div class="part_">
+          <div class="news_item" v-for="item in homeInfo.newsLists">
+            <img class="news_img" :src="item.imgUrl">
+          </div>
+        </div>
+      </div>
+<!--      <div class="show_btn class1" @click="getObj"> click me !!!!!</div>-->
+    </div>
+</template>
+
+<script>
+    class Person{
+        constructor(name,age){
+            this.name = name;
+            this.age = age;
+        }
+
+        WriteDocument(){
+            console.log("我的名字叫" + this.name+"今年"+this.age+"岁了")
+        }
+    }
+
+    class newPerson extends Person{
+        constructor(name, age, color) {
+            super(name, age); // 调用父类的constructor(x, y)
+            this.color = color;
+        }
+        WriteColor(){
+            super.WriteDocument() ; // 调用父类方法
+
+            console.log('this color is'+ this.color+' '+this.name+' ' + this.age)
+        }
+    }
+
+    class lastPerson extends newPerson{
+        constructor (name,age,color,sex){
+            super(name,age,color);
+            this.sex = sex;
+        };
+        WriteSex(){
+            super.WriteColor();
+            console.log('this color is'+ this.color+' '+this.name+' ' + this.age+' ' + this.sex)
+        }
+    }
+
+
+
+    export default {
+        name: "home",
+        data(){
+            return{
+                value5:'',
+                objFn:{},
+                homeInfo:{
+                    productLists:[{
+                        name:'青春期额面正畸',
+                        subName:'3大服务.银牌会员3大服务. 银牌3大服务.银牌会员3大服务. 银牌',
+                        priceNow:'100/期',
+                        pricePast:'1000/期',
+                        imgUrl: require('../../assets/images/item_img@2x.png'),
+                        title:'暑期特惠',
+                        number:'1232'
+                    },{
+                        name:'青春期额面正畸',
+                        subName:'3大服务.银牌会员3大服务. 银牌',
+                        priceNow:'100/期',
+                        pricePast:'1000/期',
+                        imgUrl: require('../../assets/images/item_img@2x.png'),
+                        title:'暑期特惠',
+                        number:'1232'
+                    }],
+                    newsLists:[{
+                        imgUrl: require('../../assets/images/news_1@2x.png')
+                    },{
+                        imgUrl: require('../../assets/images/news_1@2x.png')
+                    }]
+                }
+            }
+        },
+        mounted(){
+            let newObj = new lastPerson('jane','16','red','女');
+            this.objFn = newObj;
+        },
+        methods:{
+          getObj(){
+              this.objFn.WriteSex();
+          }
+        }
+    }
+</script>
+
+<style scoped lang="less">
+  .home{
+    .content{
+      padding: 0 32px;
+
+      .title_{
+        padding: 40px 0 24px 0;
+      }
+      .news_item{
+        margin-bottom: 24px;
+        .news_img{
+          width: 686px;
+          height: 360px;
+        }
+      }
+      .part_item{
+        width: 336px;
+        margin-bottom: 24px;
+
+        .img_border{
+          position: relative;
+
+          .item_number{
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 2;
+            padding: 4px 10px;
+            font-size: 16px;
+            border-radius: 50px;
+            background-color: rgba(0,0,0,0.3);
+          }
+          .item_title{
+            width:128px;
+            height:48px;
+            line-height:48px;
+            background:rgba(248,76,78,1);
+            border-radius:8px 8px 8px 30px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 2;
+          }
+        }
+        .item_spec{
+          padding: 0 24px 24px 24px;
+          border-radius: 10px;
+        }
+        .item_img{
+          width: 336px;
+          height: 246px;
+          border-radius: 10px;
+        }
+        .item_name{
+          padding: 16px 0 14px 0;
+        }
+        .item_subName{
+          margin-bottom: 27px;
+          max-width: 279px;
+        }
+        .price_past{
+          text-decoration: line-through;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+
+  .c_red{
+    color: red;
+  }
+  .c_color(@color){
+    color:@color
+  }
+  .show_btn{
+    .c_color(green)
+  }
+  .mixin(@a) when (linghtness(@a) > 50%){
+    font-size: 20px;
+  }
+  .mixin (@a) when (lightness(@a) < 50%) {
+    font-size: 30px;
+  }
+  .mixin (@a) {
+    color: @a;
+  }
+  .class1 {
+    .mixin(#000000)
+  }
+  .class2 {
+    .mixin(#555)
+  }
+</style>

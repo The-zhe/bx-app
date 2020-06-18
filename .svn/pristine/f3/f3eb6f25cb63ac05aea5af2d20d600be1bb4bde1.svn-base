@@ -1,0 +1,11 @@
+let baseUrl = '';
+
+if(process.env.NODE_ENV == 'development'){
+    baseUrl = 'http://192.168.0.230'   //开发环境 暂时为后端的IP
+}else{
+    baseUrl = 'http://121.41.113.243'   //生产环境 暂无区别 或许后期改为服务器IP
+}
+
+export{
+    baseUrl
+}

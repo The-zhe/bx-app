@@ -1,0 +1,32 @@
+<template>
+  <div>
+  </div>
+</template>
+
+<script>
+  export default {
+    components: {},
+    name: 'privateArchives',
+    data(){
+        return{
+        }
+    },
+    created(){
+
+    },
+    computed:{
+    },
+    watch:{
+
+    },
+    mounted(){
+      this.$store.commit('setHeaderTitle','私医档案')
+    },
+    methods:{
+    }
+}
+</script>
+
+<style lang="less" scope>
+
+ </style>

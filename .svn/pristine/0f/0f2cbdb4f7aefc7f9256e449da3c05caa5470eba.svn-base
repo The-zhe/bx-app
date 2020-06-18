@@ -1,0 +1,83 @@
+<template>
+  <div class="detailCard_container">
+      <div class="header">
+          <div class="title"><slot name="title"></slot></div>
+          <div class="icon">
+              <img :src="hideIconUrl"/>
+          </div>
+      </div>
+      <div class="content"><slot name="content"></slot></div>
+  </div>
+</template>
+
+<script>
+  export default {
+    components: {},
+    name: 'detailCard',
+    data(){
+        return{
+            hideIconUrl:require('../assets/imgs/btn_da_recovery.png')
+        }
+    },
+    created(){
+
+    },
+    computed:{
+    },
+    watch:{
+
+    },
+    mounted(){
+    },
+    methods:{
+
+    }
+}
+</script>
+
+<style lang="less" scope>
+.detailCard_container{
+    width: 701px;
+    margin: 0 auto;
+    background-color: #ffffff;
+    box-shadow: 0 0 8px #bebcbc;
+    border-radius: 14px;
+    box-sizing: border-box;
+    padding: 32px 20px 36px;
+    .header{
+        position: relative;
+        display: flex;
+        align-items: center;
+        box-sizing: border-box;
+        padding-bottom: 26px;
+        border-bottom: 2px solid rgb(161, 218, 209);
+        .title{
+            font-size: 30px;
+            color: #048A83;
+            font-weight: 600;
+            margin-left: 8px;
+        }
+        .icon{
+            margin-left: auto;
+            margin-right: 14px;
+            img{
+                height: 25px;
+            }
+        }
+        &::before{
+            position: absolute;
+            content: "";
+            height: 37px;
+            width: 10px;
+            background-color: #F6A63E;
+            left: -20px;
+        }
+    }
+    .content{
+        margin-top: 26px;
+        font-size: 28px;
+        color: #777777;
+        margin-left: 8px;
+    }
+}
+ </style>

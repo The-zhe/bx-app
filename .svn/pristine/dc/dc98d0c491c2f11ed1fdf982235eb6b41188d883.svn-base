@@ -1,0 +1,53 @@
+// 2020/1/17 created by xtt
+<template>
+    <div class="orderList">
+       <div class="o_top" >
+         <div :class="index===0?'o_top_text_select':'o_top_text'" v-for="(item,index) in titlebar" @click="toSelect(index)">{{item.name}}</div>
+       </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "orderList",
+        data(){
+          return{
+            titlebar:[
+              {name:'全部'},
+              {name:'待审核'},
+              {name:'待付款'},
+              {name:'已完成'},]
+          }
+        },
+      methods:{
+        toSelect(){
+
+        }
+      }
+    }
+</script>
+
+<style scoped lang="less">
+.orderList{
+  width: 100%;
+  .o_top{
+     height: 140px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    .o_top_text{
+     // height: 40px;
+      color: #5E656D;
+      font-size: 30px;
+      //border-bottom: 2px solid #048A83;
+    }
+    .o_top_text_select{
+      font-weight: bold;
+      height: 40px;
+      color: #048A83;
+      font-size: 30px;
+      border-bottom: 5px solid #048A83;
+    }
+   }
+}
+</style>

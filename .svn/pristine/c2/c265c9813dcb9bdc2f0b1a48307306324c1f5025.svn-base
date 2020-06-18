@@ -1,0 +1,487 @@
+import store from '../../vuex/store'
+import {getData,postData,getListData,postDataWithQuery} from '../utils/requestFunc'
+//医护团队列表
+export function getMedicalTeamData(memberId,catCd) {
+  return getData('/hjjk/myteam/list',{
+    memberId:memberId,
+    catCd:catCd
+  })
+}
+//医护团队id详情
+export function getMedicalInfo(id) {
+ return getData(`/hjjk/healthTeam/info/${id}`)
+}
+//医护团队列表医生 管家 护士大次数 视频/语音/图文(大)次数  对应type是2/1/0
+export function getMedicalTeamCount(memberId,teamId,type) {
+  return getData('/hjjk/memberService/useService',{
+    memberId:memberId,
+    teamId:teamId,
+    type:type
+  })
+}
+//医护团队列表点击进入咨询页面图文小次数 and 语音，视频消耗次数
+export function getConsultCount(memberId,teamId,type) {
+  return getData('/hjjk/memberService/useBigTimes',{
+     memberId:memberId,
+     teamId:teamId,
+     type:type
+  })
+}
+//图文咨询减少小次数
+export function getConsultReduce(memberId,teamId) {
+  return getData('/hjjk/memberService/removeRotation',{
+     memberId:memberId,
+     teamId:teamId
+  })
+}
+//保存图文历史记录
+export function getSaveHistory(hjjkHistoryRecordRo) {
+  return postData('/hjjk/historyRecord/add',hjjkHistoryRecordRo)
+}
+//视频语音咨询减少次数
+export function getVideoCount(memberId,catCd) {
+  return postDataWithQuery('/hjjk/memberService/upd',{
+    memberId:memberId,
+    catCd:catCd
+  })
+}
+//获取腾讯云密钥
+export function getSig(id) {
+  return getData('/hjjk/tencent/getUsersig',{identifier:id})
+}
+//管理动态-获取客户管理套餐列表
+export function getManagementDynamic(memberId) {
+  let query={
+    w: [{ k: "memberId", v: memberId, m: "eq" }],
+    o: [],
+    p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/memberSetmeal/appList',query )
+}
+//管理建议-首页列表
+export function getAdvicePage(typeCd,memberId,setmealId,dateType) {
+  return getData('/hjjk/advice/appPage',{
+    typeCd:typeCd,
+    memberId:memberId,
+    setmealId:setmealId,
+    dateType:dateType
+  })
+}
+//管理建议-查询历史记录
+  export function getAdviceListSearch(memberId,setmealId,startTime,endTime,catCd) {
+  let query={
+    w: [{ k: "memberId", v: memberId, m: "eq" },
+      {k:"setmealId",v:setmealId,m:"eq"},
+      {k:"typeCd",v:1,m:"eq"},
+    ],
+    o: [],
+    p: { n: 1, s: 10 }
+  }
+  if(startTime){
+    query.w.push({k:"crtTm",v:startTime,m:"GE"});
+  }
+  if(endTime){
+    query.w.push({k:"crtTm",v:endTime,m:"LE"});
+  }
+  if(catCd===0 ||catCd){
+    query.w.push({k:"catCd",v:catCd,m:"eq"});
+  }
+  return getListData('/hjjk/advice/page',query)
+}
+//管理建议-详情
+export function getAdviceInfo(id) {
+  return getData('/hjjk/advice/info',{
+    id:id
+  })
+}
+//新报告-查询记录
+export function getReportList(memberId,setmealId,dateType,startTm,endTm,type) {
+  let query={
+    w: [{ k: "memberId", v: memberId, m: "eq" },
+      {k:"setmealId",v:setmealId,m:"eq"},
+      {k:"dateType",v:dateType,m:"eq"}],
+    o: [],
+    p: { n: 1, s: 10 }
+  }
+  if(startTm){
+    query.w.push({k:"startTm",v:startTm,m:"eq"})
+  }
+  if(endTm){
+    query.w.push({k:"endTm",v:endTm,m:"eq"})
+  }
+  if(type===0 ||type){
+    query.w.push({k:"type",v:type,m:"eq"})
+  }
+  return getListData('/hjjk/advice/appReportPage',query )
+}
+//新报告-检查报告详情
+export function getReportCheck(id) {
+  return getData('/hjjk/recordExam/reportExamInfo',{
+    id:id
+  })
+}
+//新报告-检验报告详情
+export function getReportInspect(id) {
+  return getData('/hjjk/recordInsp/reportInspInfo',{
+    id:id
+  })
+}
+/* 检验单详情-检验单列表 */
+export function getInspectionDetailList(inspId){
+  let query={
+    w: [{ k: "inspId", v: inspId, m: "eq" }],
+    o: [],
+    p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/recordInspDetail/list',query)
+}
+//用药动态-最近用药
+export function getRecentMedical(userId) {
+  let query={
+    w: [{ k: "userId", v: userId, m: "eq" }],
+    o:[{k:"crtTm",t:"desc"}],
+    p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/medRecord/list',query )
+}
+//用药动态-获取用户用药列表
+export function getUserMedical(userId) {
+  return getData('/hjjk/medDynamics/medNameList',{
+    userId:userId
+  })
+}
+//用药动态-调整用药列表
+export function getAdjustMedical(userId) {
+  return getData('/hjjk/medDynamics/dynList',{
+    userId:userId
+  })
+}
+//用药动态-停止用药
+export function toStopMedical(id) {
+  return getData('/hjjk/medDynamics/stop',{
+    id:id
+  })
+}
+//用药动态-历史记录
+export function getMedicalHistory(userId,crtTm,isStop) {
+  let query={
+    w: [{ k: "userId", v: userId, m: "eq" },],
+    o: [],
+    p: { n: 1, s: 10 }
+  }
+  if(crtTm){
+    query.w.push({k:"crtTm",v:crtTm,m:"GE"})
+  }
+  if(isStop){
+    query.w.push({k:"isStop",v:isStop,m:"eq"})
+  }
+  return getListData('/hjjk/medDynamics/page',query )
+}
+//健康指标列表
+export function getHealthIndicator(memberId) {
+  let query={
+    w: [{ k: "memberId", v: memberId, m: "eq" }],
+    o: [],
+    p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/indicator/appList',query )
+}
+//订单列表
+export function getOrderList(userId,statCd,name) {
+  let query={
+    w:[{k:"userId",v:userId,m:"EQ"}],
+    o:[],
+    p:{n:1,s:10}
+  }
+  if(name){
+    query.w.push({k:"name",v:name,m:"EQ"});
+  }
+  if(statCd){
+    query.w.push({k:"statCd",v:statCd,m:"EQ"});
+  }
+  return getListData('/hjjk/payOrder/appPage',query)
+}
+
+//wx倍熙微公益 首页
+export function getYqinfo(userId) {
+  return getData('/hjjk/yqCount/index',{
+    userId:userId
+  })
+}
+//wx倍熙微公益 首页 轮播详情
+export function getlbinfo(id) {
+  return getData('/hjjk/indexImages/info',{
+    id:id
+  })
+}
+//wx倍熙微公益 首页 公告详情
+export function getgginfo(id) {
+  return getData('/hjjk/notice/info',{
+    id:id
+  })
+}
+//wx倍熙微公益 提交表单
+export function getSubForm(hjjkYqConsultRo) {
+  return postData('/hjjk/yqConsult/add',hjjkYqConsultRo)
+}
+//wx倍熙微公益 提交表单 获取验证码
+export function gettablecode(phone) {
+  return getData('/general/sms/getYqCode',{
+    phone:phone
+  })
+}
+//wx倍熙微公益 登录 获取验证码  忘记密码
+export function getlogincode(phone) {
+  return getData('/general/sms/getRegisterCode',{
+    phone:phone
+  })
+}
+//wx倍熙微公益 账号密码登录
+export function getaccountlogin(username,password) {
+  return getData('/general/access/login',{
+    username:username,
+    password:password,
+    roleType:'0',
+  })
+}
+//wx倍熙微公益 重置密码 忘记密码
+export function getresetpwd(phone,code,newPwd,roleType) {
+  return getData('/general/sms/resetPwd',{
+    phone:phone,
+    code:code,
+    newPwd:newPwd,
+    roleType:roleType
+  })
+}
+////wx倍熙微公益 修改密码
+export function getmodifypwd(oldPsw,newPwd,userId,roleType) {
+  return getData('/general/sms/updPwd',{
+    oldPsw:oldPsw,
+    newPwd:newPwd,
+    userId:userId,
+    roleType:roleType
+  })
+}
+//wx倍熙微公益 登录
+export function getwxLogin(phone,code) {
+  return getData('/general/sms/phoneCodeChkLogin',{
+    phone:phone,
+    code:code,
+    roleType:'0',
+  })
+}
+//wx倍熙微公益 极光推送
+export function getJGpush(userId,registrationId,deviceSerial,catCd) {
+  return postDataWithQuery('/hjjk/jgUser/add',{
+    userId:userId,
+    registrationId:registrationId,
+    deviceSerial:deviceSerial,
+    catCd:catCd
+  })
+}
+//上传图片
+export function getuploader(image) {
+  return postData('/general/oss/upload',image)
+}
+//wx倍熙微公益 医生列表
+export function getwxdoctorlist(name,isEpidemic,secondDepNm) {
+  let query={
+    w:[],
+    o:[{k:"crtTm",t:"desc"}],
+    p:{n:1,s:10}
+  }
+  if(name){
+    query.w.push({k:"name",v:name,m:"LK"});
+  }
+  if(isEpidemic){
+    query.w.push({k:"isEpidemic",v:isEpidemic,m:"EQ"});
+  }
+  if(secondDepNm){
+    query.w.push({k:"secondDepNm",v:secondDepNm,m:"EQ"});
+  }
+  return getListData('/hjjk/healthTeam/webPage',query)
+}
+//wx倍熙微公益 医生详情
+//export function getwxdoctorlistmb(illType,name,isEpidemic,secondDepId)
+export function getwxdoctorlistmb(name,isEpidemic,secondDepId) {
+  let query={
+    w:[],
+    o:[{k:"state",t:"desc"}],
+    p:{n:1,s:10}
+  }
+/*  if(illType){
+    query.w.push({k:"illType",v:illType,m:"LK"});
+  }*/
+  if(name){
+    query.w.push({k:"name",v:name,m:"LK"});
+  }
+  if(isEpidemic){
+    query.w.push({k:"isEpidemic",v:isEpidemic,m:"LK"});
+  }
+  if(secondDepId){
+    query.w.push({k:"secondDepId",v:secondDepId,m:"LK"});
+  }
+  return getListData('/hjjk/healthTeam/webPageForDep',query)
+}
+//wx倍熙微公益 医生详情
+export function getwxdoctorinfo(id,userId) {
+  return getData('/hjjk/healthTeam/info2',{
+    id:id,
+    userId:userId
+  })
+}
+////wx倍熙微公益 医生详情查看医生的病种类型
+export function getwxdoctorinfomb(doctorId) {
+  return getData('/hjjk/healthTeam/webInfoByuserId',{
+    userId:doctorId
+  })
+}
+//wx倍熙微公益 医生点赞
+export function getmodifydz(userId,teamId) {
+  return postDataWithQuery('/hjjk/userThumbs/upd',{
+    userId:userId,
+    teamId:teamId
+  })
+}
+//wx倍熙微公益 我的咨询 一对一咨询
+export function getmyconsultlist(teamId,statCd,phone) {
+  let query={
+    w:[{k:"teamId",v:teamId,m:"eq"},{k:"statCd",v:statCd,m:"="},{k:"phone",v:phone,m:"="}],
+    o:[],
+    p:{n:1,s:10}
+  }
+  return getListData('/hjjk/historyRecord/consultation',query)
+}
+//wx倍熙微公益 慢病咨询首页
+export function getmblist() {
+  return getData('/hjjk/index/listForIn',{
+
+  })
+}
+//wx倍熙微公益 获取用户免费次数    1代表新冠肺炎。2 代表慢病咨询
+export function getuserfree(fromId,toId,talkType) {
+  return getData('/hjjk/memberService/talkForFree',{
+    fromId:fromId,
+    toId:toId,
+    talkType:talkType,
+  })
+}
+//wx倍熙微公益 历史记录添加
+export function getwxconsulthistoryadd(hjjkHistoryRecordRo){
+  return postData('/hjjk/historyRecord/talkForFreeAdd',hjjkHistoryRecordRo)
+}
+//wx倍熙微公益 消息里查看医生回复
+export function getmessagereply(id) {
+  return postDataWithQuery('/hjjk/msg/findById',{
+    id:id
+  })
+}
+//wx倍熙微公益 聊天框查看7天之前的聊天记录
+export function getmorehistory(teamId,userId) {
+  let query={
+    w:[{k:"teamId",v:teamId,m:"eq"},{k:"userId",v:userId,m:"eq"}],
+    o:[],
+    p:{n:1,s:10}
+  }
+  return getListData('/hjjk/historyRecord/talkForFreeList',query)
+}
+//wx倍熙微公益 改变医生在线离线状态
+export function getdoctorstate(id) {
+  return getData('/hjjk/healthTeam/updState',{
+    id:id
+  })
+}
+//wx倍熙微公益 获取用户首页未读数
+export function getwxuserunreadnum(userId) {
+  return getData('/hjjk/msg/msgNum',{
+    userId:userId
+  })
+}
+//wx倍熙微公益 咨询详情页，点击立即回复调用
+export function getChangeState(id) {
+  return getData('hjjk/yqConsult/changeState',{
+   id:id
+  })
+}
+//wx倍熙微公益 进入到对话框页之后点击返回或者页面关闭，且医生首次进行回复的时候调用
+export function getReturnState(id) {
+  return getData('/hjjk/yqConsult/returnState',{
+    id:id
+  })
+}
+//wx倍熙微公益 资讯增加浏览量
+export function getaddBrowse(id) {
+  return postDataWithQuery('/hjjk/healthPreservation/addBrowse',{
+    id:id
+  })
+}
+//wx倍熙微公益 慢病咨询一对一列表
+export function getmbconsultlist(userId,type,pagenum) {
+  let query={
+    w:[{k:"userId",v:userId,m:"eq"},{k:"type",v:type,m:"eq"}],
+    o:[],
+    p:{n:pagenum,s:10}
+  }
+  return getListData('/hjjk/historyRecord/questionAndResponse',query)
+}
+//wx倍熙微公益 查看慢病是否提交过表单接口  0 未提交  1提交过
+export function getmbtablesubmit(userId,doctorId) {
+  return getData('/hjjk/mbConsult/isSubmit',{
+    userId:userId,
+    doctorId:doctorId
+  })
+}
+//wx倍熙微公益 慢病咨询提交表单
+export function getmbtable(hjjkMbConsultRo) {
+  return postData('/hjjk/mbConsult/add',hjjkMbConsultRo)
+}
+//wx倍熙微公益 慢病咨询提交 获取验证码
+export function getmbcode(phone) {
+  return getData('/general/sms/getMbCode',{
+    phone:phone
+  })
+}
+//wx倍熙微公益 慢病咨询详情查看
+export function getmbconsultinfo (id) {
+  return getData('/hjjk/mbConsult/info',{
+    id:id
+  })
+}
+//wx倍熙微公益 是否提交过疫情表单  long 型
+export function getisyqtable(userId) {
+  return getData('/hjjk/yqConsult/isSubmit',{
+    userId:userId
+    })
+}
+//wx倍熙微公益 是否提交过慢病表单 long 型
+export function getismbtable(userId) {
+  return getData('/hjjk/mbConsult/isSubmit',{
+    userId:userId
+    })
+}
+// wx倍熙微公益 否提交过，是否被回复，疫情表单 long 型
+export function getisyqsubimt(userId) {
+  return getData('/hjjk/yqConsult/sendAndState',{
+    userId:userId
+  });
+}
+// wx倍熙微公益 更新疫情表单
+export function getupdyqtable(hjjkYqConsultRo) {
+  return postData('/hjjk/yqConsult/upd',hjjkYqConsultRo)
+}
+//wx倍熙微公益 ////       传consultid 获取到疫情表单详情
+export function getyqtableinfo(id) {
+  return getData('/hjjk/yqConsult/webInfo',{
+    id:id
+  });
+}
+// wx倍熙微公益 医生详情点击新冠 获取consultId
+export function getconsultId(userId) {
+  let query={
+    w:[{k:"userId",v:userId,m:"eq"}],
+    o:[],
+    p:{n:1,s:10}
+  }
+  return getListData('/hjjk/yqConsult/list',query)
+}
+

@@ -1,0 +1,279 @@
+// 2020/1/8 created by xtt
+<template>
+  <div class="healthIndicator">
+    <div class="h_content" v-for="item in healthIndicatorList">
+      <div class="h_content_top">
+        <div class="healthIndicator1"><img src="../../../assets/imgs/healthIndicator1.png"></div>
+        <div class="h_content_top_text">
+          {{item.typeNm}}
+          <div class="h_content_top_text_num">{{item.value1}}
+          <span class="h_content_top_text_num_span1">bmp</span>
+            <span class="h_content_top_text_num_span2">{{item.crtTm | time}}</span>
+          </div>
+        </div>
+        <div class="h_content_top_tip1" v-show="item.statCd==='0'">{{item.statNm}}</div>
+        <div class="h_content_top_tip2" v-show="item.statCd==='1'">{{item.statNm}}</div>
+      </div>
+      <div class="h_contetn_pic">
+        <!--<canvas id="myChart"></canvas>-->
+      </div>
+    </div>
+      <div class="h_bottom">
+        <div class="h_line"></div>
+        <div class="h_btn" @click="toUpload">上传指标</div>
+    </div>
+    <van-action-sheet
+      v-model="showUp"
+      :actions="actions"
+      cancel-text="取消"
+      @cancel="onCancel"
+      @select="onselect"
+    />
+  </div>
+</template>
+
+<script>
+  import {getHealthIndicator} from '../../../api/index';
+  import Vue from 'vue';
+  import moment from 'moment';
+  Vue.filter('time',function (data,formatString) {
+    formatString=formatString||'MM-DD hh:mm';
+    return moment(data).format(formatString);
+  });
+    export default {
+        name: "healthIndicator",
+      data(){
+        return{
+          showUp:false,
+          actions:[
+            { name: '手动上传' },
+            { name: '连接设备' },
+          ],
+          data:[{
+            day: '周一',
+            value: 300
+          }, {
+            day: '周二',
+            value: 400
+          }, {
+            day: '周三',
+            value: 350
+          }, {
+            day: '周四',
+            value: 500
+          }, {
+            day: '周五',
+            value: 490
+          }, {
+            day: '周六',
+            value: 600
+          }, {
+            day: '周日',
+            value: 900
+          }],
+          healthIndicatorList:[],
+        }
+      },
+       methods:{
+         getInfo(){
+           let memberId='4535481258038273';
+           getHealthIndicator(memberId).then(res=>{
+             this.healthIndicatorList=res.data.list;
+             console.log('hhh',res.data.list);
+           })
+         },
+         //出现手动上传，连接设备
+         toUpload(){
+           this.showUp=true;
+         },
+         //选择手动上传或连接设备
+         onselect(item,index){
+           console.log(index);
+           if(index===0){
+             this.$router_({path:'/upIndicator'});
+           }
+         },
+         onCancel() {
+           this.showsheet = false;
+         },
+        drawChart(){
+          // Step 1: 创建 Chart 对象
+          const chart = new this.$F2.Chart({
+            id: 'myChart',
+            pixelRatio: window.devicePixelRatio // 指定分辨率
+          });
+
+          // Step 2: 载入数据源
+          chart.source(this.data, {
+            value: {
+              tickCount: 10,
+              min: 100
+            },
+            day: {
+              range: [ 0, 1 ]
+            }
+          });
+
+          // Step 3：创建图形语法，绘制柱状图，由 genre 和 sold 两个属性决定图形位置，genre 映射至 x 轴，sold 映射至 y 轴
+          /*chart.interval().position('genre*sold').color('genre');*/
+
+          chart.axis('day', {
+            label:null
+          });
+          chart.axis('value', {
+            label:null
+          });
+          chart.line().position('day*value').color('#3EB4A1');
+          chart.point().position('day*value').style({
+            fill:'#3EB4A1',
+            stroke: '#3EB4A1',
+            lineWidth: 1
+          });
+          // Step 4: 渲染图表
+          chart.render();
+        },
+      },
+      mounted() {
+        this.getInfo();
+        /*this.$nextTick(()=>{
+          this.drawChart();
+        })*/
+
+
+      }
+    }
+</script>
+
+<style scoped lang="less">
+ .healthIndicator{
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   width: 100%;
+   height: 100%;
+   #myChart{
+     width: 600px;
+     height: 180px;
+   }
+   .h_content{
+     width: 700px;
+     height: 220px;
+     background: white;
+     border-radius: 20px;
+     margin: 20px auto;
+     box-shadow: 0 0 8px #bebcbc;
+     .h_content_top{
+       padding-top: 20px;
+       margin: 0 auto;
+       width: 650px;
+       height: 100px;
+       display: flex;
+       justify-content: space-between;
+       .healthIndicator1{
+         margin-top: 15px;
+         margin-left: 10px;
+         width: 100px;
+         height: 75px;
+         img{
+           width: 81px;
+           height: 71px;
+         }
+       }
+       .healthIndicator2{
+         padding-left: 8px;
+         margin-left: 10px;
+         margin-top: 8px;
+         width: 92px;
+         height: 75px;
+         img{
+           width: 38px;
+           height: 71px;
+         }
+       }
+       .healthIndicator3{
+         padding-left: 15px;
+         margin-left: 10px;
+         margin-top: 15px;
+         width: 85px;
+         height: 75px;
+         img{
+           width: 64px;
+           height: 71px;
+         }
+       }
+       .h_content_top_text{
+         width: 400px;
+         height: 85px;
+         font-size: 28px;
+         color: #606060;
+         .h_content_top_text_num{
+           font-size: 42px;
+           font-weight: bold;
+           .h_content_top_text_num_span1{
+             font-size: 28px;
+             font-weight: normal;
+           }
+           .h_content_top_text_num_span2{
+             font-size: 28px;
+             font-weight: normal;
+             color: #AFAFAF;
+           }
+         }
+       }
+       .h_content_top_tip1{
+         margin-top: 20px;
+          width: 100px;
+         height: 50px;
+         line-height: 50px;
+         text-align: center;
+         color: #048A83;
+         font-size: 30px;
+         border: 2px solid #048A83;
+         border-radius: 50px;
+       }
+       .h_content_top_tip2{
+         margin-top: 20px;
+         width: 100px;
+         height: 50px;
+         line-height: 50px;
+         text-align: center;
+         color: red;
+         font-size: 30px;
+         border: 2px solid red;
+         border-radius: 50px;
+       }
+     }
+     .h_contetn_pic{
+       margin: 0 auto;
+       width: 750px;
+       height: 150px;
+       margin-top: -50px;
+       //border: 1px solid black;
+     }
+   }
+   .h_bottom{
+     margin-bottom: 400px;
+     margin-top: auto;
+     width: 700px;
+     height: 100px;
+     .h_line{
+       width: 700px;
+       height: 2px;
+       background: #CDCDCD;
+     }
+     .h_btn{
+       margin: 30px auto;
+       width: 300px;
+       height: 60px;
+       background: #3EB4A1;
+       border-radius: 60px;
+       color: white;
+       font-size: 30px;
+       line-height: 60px;
+       text-align: center;
+     }
+   }
+
+
+ }
+</style>

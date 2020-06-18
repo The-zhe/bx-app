@@ -1,0 +1,124 @@
+// 2020/4/1 created by xtt
+<template>
+<div class="doctorinfolicensed">
+  <div class="content">
+    <div class="title">毕业院校</div>
+    <div class="name">
+      <div class="text">请输入毕业院校</div>
+      <img style="height: 0.3rem" :src="nextIcon"/>
+    </div>
+  </div>
+  <div class="content">
+    <div class="title">最高学历</div>
+    <div class="name">
+      <div class="text">请选择最高学历</div>
+      <img style="height: 0.3rem" :src="nextIcon"/>
+    </div>
+  </div>
+  <div class="content">
+    <div class="title">毕业年月</div>
+    <div class="name">
+      <div class="text">请选择毕业年月</div>
+      <img style="height: 0.3rem" :src="nextIcon"/>
+    </div>
+  </div>
+  <div class="content" style="border-bottom: 0">
+    <div class="title">专业</div>
+    <div class="name">
+      <div class="text">请选择专业</div>
+      <img style="height: 0.3rem" :src="nextIcon"/>
+    </div>
+  </div>
+  <div class="line"></div>
+  <div class="content">
+    <div class="title">职称</div>
+    <div class="name">
+      <div class="text">请选择职称</div>
+      <img style="height: 0.3rem" :src="nextIcon"/>
+    </div>
+  </div>
+  <div class="content">
+    <div class="title">执业经历</div>
+    <div class="name">
+      <div class="text">请填写执业经历</div>
+      <img style="height: 0.3rem" :src="nextIcon"/>
+    </div>
+  </div>
+  <div class="content" style="border-bottom: 0">
+    <div class="title">专业擅长</div>
+    <div class="name">
+      <div class="text">请填写专业擅长</div>
+      <img style="height: 0.3rem" :src="nextIcon"/>
+    </div>
+  </div>
+  <div class="line"></div>
+  <div class="content" style="border-bottom: 0">
+    <div class="title">执业点</div>
+    <div class="name">
+      <div class="text">请设置执业地点</div>
+      <img style="height: 0.3rem" :src="nextIcon"/>
+    </div>
+  </div>
+  <div class="line"></div>
+  <div class="content" style="border-bottom: 0">
+    <div class="title">执业资格认证</div>
+    <div class="name">
+      <div class="text">上传执业证件</div>
+      <img style="height: 0.3rem" :src="nextIcon"/>
+    </div>
+  </div>
+  <div class="line"></div>
+</div>
+</template>
+
+<script>
+    export default {
+        name: "doctorinfolicensed",
+      data(){
+          return{
+            nextIcon:require('../../../../assets/imgs/btn_grzx_jbzl_next.png'),
+            selectIcon:require('../../../../assets/imgs/btn_grzx_select.png'),
+          }
+      }
+    }
+</script>
+
+<style scoped lang="less">
+.doctorinfolicensed{
+  font-size: 0.3rem;
+  .line{
+    height: 0.2rem;
+    background: #F3F3F5;
+  }
+  .content{
+    margin: 0 auto;
+    width: 6.9rem;
+    height: 0.65rem;
+    padding-top: 0.35rem;
+    border-bottom: 0.02rem solid #F3F0F3;
+    display: flex;
+    justify-content: space-between;
+    .title{
+      margin-left: 0.15rem;
+      color: #777777;
+      font-weight: bold;
+    }
+    .name{
+      color: #8E8E8E;
+      width: 3.2rem;
+      height: 0.6rem;
+      display: flex;
+      justify-content: space-between;
+      .text{
+        text-align: right;
+        width: 2.6rem;
+        height: 0.3rem;
+      }
+      img{
+        width: 0.16rem;
+        height: 0.13rem;
+      }
+    }
+  }
+}
+</style>

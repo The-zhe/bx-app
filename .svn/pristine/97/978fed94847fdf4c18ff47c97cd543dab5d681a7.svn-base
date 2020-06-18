@@ -1,0 +1,412 @@
+<template>
+  <div class="body_container">
+    <div class="form_container">
+      <div class="title_container">
+        <div class="title">
+          门诊挂号预约
+        </div>
+        <div class="rest_times">
+          (剩余1次)
+        </div>
+      </div>
+      <div class="server_info_container">
+        <div class="info">
+          说明XXX
+        </div>
+        <div class="understand_sever">
+          了解更多
+        </div>
+      </div>
+      <div class="form_box_container">
+        <div class="_item form_item">
+          <div class="item_label">
+            <span>姓名</span>
+          </div>
+          <div class="item_input">
+            <input type="text" placeholder="请输入姓名" v-model="name" />
+          </div>
+        </div>
+        <div class="_item form_item ">
+          <div class="item_label">
+            <span>证件号</span>
+          </div>
+          <div class="idcard_box">
+            <div class="item_select">
+              <select>
+                <option value ="volvo">身份证</option>
+                <option value ="saab">医保卡</option>
+              </select>
+            </div>
+            <div class="item_input">
+              <input type="text" placeholder="请输入证件号" v-model="idCard" />
+            </div>
+          </div>
+        </div>
+        <div class="_item form_item">
+          <div class="item_label">
+            <span>医院</span>
+          </div>
+          <div class="item_input">
+            <input type="text" placeholder="请填写医院" v-model="hospital" />
+          </div>
+        </div>
+        <div class="_item form_item">
+          <div class="item_label">
+            <span>科室</span>
+          </div>
+          <div class="item_input">
+            <input type="text" placeholder="请选择科室" v-model="department"  />
+          </div>
+        </div>
+        <div class="_item form_item">
+          <div class="item_label">
+            <span>医生</span>
+          </div>
+          <div class="item_input">
+            <input type="text" placeholder="请填写医生姓名" v-model="doctor"  />
+          </div>
+        </div>
+          <div class="_item form_item">
+          <div class="item_label">
+            <span>预约时间</span>
+          </div>
+          <div class="item_input" @click="picktime">
+            <div class="time_box" :class="pick_date==''?'':'picked'">
+              {{pick_date==''?'请选择预约时间':pick_date}}
+            </div>
+          </div>
+        </div>
+        <div class="_item form_item">
+          <div class="item_label">
+            <span>联系电话</span>
+          </div>
+          <div class="item_input">
+            <input type="text" placeholder="请填写联系电话" v-model="phone" />
+          </div>
+        </div>
+        <div class="_item _last form_item">
+          <div class="item_label">
+            <span>医疗支付</span>
+          </div>
+          <div class="item_input choose">
+            <div class="item_choose" @click="choose_pay(1)" :class="pay_choose==1?'active':''">医保卡</div>
+            <div class="item_choose" @click="choose_pay(2)" :class="pay_choose==2?'active':''">自费</div>
+            <div class="item_choose" @click="choose_pay(3)" :class="pay_choose==3?'active':''">代付</div>
+          </div>
+        </div>
+      </div>
+      <div class="agreement_container">
+        <span class="agreement_icon">
+          <van-checkbox v-model="checked" checked-color="#0FA29C">复选框</van-checkbox>
+        </span>
+        <div class="agreement_text">请你阅读并同意</div>
+        <div class="agreement_info">《服务协议和隐私政策》</div>
+      </div>
+      <div class="button_container">
+        <button class="blue_back" @click="order">立即预约</button>
+        <button class="while_back">健康管家 一键预约</button>
+      </div>
+    </div>
+              <van-datetime-picker
+              v-model="currentDate"
+              v-if="picker_show"
+              type="datetime"
+              @cancel="pick_cancel"
+              @confirm="pick_confirm"
+              :min-date="minDate"
+              :max-date="maxDate"
+              :formatter="formatter"
+            />  
+            <van-overlay
+            :show="show"
+            @click="overlay_click"
+            z-index="10"
+          />            
+  </div>
+</template>
+
+<script>
+export default {
+  name: 'appointment',
+  data (){
+    return{
+      minHour: 10,
+      maxHour: 20,
+      minDate: new Date(),
+      maxDate: new Date(2020, 0, 0),
+      currentDate: new Date(),
+      picker_show:false,
+      show: false, 
+      agree:false,
+      name:'',
+      idType:1,
+      idCard:'',
+      hospital:'',
+      department:'',
+      doctor:'',
+      pick_date:'',
+      phone:'',
+      pay_choose:1,
+      pId:'',
+      checked:true,
+      noon:0
+    }
+  },
+  mounted(){
+  },
+  methods:{
+    order(){
+        let url = '/hjjk/apntRegister/apnt';
+        let data = {
+            memberId:1,
+            serviceId:1,
+            name:this.name,
+            idType:this.idType,
+            idCard:this.idCard,
+            hospital:this.hospital,
+            doctor:this.doctor,
+            department:this.department,
+            apntDate:this.pick_date,
+            phone:this.phone, 
+            payType:this.pay_choose,
+            apntDay:0
+        };
+        let response = (res)=>{
+            console.log(res.data)
+        };
+        this.$store.state.getMoreDataPost(url,data,response);      
+    },
+    formatter(type, value) {
+      if (type === 'year') {
+        return `${value}年`;
+      } else if (type === 'month') {
+        return `${value}月`
+      }else if (type === 'day') {
+        return `${value}日`
+      }else if (type === 'hour') {
+        return `${value}时`
+      }else if (type === 'minute') {
+        return `${value}分`
+      }
+      return value;
+    
+    },
+    picktime(){
+      this.picker_show=true
+      this.show=true
+    },
+    pick_cancel(){
+      this.picker_show=false
+      this.show=false
+    },
+    pick_confirm(value){
+      let month =value.getMonth()+1
+      let date = value.getDate()
+      let hour = value.getHours()
+      if(hour>=12){
+        this.noon=1
+      }else{
+        this.noon=0
+      }
+      let minute = value.getMinutes()
+      this.pick_date= month+'月'+date+'日'+hour+'时'+minute+'分'
+      this.show=false
+      this.picker_show=false
+    },
+    overlay_click(){
+      this.show=false
+      this.picker_show=false
+    },
+    choose_pay(value){
+      this.pay_choose=value
+    }
+  },
+  components: {
+
+  }
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang='less'>
+.body_container{
+  background-color: #F5F6F8; 
+  position: relative;
+  .form_container{
+    background: url('../../assets/images/back@1x.png') no-repeat ;
+    background-size: 100% 80%;
+    padding: 59px 30px 0 34px;
+    .title_container{
+      display: flex;
+      align-items: center;
+      .title{
+        font-size: 40px;
+        color:rgba(242,242,242,1);
+        font-weight: 500;
+      }
+      .rest_times{
+        margin-top: 15px;
+        font-size: 24px;
+        color:rgba(242,242,242,1);
+        margin-left: 10px;
+      }
+    }
+    .server_info_container{
+      display: flex;
+      margin-top: 15px;
+      justify-content: space-between;
+      font-size:24px;
+      color:#F2F2F2;
+      font-weight: 300;
+    }
+    .form_box_container{
+      background-color: #ffffff;
+      border-radius: 6px;
+      height: 727px;
+      //width: 686px;
+      margin-top: 38px;
+      ._item{ 
+        display: flex;
+        align-items: center;
+        height: 90px;
+        border-bottom: 1px solid #ECECEC;
+        font-size: 32px;
+        .item_label{
+          width: 180px;
+          span{
+          font-family:PingFang SC;
+          font-weight:bold;
+          color:rgba(50,50,50,1);
+          float: right;
+          margin-top: 10px;
+          }
+        }
+        .item_select{
+
+          select{
+            border: none;
+            color:rgba(100,100,100,1);
+            background-color: #ffffff;
+          }
+        }
+        .item_input{
+          margin-left: 23px;
+          flex: 1;
+          .time_box{
+            font-size: 32px;
+            color:rgb(172, 172, 172);
+            margin-top: 10px;            
+          }
+          .picked{
+            color: #646464;
+          }
+          input{
+            border: none;
+            font-size: 32px;
+            color: #646464;
+          }
+          .item_choose{
+            margin-right: 23px;
+            border-radius:4px;
+            border:1px solid rgba(222, 222, 222, 1);
+            width:120px;
+            height: 56px;
+            text-align: center;
+            font-size: 32px;
+            line-height: 56px;  
+            color:#646464;
+          }
+          .active{
+            border: 1px solid #0FA29C;
+            color: #0FA29C;
+          }
+        }
+        .choose{
+          display: flex;
+        }
+        .idcard_box{
+          display: flex;
+          margin-left: 23px;
+        }
+      }
+      ._last{
+          border-bottom: none;
+      }
+    }
+    .agreement_container{
+      display: flex;
+      font-size: 20px;
+      margin-top: 22px;
+      .agreement_text{
+        margin-left: 0px;
+        color:#969696;
+      }
+      .agreement_info{
+        color: #3587C3;
+      }
+      .agreement_icon{
+        height: 26px;
+        width: 26px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img{
+        height: 26px;
+        width: 26px; 
+        }
+      }
+    }
+    .button_container{
+      margin-top: 23px;
+      display: flex;
+      flex-direction: column;
+      button{
+      height: 92px;
+      border-radius:6px;
+      border: none;
+      }
+      .blue_back{
+        background-color: #0FA29C;
+        color: #ffffff;
+        font-size:40px;
+        line-height: 88px;
+      }
+      .while_back{
+        margin-top: 24px;
+        background-color: rgba(245,246,248,1);
+        color:rgba(100,100,100,1);
+        border: 1px solid #DCDCDC;
+        font-size:40px;
+        line-height: 88px;
+      }
+    }
+  }
+  .van-datetime-picker{
+  position: absolute;
+  bottom: 0px;
+  width: 750px;
+  z-index: 11;
+
+}
+}
+</style>
+<style lang="less">
+.body_container{
+  .van-picker__toolbar{
+    height: 60px;
+    line-height: 60px;
+  }
+  .van-picker__cancel{
+    font-size: 40px;
+  }
+  .van-picker__confirm{
+    font-size: 40px;
+  }
+  .van-picker__columns{
+    height: 150px;
+  }
+  .van-picker-column__item{
+    font-size: 40px;
+  }
+}
+</style>

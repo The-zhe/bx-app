@@ -1,0 +1,35 @@
+<template>
+  <div class="consultRecord_container">
+      11111
+  </div>
+</template>
+
+<script>
+  export default {
+    components: {},
+    name: 'consultRecord',
+    data(){
+        return{
+        }
+    },
+    created(){
+
+    },
+    computed:{
+    },
+    watch:{
+
+    },
+    mounted(){
+    },
+    methods:{
+
+    }
+}
+</script>
+
+<style lang="less" scope>
+.consultRecord_container{
+
+}
+ </style>

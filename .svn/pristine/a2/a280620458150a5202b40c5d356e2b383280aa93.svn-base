@@ -1,0 +1,33 @@
+<template>
+  <div class="sendWay_container">
+      sendWay
+  </div>
+</template>
+
+<script>
+  export default {
+    components: {},
+    name: 'sendWay',
+    data(){
+        return{
+        }
+    },
+    created(){
+
+    },
+    computed:{
+    },
+    watch:{
+
+    },
+    mounted(){
+    },
+    methods:{
+
+    }
+}
+</script>
+
+<style lang="less" scope>
+
+ </style>

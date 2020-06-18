@@ -1,0 +1,363 @@
+/*
+ * @Author: zzh 
+ * @Date: 2019-12-26 14:32:44 
+ * @Last Modified by: zzh
+ * @Last Modified time: 2020-01-10 11:29:09
+ */
+
+<template>
+  <div class="outpatientDetails_container">
+    <div class="headerPart_container"></div>
+    <div class="detail_container">
+      <div class="hospital">{{detailInfo.hospName}}</div>
+      <div class="border"></div>
+      <div class="bottom_content">
+        <div class="top">
+          <div class="item department">
+            <div class="item_title">科&emsp;室：</div>
+            <div class="item_text">{{detailInfo.deptNm}}</div>
+          </div>
+          <div class="item doctor">
+            <div class="item_title">医&emsp;生：</div>
+            <div class="item_text">{{detailInfo.doctor}}</div>
+          </div>
+        </div>
+        <div class="item date">
+          <div class="item_title">时&emsp;间：</div>
+          <div class="item_text">{{detailInfo.date}}</div>
+        </div>
+        <div class="item number">
+          <div class="item_title">门诊号：</div>
+          <div class="item_text">{{detailInfo.opcNo}}</div>
+        </div>
+        <div class="item result">
+          <div class="item_title">诊&emsp;断：</div>
+          <div class="item_text">{{detailInfo.imp}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="tabBar_container">
+      <div class="tab_container">
+        <div
+          class="tab_item"
+          @click="changeTabComponent(item,index)"
+          v-for="(item,index) in tabLists"
+          :key="item.title"
+        >
+          <div class="item_icon">
+            <img :src="currentTabIndex==index?item.activeIconUrl:item.iconUrl" />
+          </div>
+          <div
+            class="item_title"
+            :class="{'active_item_title':currentTabIndex==index}"
+          >{{item.title}}</div>
+        </div>
+      </div>
+      <div class="component_container">
+        <keep-alive>
+          <component :opcId="detailInfo.id" :is="currentTabComponent"></component>
+        </keep-alive>
+      </div>
+    </div>
+
+    <div class="outpatientCharges_container">
+      <div class="title">门诊收费</div>
+      <div class="content">
+        <div class="table_header">
+          <div class="header_index">序号</div>
+          <div class="header_invoiceNum">发票号</div>
+        </div>
+        <div class="table_list">
+          <div class="list_item" v-for="(listItem,listIndex) in chargeLists">
+            <div class="item_header">
+              <div class="item_index">{{listIndex}}</div>
+              <div class="item_invoiceNum">
+                <div class="num">{{listItem.invoiceNo}}</div>
+                <div class="arrow" @click="ChangeChargeItemShow(listIndex)">
+                  <img :src="listItem.show?downArrwoIconUrl:upArrowIconUrl" />
+                </div>
+              </div>
+            </div>
+            <div class="item_list" v-show="listItem.show">
+              <div class="item" v-for="(invoiceItem,invoiceIndex) in listItem.feelist">
+                <div class="item_text">
+                  <div class="item_title">{{invoiceItem.name}}</div>
+                  <div class="item_type">{{invoiceItem.type}}</div>
+                </div>
+                <div class="item_num">{{`${invoiceItem.fee}*${invoiceItem.quantity}`}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import PrescriptionList from "./components/prescriptionList";
+import CheckList from "./components/checkList";
+import InspectionList from "./components/inspectionList";
+import { getChargeList } from "../../api/index";
+export default {
+  components: { PrescriptionList, CheckList, InspectionList },
+  name: "outpatientDetails",
+  data() {
+    return {
+      upArrowIconUrl: require("../../assets/imgs/btn_da_upper.png"),
+      downArrwoIconUrl: require("../../assets/imgs/btn_da_lower.png"),
+      currentTabIndex: 0,
+      currentTabComponent: "PrescriptionList",
+      detailInfo: {
+        date: "2019-08-11 10:20",
+        hospital: "宁波市医疗中心李惠利医院（兴宁院区）",
+        outpatientNumber: "G007190949",
+        doctorName: "刘忻",
+        department: "呼吸内科专业",
+        result: "急性上呼吸道感染+感染性发热"
+      },
+      tabLists: [
+        {
+          title: "处方",
+          componentName: "PrescriptionList",
+          iconUrl: require("../../assets/imgs/icon_da_cfxx_nor.png"),
+          activeIconUrl: require("../../assets/imgs/icon_da_cfxx_pre.png")
+        },
+        {
+          title: "检查单",
+          componentName: "CheckList",
+          iconUrl: require("../../assets/imgs/icon_da_jcd_nor.png"),
+          activeIconUrl: require("../../assets/imgs/icon_da_jcd_pre.png")
+        },
+        {
+          title: "检验单",
+          componentName: "InspectionList",
+          iconUrl: require("../../assets/imgs/icon_da_jyd_nor.png"),
+          activeIconUrl: require("../../assets/imgs/icon_da_jyd_pre.png")
+        }
+      ],
+      chargeLists: []
+    };
+  },
+  mounted() {
+    this.detailInfo = JSON.parse(sessionStorage.getItem("detailInfo"));
+    this.$nextTick(() => {
+      this.getChargeListFun();
+    });
+    console.log(this.$route)
+  },
+  methods: {
+    changeTabComponent(item, index) {
+      this.currentTabIndex = index;
+      this.currentTabComponent = item.componentName;
+    },
+    ChangeChargeItemShow(index) {
+      this.chargeLists[index].show = !this.chargeLists[index].show;
+    },
+    getChargeListFun() {
+      getChargeList(this.detailInfo.id).then(res => {
+        this.chargeLists = res.data.list.map(item => {
+          return Object.assign(item, { show: true });
+        });
+      });
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.outpatientDetails_container {
+  background-color: #f4f4f4;
+  box-sizing: border-box;
+  padding-bottom: 29px;
+  .headerPart_container {
+    height: 300px;
+    background-color: #008b84;
+  }
+  .detail_container {
+    width: 701px;
+    height: 392px;
+    margin: -275px auto 0;
+    background-color: #fff;
+    border-radius: 10px;
+    box-sizing: border-box;
+    font-size: 28px;
+    color: #777777;
+    box-shadow: 0 0 8px #d8d6d6;
+    .hospital {
+      border-radius: 10px 10px 0 0;
+      background: #f4f4f4;
+      padding: 33px 0 26px 0;
+      text-align: center;
+    }
+    .border{
+      height: 6px;
+      border-top: 4px solid #cdcdcd;
+      width: 660px;
+      margin: 0 auto;
+      border-bottom: 2px solid #cdcdcd;
+    }
+    .bottom_content {
+      padding: 0 20px 0 34px;
+      .top{
+        display: flex;
+        .doctor{
+          margin-left: auto;
+          margin-right: 90px;
+        }
+      }
+      .item {
+        display: flex;
+        margin-top: 24px;
+        .item_title {
+          font-weight: 600;
+        }
+      }
+    }
+  }
+  .tabBar_container {
+    box-sizing: border-box;
+    padding-bottom: 29px;
+    width: 701px;
+    margin: 25px auto 0;
+    background-color: #fff;
+    .tab_container {
+      box-sizing: border-box;
+      padding: 29px 0;
+      border-radius: 10px;
+      height: 151px;
+      box-shadow: 0 0 8px #d8d6d6;
+      display: flex;
+      .tab_item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 233px;
+        .item_icon {
+          img {
+            height: 50px;
+          }
+        }
+        .item_title {
+          margin-top: 17px;
+          color: #999999;
+          font-size: 26px;
+        }
+        .active_item_title {
+          font-weight: 600;
+          color: #f6a540;
+        }
+        &:not(:first-child) {
+          border-left: 2px solid #d5d5d5;
+        }
+      }
+    }
+    .component_container {
+      height: 100%;
+    }
+  }
+  .outpatientCharges_container {
+    box-shadow: 0 0 8px #d8d6d6;
+    margin: 26px auto 0;
+    background-color: #fff;
+    width: 701px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    padding: 33px 19px 27px;
+    .title {
+      color: #048a83;
+      font-size: 30px;
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 26px;
+      padding-left: 6px;
+      border-bottom: 2px solid #64C2B4;
+      &::before {
+        content: "";
+        position: absolute;
+        left: -19px;
+        top: 4px;
+        width: 9px;
+        height: 36px;
+        background-color: #f6a63e;
+      }
+    }
+    .content {
+      margin-top: 28px;
+      border: 2px solid #d2d2d2;
+      .table_header {
+        display: flex;
+        background-color: #f4f4f4;
+        height: 51px;
+        color: #777777;
+        font-weight: 400;
+        .header_index {
+          width: 120px;
+          text-align: center;
+        }
+        .header_invoiceNum {
+          border-left: 2px solid #d2d2d2;
+          width: 542px;
+          text-align: center;
+        }
+      }
+      .table_list {
+        .list_item {
+          .item_header {
+            border-top: 2px solid #d2d2d2;
+            border-bottom: 2px solid #d2d2d2;
+            font-size: 28px;
+            color: #777777;
+            font-weight: 600;
+            display: flex;
+
+            .item_index {
+              width: 120px;
+              text-align: center;
+            }
+            .item_invoiceNum {
+              display: flex;
+              border-left: 2px solid #d2d2d2;
+              width: 542px;
+              align-items: center;
+              .num {
+                margin-left: 30px;
+              }
+              .arrow {
+                margin-right: 15px;
+                margin-left: auto;
+              }
+              img {
+                height: 14px;
+              }
+            }
+          }
+          .item_list {
+            .item {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              font-size: 28px;
+              color: #777777;
+              height: 94px;
+              box-sizing: border-box;
+              padding: 0 17px;
+              .item_text {
+                .item_title {
+                }
+                .tiem_type {
+                }
+              }
+              .item_num {
+              }
+              &:not(:first-child) {
+                border-top: 2px dashed #e7e7e7;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</style>

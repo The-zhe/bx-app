@@ -1,0 +1,216 @@
+import store from '../../vuex/store'
+import {getData,postData,getListData,postDataWithQuery} from '../utils/requestFunc'
+
+//医护团队列表
+export function getMedicalTeamData(memberId,catCd) {
+  return getData('/hjjk/myteam/list',{
+    memberId:memberId,
+    catCd:catCd
+  })
+}
+//医护团队id详情
+export function getMedicalInfo(id) {
+ return getData(`/hjjk/healthTeam/info/${id}`)
+}
+//医护团队列表医生 管家 护士大次数 视频/语音/图文(大)次数  对应type是2/1/0
+export function getMedicalTeamCount(memberId,teamId,type) {
+  return getData('/hjjk/memberService/useService',{
+    memberId:memberId,
+    teamId:teamId,
+    type:type
+  })
+}
+//医护团队列表点击进入咨询页面图文小次数 and 语音，视频消耗次数
+export function getConsultCount(memberId,teamId,type) {
+  return getData('/hjjk/memberService/useBigTimes',{
+     memberId:memberId,
+     teamId:teamId,
+     type:type
+  })
+}
+//图文咨询减少小次数
+export function getConsultReduce(memberId,teamId) {
+  return getData('/hjjk/memberService/removeRotation',{
+     memberId:memberId,
+     teamId:teamId
+  })
+}
+//保存图文历史记录
+export function getSaveHistory(hjjkHistoryRecordRo) {
+  return postData('/hjjk/historyRecord/add',hjjkHistoryRecordRo)
+}
+//视频语音咨询减少次数
+export function getVideoCount(memberId,catCd) {
+  return postDataWithQuery('/hjjk/memberService/upd',{
+    memberId:memberId,
+    catCd:catCd
+  })
+}
+//获取腾讯云密钥
+export function getSig(id) {
+  return getData('/hjjk/tencent/getUsersig',{identifier:id})
+}
+/* 就医记录-门诊列表 */
+export function getOutpatientList(memberId,startTime,endTime) {
+  let query={
+      w: [{ k: "memberId", v: memberId, m: "eq" }],
+      //{ k: "date", v: "", m: "GE" }, 2019-05-12 00:00:00
+     // { k: "date", v: "", m: "LE" }],2019-06-00 23:59:59
+      o: [],
+      p: { n: 1, s: 10 }
+  }
+  if(startTime){
+      query.w.push({ k: "date", v: startTime, m: "GE" })
+  }
+  if(endTime){
+      query.w.push({ k: "date", v: endTime, m: "LE" })
+  }
+  return getListData('/hjjk/recordOpc/page',query )
+}
+/* 门诊详情-门诊收费 */
+export function getChargeList(opcId){
+  let query={
+      w: [{ k: "opcId", v: opcId, m: "eq" }],
+      o: [],
+      p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/recordOpcFee/appList',query ) 
+}
+/* 门诊详情-处方信息列表 */
+export function getPrescriptionList(opcId){
+  let query={
+      w: [{ k: "opcId", v: opcId, m: "eq" }],
+      o: [],
+      p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/recordOpcPres/appList',query )
+}
+/* 门诊详情-检查单列表 */
+export function getCheckList(opcId){
+  let query={
+      w: [{ k: "opcId", v: opcId, m: "eq" }],
+      o: [],
+      p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/recordExam/appPage',query )
+}
+/* 门诊详情-检验单列表 */
+export function getInspectionList(opcId){
+  let query={
+      w: [{ k: "opcId", v: opcId, m: "eq" }],
+      o: [],
+      p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/recordInsp/appPage',query )
+}
+/* 检查单详情 */
+export function getCheckListDetail(id){
+  return getData('/hjjk/recordExam/info',{
+      id
+  } )
+}
+/* 检验单详情 */
+export function getInspectionListDetail(id){
+  return getData('/hjjk/recordInsp/info',{
+      id
+  } )
+}
+/* 检验单详情-检验单列表 */
+export function getInspectionDetailList(inspId){
+  let query={
+      w: [{ k: "inspId", v: inspId, m: "eq" }],
+      o: [],
+      p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/recordInspDetail/list',query)    
+}
+/* 处方详情 */
+export function getPrescriptionListDetail(opcPresId){
+  let query={
+      w: [{ k: "opcPresId", v: opcPresId, m: "eq" }],
+      o: [],
+      p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/recordOpcPreslist/list',query)    
+}
+/* 健康资讯列表 */
+export function getHealthInfoList(){
+    return getData('/hjjk/healthPreservation/page')
+}
+/* 健康资讯详情 */
+export function getHealthInfoDetail(id){
+  return getData('/hjjk/healthPreservation/appInfo',{id,memberId:1})
+}
+/* 一键预约列表 */
+export function getAppointList(memberId,catCd){
+  let query={
+      w: [{ k: "memberId", v: memberId, m: "eq" },{ k: "catCd", v: catCd, m: "eq" }],
+      o: [],
+      p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/memberService/list',query)
+}
+/* 健康资讯收藏 */
+export function collectHealthInfo(objId){
+  return postData('/hjjk/memberCollect/add',{
+    objId,memberId:1,catCd:'60000.110.100'
+  })
+}
+/* 健康资讯取消收藏 */
+export function cancelCollectHealthInfo(id){
+  return getData('/hjjk/memberCollect/appDel',{
+    id,memberId:1,catCd:'60000.110.100'
+  })
+}
+/* 门诊预约-表单提交 */
+export function PostappointData(data){
+  return postData('/hjjk/apntRegister/add',data)
+}
+/* 门诊预约-医院列表 */
+export function getHospitalList(){
+  return getData('hjjk-sys/cat/listByPrntCd?prntCd=80050')
+}
+/* 门诊预约-科室列表 */
+export function getDepartmentList(){
+  return getData('hjjk-sys/cat/listByPrntCd?prntCd=60000.100')
+}
+/* 地址管理-地址列表获取 */
+export function getAddressList(){
+  let query={
+    w: [{ k: "memberId", v: memberId, m: "eq" }],
+    o: [],
+    p: { n: 1, s: 10 }
+}
+  return getListData('/hjjk/memberAddr/listForAdimin',query)
+}
+export function getAddressDetail(id){
+  return getData('/hjjk/memberAddr/info',{id})
+}
+export function addAddress(data){
+  return postData('/hjjk/memberAddr/add',Object.assign({memberId},data))
+}
+export function updAddress(data){
+  return postData('/hjjk/memberAddr/upd',data)
+}
+export function delAddress(id){
+  return getData('/hjjk/memberAddr/del',{id})
+}
+
+/* 私医档案-病程记录列表 */
+export function getDiseaseList(startTime,endTime){
+  let query={
+    w: [{ k: "memberId", v: memberId, m: "eq" }],
+    o: [],
+    p: { n: 1, s: 10 }
+}
+if(startTime.length>10){
+  query.w.push({ k: "crtTm", v: startTime, m: "GE" })
+}
+if(endTime.length>10){
+  query.w.push({ k: "crtTm", v: endTime, m: "LE" })
+}
+  return getListData('/hjjk/symptom/symptomAndAdvice',query)
+}
+export function uploadDisease(data){
+  return postData('/hjjk/symptom/add',Object.assign({memberId},data))
+}

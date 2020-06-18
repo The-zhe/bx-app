@@ -1,0 +1,152 @@
+import store from '../../vuex/store'
+import {getData,postData,getListData,postDataWithQuery} from '../utils/requestFunc'
+//医护团队列表
+export function getMedicalTeamData(memberId,catCd) {
+  return getData('/hjjk/myteam/list',{
+    memberId:memberId,
+    catCd:catCd
+  })
+}
+//医护团队id详情
+export function getMedicalInfo(id) {
+ return getData(`/hjjk/healthTeam/info/${id}`)
+}
+//医护团队列表医生 管家 护士大次数 视频/语音/图文(大)次数  对应type是2/1/0
+export function getMedicalTeamCount(memberId,teamId,type) {
+  return getData('/hjjk/memberService/useService',{
+    memberId:memberId,
+    teamId:teamId,
+    type:type
+  })
+}
+//医护团队列表点击进入咨询页面图文小次数 and 语音，视频消耗次数
+export function getConsultCount(memberId,teamId,type) {
+  return getData('/hjjk/memberService/useBigTimes',{
+     memberId:memberId,
+     teamId:teamId,
+     type:type
+  })
+}
+//图文咨询减少小次数
+export function getConsultReduce(memberId,teamId) {
+  return getData('/hjjk/memberService/removeRotation',{
+     memberId:memberId,
+     teamId:teamId
+  })
+}
+//保存图文历史记录
+export function getSaveHistory(hjjkHistoryRecordRo) {
+  return postData('/hjjk/historyRecord/add',hjjkHistoryRecordRo)
+}
+//视频语音咨询减少次数
+export function getVideoCount(memberId,catCd) {
+  return postDataWithQuery('/hjjk/memberService/upd',{
+    memberId:memberId,
+    catCd:catCd
+  })
+}
+//获取腾讯云密钥
+export function getSig(id) {
+  return getData('/hjjk/tencent/getUsersig',{identifier:id})
+}
+//管理动态-获取客户管理套餐列表
+export function getManagementDynamic(memberId) {
+  let query={
+    w: [{ k: "memberId", v: memberId, m: "eq" }],
+    o: [],
+    p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/memberSetmeal/appList',query )
+}
+//管理建议-首页列表
+export function getAdvicePage(typeCd,memberId,setmealId,dateType) {
+  return getData('/hjjk/advice/appPage',{
+    typeCd:typeCd,
+    memberId:memberId,
+    setmealId:setmealId,
+    dateType:dateType
+  })
+}
+//管理建议-查询历史记录
+export function getAdviceListSearch(memberId,setmealId,startTime,endTime,catCd) {
+  let query={
+    w: [{ k: "memberId", v: memberId, m: "eq" },
+      {k:"setmealId",v:setmealId,m:"eq"},
+      {k:"typeCd",v:1,m:"eq"},
+    ],
+    o: [],
+    p: { n: 1, s: 10 }
+  }
+  if(startTime){
+    query.w.push({k:"crtTm",v:startTime,m:"GE"});
+  }
+  if(endTime){
+    query.w.push({k:"crtTm",v:endTime,m:"LE"});
+  }
+  if(catCd===0 ||catCd){
+    query.w.push({k:"catCd",v:catCd,m:"eq"});
+  }
+  return getListData('/hjjk/advice/page',query)
+}
+//管理建议-详情
+export function getAdviceInfo(id) {
+  return getData('/hjjk/advice/info',{
+    id:id
+  })
+}
+//新报告-查询记录
+export function getReportList(memberId,setmealId,dateType,startTm,endTm,type) {
+  let query={
+    w: [{ k: "memberId", v: memberId, m: "eq" },
+      {k:"setmealId",v:setmealId,m:"eq"},
+      {k:"dateType",v:dateType,m:"eq"}],
+    o: [],
+    p: { n: 1, s: 10 }
+  }
+  if(startTm){
+    query.w.push({k:"startTm",v:startTm,m:"eq"})
+  }
+  if(endTm){
+    query.w.push({k:"endTm",v:endTm,m:"eq"})
+  }
+  if(type){
+    query.w.push({k:"type",v:type,m:"eq"})
+  }
+  return getListData('/hjjk/advice/appReportPage',query )
+}
+//新报告-检查报告详情
+export function getReportCheck(id) {
+  return getData('/hjjk/recordExam/reportExamInfo',{
+    id:id
+  })
+}
+//新报告-检验报告详情
+export function getReportInspect(id) {
+  return getData('/hjjk/recordInsp/reportInspInfo',{
+    id:id
+  })
+}
+//用药动态-最近用药
+export function getRecentMedical(userId) {
+  let query={
+    w: [{ k: "userId", v: userId, m: "eq" }],
+    o:[{k:"crtTm",t:"desc"}],
+    p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/medRecord/list',query )
+}
+//用药动态-获取用户用药列表
+export function getUserMedical(userId) {
+  return getData('/hjjk/medDynamics/medNameList',{
+    userId:userId
+  })
+}
+//健康指标列表
+export function getHealthIndicator(memberId) {
+  let query={
+    w: [{ k: "memberId", v: memberId, m: "eq" }],
+    o: [],
+    p: { n: 1, s: 10 }
+  }
+  return getListData('/hjjk/indicator/appList',query )
+}

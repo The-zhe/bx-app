@@ -1,0 +1,191 @@
+<template>
+  <div>
+    <button style="width:100%;height:100px" @click="start">start</button>
+    <div style="width:100%;height:10px"></div>
+    <button style="width:100%;height:100px" @click="stop">stop</button>
+    <div style="width:100%;height:10px"></div>
+    <button style="width:100%;height:100px" @click="play">play</button>
+    <div class="audio_item" @click="play(item.data)" :key="index"  v-for="(item,index) in audioArray">
+      {{item.duration}}
+      <button @click.stop="translate(item.data,index)">转文字</button>
+      <div class="translate_result">
+        {{item.translation}}
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import Recorder from "js-audio-recorder";
+import HmacSHA256 from "crypto-js/hmac-sha256";
+import encBase64 from "crypto-js/enc-base64";
+export default {
+  name: "Mine",
+  data() {
+    return {
+      recorder: null,
+      APISecret: "8a40fb8eef2dbdebb115772204f1092c",
+      APIKey: "24f8384d4a4afbadbbe2085cfa40dd83",
+      APPID: "5ddb9e75",
+      host: "iat-api.xfyun.cn",
+      url: "wss://iat-api.xfyun.cn/v2/iat",
+      algorithm: "hmac-sha256",
+      headers: "host date request-line",
+      ws: null,
+      timer: null,
+      result: "",
+      mediaRecorder: null,
+      chunks: [],
+      audioArray:[],
+      currentAudioIndex:0
+    };
+  },
+  computed: {},
+  methods: {
+    ArrayBufferToBase64(buffer) {
+      var binary = "";
+      var bytes = new Uint8Array(buffer);
+      var len = bytes.byteLength;
+      for (var i = 0; i < len; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return window.btoa(binary);
+    },
+    sendData(blob) {
+      let reader = new FileReader();
+      reader.onload = e => {
+        let bufferArray = Array.from(new Int8Array(e.target.result));
+        let audioData = bufferArray.splice(0, 1280);
+        let firstFrame = {
+          common: {
+            app_id: this.APPID
+          },
+        
+          business: {
+            "language": "zh_cn", //小语种可在控制台--语音听写（流式）--方言/语种处添加试用
+            "domain": "iat",
+            "accent": "mandarin", //中文方言可在控制台--语音听写（流式）--方言/语种处添加试用
+            "vad_eos": 5000, 
+            /* "dwa": "wpgs" //为使该功能生效，需到控制台开通动态修正功能（该功能免费）   */
+          },
+          data: {
+            status: 0,
+            format: "audio/L16;rate=16000",
+            encoding: "raw", 
+            audio: this.ArrayBufferToBase64(audioData)
+          }
+        };
+        this.ws.send(JSON.stringify(firstFrame));
+        this.timer = setInterval(() => {
+          if (bufferArray.length == 0) {
+            this.ws.send(
+              JSON.stringify({
+                data: {
+                  status: 2,
+                  format: "audio/L16;rate=16000",
+                  encoding: "raw", 
+                  audio: ""
+                }
+              })
+            );
+            clearInterval(this.timer);
+            return;
+          }
+          audioData = bufferArray.splice(0, 1280);
+          this.ws.send(
+            JSON.stringify({
+              data: {
+                status: 1,
+                 format: "audio/L16;rate=16000",
+                encoding: "raw", 
+                audio: this.ArrayBufferToBase64(audioData)
+              }
+            })
+          );
+        }, 40);
+      };
+      reader.readAsArrayBuffer(blob);
+    },
+    start() {
+      this.result=""
+      this.recorder.start().then(
+        () => {
+        },
+        error => {
+          console.log(error);
+        }
+      );
+    },
+    stop() {
+      this.recorder.stop();
+      this.audioArray.push({
+        duration:Math.round(this.recorder.duration),
+        data:this.recorder.getPCMBlob(),
+        translation:""
+      })
+    },
+    play(blob){
+      this.recorder.playAudioData(blob)
+    },
+    translate(blob,index){
+      this.initSocket();
+      this.currentAudioIndex=index
+    },
+    initRecorder() {
+      this.recorder = new Recorder({
+        sampleBits: 16, // 采样位数，支持 8 或 16，默认是16
+        sampleRate: 16000, // 采样率，支持 11025、16000、22050、24000、44100、48000，根据浏览器默认值，我的chrome是48000
+        numChannels: 1, // 声道，支持 1 或 2， 默认是1
+        compiling: false // 是否边录边转换，默认是false
+      });
+    },
+    initSocket() {
+      let signatureOrigin = `host: ${
+        this.host
+      }\ndate: ${new Date().toGMTString()}\nGET /v2/iat HTTP/1.1`;
+      let signatureSha = HmacSHA256(signatureOrigin, this.APISecret);
+      let signature = encBase64.stringify(signatureSha);
+      let authorizationOrigin = `api_key="${this.APIKey}", algorithm="${this.algorithm}", headers="${this.headers}", signature="${signature}"`;
+      let authorization = btoa(authorizationOrigin);
+      let socketUrl = `${
+        this.url
+      }?authorization=${authorization}&date=${new Date().toGMTString()}&host=${
+        this.host
+      }`;
+      if ("WebSocket" in window) {
+        this.ws = new WebSocket(socketUrl);
+      } else if ("MozWebSocket" in window) {
+        this.ws = new MozWebSocket(socketUrl);
+      } else {
+        alert("notSupportTip");
+        return null;
+      }
+      this.ws.onmessage = e => {
+        let jsonData = JSON.parse(e.data);
+        jsonData.data.result.ws.forEach(wsItem => {
+          this.audioArray[this.currentAudioIndex].translation += wsItem.cw[0].w;
+        });
+        if(jsonData.data.result.ls){
+           this.ws.close()
+        }
+      };
+      this.ws.onclose = e => {
+        console.log("websocket close");
+      };
+      this.ws.onopen = e => {
+        this.sendData(this.audioArray[this.currentAudioIndex].data)
+        console.log("websocket open");
+      };
+      this.ws.onerror = e => {
+        console.log("websocket error");
+      };
+    }
+  },
+  mounted() {
+    this.initRecorder();
+  }
+};
+</script>
+
+<style lang="less" scoped>
+</style>

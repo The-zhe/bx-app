@@ -1,0 +1,24 @@
+<template>
+  <div>
+      Service
+  </div>
+</template>
+
+<script>
+export default {
+  name: "Service",
+  data() {
+    return {
+
+    };
+  },
+  methods: {
+
+  },
+  mounted() {}
+};
+</script>
+
+<style lang="less" scoped>
+
+</style>

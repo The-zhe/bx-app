@@ -1,0 +1,262 @@
+/*
+ * @Author: zzh 
+ * @Date: 2019-12-26 14:33:15 
+ * @Last Modified by: zzh
+ * @Last Modified time: 2020-01-02 15:36:45
+ */
+
+<template>
+  <div class="medicalRecord_container">
+    <div class="headerPart_container"></div>
+    <div class="tab_container">
+      <div
+        class="tab_item"
+        :class="{'active_item':currentTabIndex==index}"
+        :key="item.title"
+        v-for="(item,index) in tabLists"
+      >
+        <div class="tab_icon">
+          <img :src="item.iconUrl" />
+        </div>
+        <div class="tab_title">{{item.title}}</div>
+      </div>
+    </div>
+    <div class="search_container">
+      <div class="time start_time">
+        {{startTime==''?'开始时间':startTime}}
+        <calendar title=""  style="opacity:0;position:absolute; left:2px; top:-2px; width:114px;height:15px" v-model="startTime"></calendar>
+        <img src="../../assets/imgs/btn_da_time.png" />
+      </div>
+      <div class="crossbar"></div>
+      <div class="time end_time">
+        {{endTime==''?'结束时间':endTime}}
+         <calendar title="" style="opacity:0; position:absolute; left:4px; top:-2px; width:114px;height:15px" v-model="endTime"></calendar> 
+        <img src="../../assets/imgs/btn_da_time.png" />
+      </div>
+      <div class="search_button" @click="searchList">搜索</div>
+    </div>
+    <div class="list_container">
+      <div class="item" v-for="item in infoLists" @click="JumpToDetail(item)" :key="item.date">
+        <div class="item_date">
+          <div class="title">就诊日期：</div>
+          <div class="text">{{item.date}}</div>
+        </div>
+        <div class="item_hospital">
+          <div class="title">就诊医院：</div>
+          <div class="text">{{item.hospName}}</div>
+          <img src="../../assets/imgs/btn_da_next.png"/>
+        </div>
+        <div class="item_result">
+          <div class="title">诊断信息：</div>
+          <div class="text">{{item.imp}}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script>
+import {Group,Calendar} from 'vux';
+import {getOutpatientList} from '../../api/index'
+export default {
+  components: {Group,Calendar},
+  name: "medicalRecord",
+  data() {
+    return {
+      startTime:"",
+      endTime:"",
+      currentTabIndex: 0,
+      tabLists: [
+        {
+          title: "门诊",
+          iconUrl: require("../../assets/imgs/icon_da_mz_pre.png")
+        },
+        {
+          title: "住院",
+          iconUrl: require("../../assets/imgs/icon_da_zy_nor.png")
+        },
+        {
+          title: "检查",
+          iconUrl: require("../../assets/imgs/icon_da_jc_nor.png")
+        },
+        {
+          title: "检验",
+          iconUrl: require("../../assets/imgs/icon_da_jy_nor.png")
+        }
+      ],
+      infoLists: [
+      ]
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {
+    this.getOutpatientListFunc(1)
+  },
+  methods: {
+    stateTimeChange(val){
+      this.startTime=val
+    },
+    endTimeChange(val){
+      this.endTime=val
+    },
+    getOutpatientListFunc(memberId,startTime,endTime){
+      getOutpatientList(memberId,startTime,endTime).then((res)=>{
+        console.log(res)
+        this.infoLists=res.data.list
+      })
+    },
+    JumpToDetail(item){
+      sessionStorage.setItem('detailInfo',JSON.stringify(item))
+      this.$router.push({name:'outpatientDetails'})
+    },
+    searchList(){
+      let startTime = this.startTime+' 00:00:00'
+      let endTime = this.endTime + ' 23:59:59'
+      this.getOutpatientListFunc(1,startTime,endTime)
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.medicalRecord_container {
+  background-color: #f4f4f4;
+  .headerPart_container {
+    height: 100px;
+    background-color: #008b84;
+  }
+  .tab_container {
+    background-color: #ffffff;
+    width: 701px;
+    margin: -70px auto 0px;
+    display: flex;
+    padding: 24px 0 27px 0;
+    border-radius: 14px 14px 0 0;
+    box-shadow: 0 0 10px #999999;
+    .tab_item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 175px;
+      .tab_icon {
+        img {
+          height: 51px;
+        }
+      }
+      .tab_title {
+        margin-top: 16px;
+        color: #999999;
+        font-size: 26px;
+        font-weight: 400;
+      }
+      &:not(:first-child) {
+        border-left: 2px solid #d2d2d2;
+      }
+    }
+    .active_item{
+      .tab_title{
+        color: #F6A540;
+        font-weight: 600;
+      }
+    }
+  }
+  .search_container {
+    display: flex;
+    padding: 32px 25px;
+    box-sizing: border-box;
+    align-items: center;
+    .time {
+      height: 61px;
+      width: 251px;
+      line-height: 61px;
+      background-color: #ffffff;
+      color: #40b2a0;
+      font-size: 30px;
+      border-radius: 25px;
+      padding-left: 20px;
+      box-sizing: border-box;
+      position: relative;
+      img {
+        position: absolute;
+        width: 33px;
+        top: 14px;
+        right: 20px;
+      }
+    }
+    .start_time {
+    }
+    .crossbar {
+      margin-left: 9px;
+      margin-right: 8px;
+      height: 2px;
+      width: 25px;
+      background-color: #3eb4a1;
+    }
+    .end_time {
+    }
+    .search_button {
+      margin-left: 16px;
+      font-size: 30px;
+      color: #ffffff;
+      background-color: #3eb4a1;
+      line-height: 61px;
+      text-align: center;
+      border-radius: 25px;
+      width: 141px;
+      height: 61px;
+    }
+  }
+  .list_container {
+    box-sizing: border-box;
+    position: absolute;
+    bottom: 0px;
+    left: 0px;
+    top: 437px;
+    width: 100%;
+    background-color: #ffffff;
+    border-radius: 36px 36px 0 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .item {
+      background-color: #FCFCFC;
+      box-sizing: border-box;
+      padding: 30px 21px 38px 17px;
+      margin-top: 25px;
+      border-radius: 16px;
+      border: 2px solid #e3e3e3;
+      width: 701px;
+      height: 202px;
+      div {
+        display: flex;
+        align-items: center;
+        color: #777777;
+        font-size: 28px;
+        .title {
+          white-space: nowrap;
+          font-weight: 600;
+        }
+        .text {
+        }
+        img{
+          margin-left: auto;
+          width: 15px;
+          height: 27px;
+        }
+      }
+      .item_hospital{
+        margin-top: 12px;
+      }
+      .item_result{
+        margin-top: 12px;
+      }
+      &:last-child{
+        margin-bottom: 25px;
+      }
+    }
+  }
+}
+</style>

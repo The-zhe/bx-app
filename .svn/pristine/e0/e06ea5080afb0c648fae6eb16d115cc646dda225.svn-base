@@ -1,0 +1,245 @@
+<template>
+  <!-- 非会员首页一键预约 -->
+  <div class="QuickAppointment_container">
+    <!-- 标题 -->
+    <div class="title_container">
+      <div class="titleForCN">一键预约</div>
+      <div class="slanting_bar">
+        <img src="../../../assets/imgs/slanting_bar.png" />
+      </div>
+      <div class="titleForEN">QUICK APPOINTMENT</div>
+    </div>
+    <!-- 预约表单 -->
+    <div class="appointment_container">
+      <div class="service_type">
+        <div class="item_label">选择服务类型</div>
+        <div class="item_input">
+          <div class="item_icon">
+            <van-icon name="arrow-down" color="#d1d1d1" />
+          </div>
+          <van-field readonly clickable :value="serviceType" @click="showPicker = true" />
+        </div>
+      </div>
+      <div class="contact_way">
+        <div class="item_label">联系方式</div>
+        <div class="item_input">
+          <input type="text" v-model="contact_way" />
+        </div>
+      </div>
+      <div class="demand_dec">
+        <div class="item_label">需求简述</div>
+        <div class="item_input">
+          <textarea type="textarea" v-model="demand_dec" placeholder="简单描述问题，限50字" />
+        </div>
+      </div>
+      <div class="submit_button">
+        <button>快速预约</button>
+      </div>
+    </div>
+    <!-- 标题 -->
+    <div class="title_container">
+      <div class="titleForCN">电话客服</div>
+      <div class="slanting_bar">
+        <img src="../../../assets/imgs/slanting_bar.png" />
+      </div>
+      <div class="titleForEN">CHINESE MAINLAND ONLY</div>
+    </div>
+    <!-- 电话客服 -->
+    <div class="phone_info_container">
+      <div class="phone_icon">
+        <img src="../../../assets/imgs/phone_orange.png" />
+      </div>
+      <div class="phone_text">
+        <div class="phone_title">医疗服务热线</div>
+        <div class="phone_number">400-800-1808</div>
+      </div>
+    </div>
+    <van-popup v-model="showPicker" position="bottom">
+      <van-picker
+        show-toolbar
+        :columns="columns"
+        @cancel="showPicker = false"
+        @confirm="onConfirm"
+      />
+    </van-popup>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "QuickAppointment",
+  components: {},
+  data() {
+    return {
+      serviceType: "",
+      contact_way: "",
+      demand_dec: "",
+      showPicker: false,
+      columns: ["杭州", "宁波", "温州", "嘉兴", "湖州"]
+    };
+  },
+  methods: {
+    onConfirm(value) {
+      this.serviceType = value;
+      this.showPicker = false;
+    }
+  }
+};
+</script>
+
+<style scoped lang="less">
+@import "../../../../static/lessfunc.less";
+.QuickAppointment_container {
+  .bb();
+  .pdt(48px);
+  .h(820px);
+  .bgc(#f2f2f2);
+  .title_container {
+    .bb();
+    .mgl(126px);
+    .flex_y_center();
+    .titleForCN {
+      .fs(32px);
+      .fc(#5d5d5d);
+    }
+    .slanting_bar {
+      .mgl(19px);
+      img {
+        .w(12px);
+      }
+    }
+    .titleForEN {
+      .mgl(17px);
+      .fs(30px);
+      .fc(#268d7a);
+      .fw(600);
+    }
+    &:not(:first-child) {
+      .mgt(60px);
+      .mgl(84px);
+    }
+  }
+  .appointment_container {
+    .mgt(48px);
+    .item_label {
+      .ptr();
+      .fs(28px);
+      .fc(#5d5d5d);
+      &::after {
+        .pta();
+        left: -15px;
+        top: 5px;
+        content: "*";
+        .fc(#f15a24);
+      }
+    }
+    .service_type {
+      .mgl(87px);
+      .flex_y_center();
+      .item_input {
+        .ptr();
+        .item_icon {
+          z-index: 10;
+          .pta();
+          right: 20px;
+          top: 9px;
+        }
+        .mgl(17px);
+        .h(60px);
+        .w(400px);
+      }
+    }
+    .contact_way {
+      .mgt(30px);
+      .flex_y_center();
+      .mgl(140px);
+
+      .item_input {
+        .mgl(19px);
+        input {
+          -webkit-appearance: none;
+          .fs(24px);
+          .br(0);
+          .fc(#b7b7b7);
+          .pdl(17px);
+          .h(60px);
+          .w(383px);
+          .bd(1px, #e6e6e6);
+        }
+      }
+    }
+    .demand_dec {
+      display: flex;
+      .mgt(30px);
+      .mgl(140px);
+      .item_input {
+        .mgl(19px);
+        textarea {
+          -webkit-appearance: none;
+          .pdl(17px);
+          .br(0);
+          .pdt(18px);
+          .fs(24px);
+          .h(173px);
+          .w(383px);
+          .fc(#b7b7b7);
+          .bd(1px, #e6e6e6);
+          &::placeholder {
+            .fc(#b7b7b7);
+          }
+        }
+      }
+    }
+    .submit_button {
+      .mgt(27px);
+      .mgl(270px);
+      button {
+        .bgc(#ec6b1a);
+        .h(58px);
+        .w(212px);
+        .fs(28px);
+        .fc(#ffffff);
+        .tac();
+      }
+    }
+  }
+  .phone_info_container {
+    .mgt(24px);
+    .mgl(235px);
+    .flex_y_center();
+    .phone_icon {
+      img {
+        .h(52px);
+        .w(46px);
+      }
+    }
+    .phone_text {
+      .mgl(18px);
+      .phone_title {
+        .fs(20px);
+        .fc(#f15a24);
+      }
+      .phone_number {
+        .fs(30px);
+        .fc(#f15a24);
+        .fw(600);
+      }
+    }
+  }
+}
+</style>
+<style lang="less">
+.QuickAppointment_container {
+  .van-cell {
+    box-sizing: border-box;
+    border: 1px solid #e6e6e6;
+    padding: 0px;
+    height: 60px;
+    .van-field__control{
+      font-size: 24px;
+      color: #b7b7b7;
+      padding-left: 17px;
+    }
+  }
+}
+</style>

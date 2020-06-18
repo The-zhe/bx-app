@@ -1,0 +1,173 @@
+<template>
+    <div class="doctorInfo_container">
+        <div class="form_item avatar">
+            <div class="label">头像</div>
+            <img class="avatarImg"/>
+            <img :src="rightArrow" class="rightArrow"/>
+        </div>
+        <div class="form_item name">
+            <div class="label">姓名：</div>
+            <div class="val">{{doctorInfo.name}}</div>
+        </div>
+        <div class="form_item idCard">
+            <div class="label">身份证：</div>
+            <div class="val">{{doctorInfo.idCard}}</div>
+        </div>
+        <div class="form_item rank">
+            <div class="label">职称：</div>
+            <div class="val">{{doctorInfo.titleNm}}</div>
+        </div>
+        <div class="form_item hospital">
+            <div class="label">医院：</div>
+            <div class="val">{{doctorInfo.hospitalName}}</div>
+        </div>
+        <div class="form_item department">
+            <div class="label">科室：</div>
+            <div class="val">{{doctorInfo.secondDepNm}}</div>
+        </div>
+        <div class="form_item experienceNum">
+            <div class="label">执业证书编号：</div>
+            <div class="val">{{doctorInfo.certNo}}</div>
+        </div>
+        <div class="form_item experienceImg">
+            <div class="label">执业证书照片</div>
+            <img class="experience_img" :src="doctorInfo.certImgUrl" />
+        </div>
+        <div class="form_item cardImg">
+            <div class="label">身份证照片</div>
+            <img class="card_img" :src="doctorInfo.idCardRlImgUrl" />
+        </div>
+        <div class="form_item phone">
+            <div class="label">手机号：</div>
+            <div class="val">
+                {{doctorInfo.phone}}
+            </div>
+        </div>
+        <div class="form_item skills">
+            <div class="label">专业擅长：</div>
+            <div class="val">
+                {{doctorInfo.skills}}
+            </div>
+        </div>
+        <div class="form_item experience_place">
+            <div class="label">执业地点：</div>
+            <div class="val">
+                {{doctorInfo.address}}
+            </div>
+        </div>
+        <div class="form_item experience">
+            <div class="label">执业经历：</div>
+            <div class="val">
+                {{doctorInfo.experience}}
+            </div>
+        </div>
+        <img @click="jumpToEdit" :src="editImg" class="editImg"/>
+    </div>
+</template>
+
+<script>
+import {getDoctorInfo} from '../../../../api/apiz'
+export default {
+name:"doctorInfo",
+data(){
+    return{
+        editImg:require('@/assets/imgs/btn_grxx_modify.png'),
+        rightArrow:require('@/assets/imgs/btn_grzx_next.png'),
+        doctorInfo:{}
+    }
+},
+methods:{
+    getDoctorInfoFun(){
+        getDoctorInfo().then(res=>{
+            this.doctorInfo=res.data.data  
+        })
+    },
+    jumpToEdit(){
+        this.$router_({name:'doctorPersonalInfoEdit'})
+    }
+},
+mounted(){
+    this.getDoctorInfoFun()
+}
+
+};
+</script>
+
+<style scoped lang="less">
+.doctorInfo_container{
+    .form_item{
+        height: 0.98rem;
+        display: flex;
+        align-items: center;
+        border-bottom: 0.03rem solid #F4F1F4;
+        font-size: 0.3rem;
+        padding:0 0.5rem;
+        .label{
+            white-space: nowrap;
+            font-weight: bold;
+            color: #777777;
+        }
+        .val{
+            margin-left: auto;
+            color: #717071;
+        }
+        .avatarImg{
+            margin-right: .45rem;
+            height: 1rem;
+            width: 1rem;
+        }
+        .rightArrow{
+            width: 0.18rem;
+            height: .31rem;
+        }
+        .experience_img{
+            height: 1.22rem;
+            width: 1.72rem;
+            margin-left: auto;
+        }
+        .card_img{
+            width: 1.72rem;
+            height: 1.09rem;
+            margin-left: auto;
+        }
+    }
+        .avatar{
+            height: 1.72rem;
+            justify-content: flex-end;
+            .label{
+                margin-right: auto;
+            }
+        }
+        .experienceImg{
+            height: 2.47rem;
+            .label{
+                margin-top: .34rem; 
+                align-self: flex-start;
+            }
+        }
+        .cardImg{
+            height: 1.85rem;
+            .label{
+                margin-top: .34rem;
+                align-self: flex-start;
+            }
+        }
+        .skills{
+            height: 1.33rem;
+        }
+        .experience_place{
+            height: 1.3rem;
+            .val{
+                margin-left: 0px;
+            }
+        }
+        .experience{
+            height: 1.3rem;
+        }
+        .editImg{
+            width: 3.06rem;
+            height: 0.71rem;
+            margin: 1.11rem auto;   
+        }
+}
+</style>

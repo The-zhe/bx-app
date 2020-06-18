@@ -1,0 +1,126 @@
+// 2020/1/17 created by xtt
+<template>
+    <div class="orderInfo">
+      <div class="o_top">
+        <div class="o_top_img"></div>
+        <div class="o_top_right">
+          <div class="o_top_right_service">挂号服务</div>
+          <div class="o_top_right_price">会员价：¥68.00 ¥120.00</div>
+        </div>
+      </div>
+      <div class="o_info">
+        <div class="o_info_top">订单信息</div>
+        <div class="o_info_content">
+         <div>就诊项目：<span>挂号服务
+
+
+
+</span>
+           </div>
+          <div>
+            下单日期：<span>2019-12-27</span>
+          </div>
+          <div>
+            订单编号：<span>JZ20191227000141</span>
+          </div>
+          <div>
+            就  诊  人：<span>王娇娇  男  36    13732182995</span>
+          </div>
+          <div>
+            服务费用：<span>58.00元</span>
+          </div>
+        </div>
+      </div>
+      <div class="o_seedoctor">
+        <div class="o_info_top">就医信息</div></div>
+      <div class="o_datdcard">
+        <div class="o_info_top">资料卡证信息</div></div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "orderInfo"
+    }
+</script>
+
+<style scoped lang="less">
+.orderInfo{
+  width: 100%;
+  background: #F4F4F4;
+  .o_top{
+    width: 700px;
+    height: 162px;
+    margin: 20px auto;
+    border: 2px solid #E6E6E6;
+    border-radius: 20px;
+    background: white;
+    display: flex;
+    justify-content: flex-start;
+    .o_top_img{
+      margin-top: 30px;
+      margin-left: 20px;
+      width: 100px;
+      height: 100px;
+      background: #40b2a0;
+      border-radius: 50px;
+    }
+    .o_top_right{
+      margin-top: 35px;
+      margin-left: 30px;
+      font-size: 30px;
+      color: #777777;
+      .o_top_right_service{
+        width: 120px;
+        height: 28px;
+        font-weight: bold;
+      }
+      .o_top_right_price{
+        margin-top: 25px;
+        font-weight: normal;
+
+      }
+    }
+  }
+  .o_info_top{
+    color: #777777;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 20px auto;
+    width: 660px;
+    height: 60px;
+    border-bottom: 2px solid #E3E3E5;
+  }
+  .o_info_content{
+    margin: 0 auto;
+    width: 660px;
+    height: auto;
+    color: #A0A0A0;
+    font-size: 30px;
+  }
+  .o_info{
+    width: 700px;
+    height: 380px;
+    margin: 20px auto;
+    border: 2px solid #E6E6E6;
+    border-radius: 20px;
+    background: white;
+  }
+  .o_seedoctor{
+    width: 700px;
+    height: 380px;
+    margin: 20px auto;
+    border: 2px solid #E6E6E6;
+    border-radius: 20px;
+    background: white;
+  }
+  .o_datdcard{
+    width: 700px;
+    height: 700px;
+    margin: 20px auto 0 auto;
+    border: 2px solid #E6E6E6;
+    border-radius: 20px;
+    background: white;
+  }
+}
+</style>

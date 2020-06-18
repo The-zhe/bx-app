@@ -1,0 +1,333 @@
+/*
+ * @Author: zzh 
+ * @Date: 2019-12-26 14:32:21 
+ * @Last Modified by: zzh
+ * @Last Modified time: 2020-01-17 11:35:33
+ */
+
+<template>
+  <div class="inspectionDetail_container" v-if="Object.keys(inspectionInfo).length>0">
+    <div class="headerPart_container"></div>
+    <div class="report_container">
+      <div class="report_container_">
+        <div class="report_header">
+          <div class="hospital">{{inspectionInfo.hospName}}</div>
+          <div class="date">{{inspectionInfo.opcDate.slice(0,10)}}</div>
+        </div>
+        <div class="hasPadding">
+        <div class="report_middle">
+          <div class="top">
+            <div class="info department">
+              <div class="title">科&emsp;室：</div>
+              <div class="text">{{inspectionInfo.deptNm}}</div>
+            </div>
+            <div class="info doctor">
+              <div class="title">医&emsp;生：</div>
+              <div class="text">{{inspectionInfo.doctor}}</div>
+            </div>
+          </div>
+          <div class="info outPatient_num">
+            <div class="title">门诊号：</div>
+            <div class="text">{{inspectionInfo.opcNo}}</div>
+          </div>
+        </div>
+        <div class="report_bottom">
+          <div class="info reportNum">
+            <div class="title">报告单号：</div>
+            <div class="text">{{inspectionInfo.reportNo}}</div>
+          </div>
+          <div class="info gatherTime">
+            <div class="title">采集时间：</div>
+            <div class="text">{{inspectionInfo.date.slice(0,10)}}</div>
+          </div>
+        </div>
+        </div>
+      </div>
+      <div class="inspectionList_container">
+        <div class="list_header">
+          <div class="header_item">项目名称</div>
+          <div class="header_result">结果</div>
+          <div class="header_reference">参考值</div>
+        </div>
+        <div class="list_content">
+          <div class="item" v-for="item in checkSheet">
+            <div class="item_name">{{item.name}}</div>
+            <div class="item_result">
+              <div class="text">{{item.result}}</div>
+              <div class="arrow" v-if="item.statCd!=='80070.104'">
+                <img
+                  :src="item.statCd=='80070.100'?pddwUrl:item.statCd=='80070.101'?pdgwUrl:item.statCd=='80070.102'?pgdwUrl:pggwUrl"
+                  :class="{'pddw':item.statCd=='80070.100','pdgw':item.statCd=='80070.101','pgdw':item.statCd=='80070.102','pggw':item.statCd=='80070.103'}"
+                />
+              </div>
+            </div>
+            <div class="item_reference">{{`${item.range} ${item.unit}`}}</div>
+          </div>
+        </div>
+        <div class="list_tip">
+          <div>(提示说明：</div>
+          <div>
+            <img class="pgdw" :src="pgdwUrl" />偏高低危
+          </div>
+          <div>
+            <img class="pggw" :src="pggwUrl" />偏高高危
+          </div>
+          <div>
+            <img class="pddw" :src="pddwUrl" />偏低低危
+          </div>
+          <div>
+            <img class="pdgw" :src="pdgwUrl" />偏低高危)
+          </div>
+        </div>
+        <div class="check_tip">(提示说明：点击项目名称可查看历史数据动态)</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import {
+  getInspectionListDetail,
+  getInspectionDetailList
+} from '@/api/apiz';
+export default {
+  components: {},
+  name: "inspectionListDetail",
+  data() {
+    return {
+      currentReportId: 0,
+      pgdwUrl: require("@/assets/imgs/icon_da_arrow_upper.png"),
+      pggwUrl: require("@/assets/imgs/icoon_da_triangle_lower.png"),
+      pddwUrl: require("@/assets/imgs/icon_da_arrow_lower.png"),
+      pdgwUrl: require("@/assets/imgs/icoon_da_triangle_upper.png"),
+      checkSheet: [],
+      inspectionInfo: {}
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {
+    this.currentReportId = this.$route.params.id;
+    this.$nextTick(() => {
+      this.getInspectionListDetailFunc(this.currentReportId);
+      this.getInspectionDetailListFunc(this.currentReportId);
+    });
+  },
+  methods: {
+    getInspectionDetailListFunc(id) {
+      getInspectionDetailList(id).then(res => {
+        this.checkSheet = res.data.list;
+      });
+    },
+    getInspectionListDetailFunc(id) {
+      getInspectionListDetail(id).then(res => {
+        this.inspectionInfo = res.data.data;
+        this.$store.commit("setHeaderTitle", res.data.data.name);
+      });
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.inspectionDetail_container {
+  box-sizing: border-box;
+  background-color: #f4f4f4;
+  .headerPart_container {
+    box-sizing: border-box;
+    padding-top: 23px;
+    height: 200px;
+    background-color: #008b84;
+  }
+  .report_container {
+    font-size: 30px;
+    color: #777777;
+    border-radius: 14px;
+    box-shadow: 0 0 8px #bebcbc;
+    box-sizing: border-box;
+    width: 701px;
+    margin: -200px auto 0;
+    box-sizing: border-box;
+    background-color: #fff;
+    font-size: 28px;
+    color: #777777;
+    justify-content: space-between;
+    .report_container_ {
+  
+      .report_header {
+        border-radius: 14px 14px 0 0;
+        font-size: 30px;
+        position: relative;
+        font-weight: 600;
+        background-color: #f4f4f4;
+        box-sizing: border-box;
+        padding: 24px 0 21px;
+        text-align: center;
+        .title {
+          margin-top: 8px;
+          font-weight: 600;
+        }
+        .date {
+        }
+        &:after{
+          content: "";
+          width: 661px;
+          position: absolute;
+          left: 20px;
+          bottom: -4px;
+          height: 4px;
+          background-color: #cdcdcd;
+        }
+      }
+      .hasPadding{
+        padding: 0 20px;
+        margin-top: 10px;
+        .report_middle {
+        border-top: 1px solid #cdcdcd;
+        padding: 29px 0 39px 14px;
+        border-bottom: 20px solid #f4f4f4;
+        .top {
+          display: flex;
+          .doctor {
+            margin-left: auto;
+            margin-right: 90px;
+          }
+        }
+      }
+            .report_bottom {
+        box-sizing: border-box;
+        padding: 33px 13px 39px;
+      }
+      }
+
+
+      .info {
+        display: flex;
+        .title {
+          font-weight: 600;
+        }
+        &:not(:last-child) {
+          margin-bottom: 28px;
+        }
+      }
+    }
+
+    .inspectionList_container {
+      border-radius: 14px;
+      width: 100%;
+      background-color: #fff;
+      box-sizing: border-box;
+      padding: 0 0 37px;
+      .list_header {
+        font-size: 28px;
+        color: #777777;
+        align-items: center;
+        background-color: #f4f4f4;
+        height: 89px;
+        display: flex;
+        .header_item {
+          width: 250px;
+          text-align: center;
+        }
+        .header_result {
+          margin-left: 90px;
+          width: 100px;
+          text-align: center;
+        }
+        .header_reference {
+          width: 310px;
+          text-align: center;
+        }
+      }
+      .list_content {
+        font-size: 28px;
+        color: #777777;
+        .item {
+          align-items: center;
+          height: 68px;
+          display: flex;
+          border-bottom: 2px solid#DCDCDC;
+          .item_name {
+            box-sizing: border-box;
+            padding-left: 20px;
+            width: 250px;
+            text-align: center;
+          }
+          .item_result {
+            margin-left: 90px;
+            width: 100px;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            .text {
+            }
+            .arrow {
+              margin-left: 10px;
+            }
+            .pgdw {
+              width: 11px;
+              height: 28px;
+            }
+            .pggw {
+              width: 14px;
+              height: 11px;
+            }
+            .pddw {
+              width: 12px;
+              height: 27px;
+            }
+            .pdgw {
+              width: 14px;
+              height: 11px;
+            }
+          }
+          .item_reference {
+            width: 310px;
+            text-align: center;
+          }
+        }
+      }
+      .list_tip {
+        margin-top: 25px;
+        font-size: 26px;
+        color: #969696;
+        display: flex;
+        align-items: center;
+        padding-left: 30px;
+        div {
+          white-space: nowrap;
+          img {
+            margin-left: 4px;
+            margin-right: 2px;
+          }
+          display: flex;
+          align-items: center;
+          .pgdw {
+            width: 11px;
+            height: 28px;
+          }
+          .pggw {
+            width: 14px;
+            height: 11px;
+          }
+          .pddw {
+            width: 12px;
+            height: 27px;
+          }
+          .pdgw {
+            width: 14px;
+            height: 11px;
+          }
+        }
+      }
+      .check_tip{
+        padding-left: 30px;
+        margin-top: 13px;
+        font-size: 26px;
+        color: #969696;
+      }
+    }
+  }
+}
+</style>

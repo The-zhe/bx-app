@@ -1,0 +1,15 @@
+/* 是否为空对象 */
+export const isEmptyObj = (obj) =>{
+    return Boolean(Object.keys(obj).length)
+}
+/*  */
+export const has =(obj) =>{
+    
+}
+export const formatDataQuery =(data)=>{
+  let query=""
+  Object.keys(data).forEach((key,index)=>{
+    query+=key+'='+data[key]+'&'
+  })
+  return query.substr(0,query.length-1)
+}

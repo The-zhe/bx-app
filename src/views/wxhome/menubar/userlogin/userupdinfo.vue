@@ -1,0 +1,306 @@
+<template>
+  <div class="userupdinfo">
+    <div class="u_top">与医生开始咨询前，请先完善你的基本信息</div>
+   <!-- <div class="u_div">
+      <div class="u_name">*称&emsp;&emsp;呼：</div>
+      <div class="u_inp"><input v-model="uname" @input="changename"/><div class="u_tip" v-show="issex">称呼不能为空</div></div>
+    </div>-->
+    <div class="u_div">
+      <div class="u_name">*性&emsp;&emsp;别：</div>
+      <div class="u_inp" @click="toshowsex"><div class="u_sex">{{sex}}</div><img src="../../../../assets/imgs/xfill1_address.png">
+       <!-- <div class="u_tip">性别不能为空</div>-->
+      </div>
+    </div>
+    <van-popup
+      v-model="sexshow"
+      position="bottom"
+      :style="{ height: '30%' }"
+    ><van-picker show-toolbar title="请选择" :columns="columns" @cancel="cancel" @confirm="confirmsex"/>
+    </van-popup>
+    <div class="u_div">
+      <div class="u_name">*生&emsp;&emsp;日：</div>
+      <!--<div class="fillinput"><input :placeholder="ptip" v-model="age" @focus="tofocus" @blur="toblur"/></div>-->
+      <div class="u_date" @click="todate" v-show="isdate">{{birthday}}</div>
+      <div class="u_datetip" v-show="!isdate" @click="todatetip">
+        <div class="u_datef"></div>
+        <div class="u_tipf">生日不能为空</div></div>
+      <van-popup
+        v-model="dateshow"
+        position="bottom"
+        :style="{ height: '30%' }"
+      >
+        <van-datetime-picker
+          v-model="currentDate"
+          type="date"
+          :min-date="minDate"
+          :max-date="maxDate"
+          @confirm="confirmdate"
+          @cancel="cancel"
+        />
+      </van-popup>
+    </div>
+    <div class="u_btn" @click="tocheck"><img src="../../../../assets/imgs/x_jrzx.png"/></div>
+  </div>
+</template>
+
+<script>
+  import moment from "moment/moment";
+  import {getUserInfo,editUserInfo} from '../../../../api/apiz'
+  export default {
+    name: "userupdinfo",
+    data() {
+      return {
+        ptip:'请输入年龄',
+        issex:false,
+        isdate:true,
+        uname:'',
+        age:'',
+        dateshow:false,
+        columns: ['男', '女'],
+        sexshow:false,
+        sex:'',
+        dateshow: false,
+        minDate: new Date(1950, 0, 1),
+        maxDate: new Date(2020, 3, 1),
+        currentDate: new Date(),
+        image:'',
+      }
+    },
+    mounted(){
+      this.getUserInfoFun()
+    },
+    methods:{
+      tofocus(){
+        this.ptip='';
+      },
+      toblur(){
+        this.ptip='请输入年龄';
+      },
+      getUserInfoFun(){
+          getUserInfo().then(res=>{
+              let userInfo=res.data.data
+              //this.uname=userInfo.nickname
+              this.age=userInfo.age
+              this.sex=userInfo.sex
+          })
+      },
+      editUserInfoFun(){
+          editUserInfo({
+            //nickname:this.uname,
+            sex:this.sex,
+            age:this.age
+          }).then(res=>{
+              if(res.data.code==0){
+                //sessionStorage.setItem('perusername', this.uname);
+                localStorage.setItem('persex', this.sex);
+                localStorage.setItem('perbirthday', this.perbirthday);
+                this.updIMnick();
+                this.$router_({path:'/wxconsultuser'});
+              }
+          })
+      },
+      changename(){
+        this.issex=false
+      },
+      todatetip(){
+        this.isdate=true;
+      },
+      tocheck(){
+       /* if(!this.uname){
+           this.issex=true;
+        }*/
+        if(!this.age){
+          this.isdate=false;
+        }else {
+          this.editUserInfoFun();
+        }
+      },
+      toshowsex(){
+        this.sexshow=true;
+
+      },
+      confirmsex(a){
+        this.sex=a;
+        this.sexshow=false;
+      },
+      confirmdate(value){
+        this.birthday=moment(value).format('YYYY-MM-DD');
+        this.dateshow=false;
+        let year=new Date().getFullYear();
+        let birth=value.getFullYear();
+        this.image=this.getAge(this.birthday);
+      },
+      //算周岁
+      getAge(strBirthday){
+        let returnAge,
+      strBirthdayArr=strBirthday.split("-"),
+      birthYear = strBirthdayArr[0],
+      birthMonth = strBirthdayArr[1],
+      birthDay = strBirthdayArr[2],
+      d = new Date(),
+      nowYear = d.getFullYear(),
+      nowMonth = d.getMonth() + 1,
+      nowDay = d.getDate();
+    if(nowYear == birthYear){
+      returnAge = 0;//同年 则为0周岁
+    }
+    else{
+      let ageDiff = nowYear - birthYear ; //年之差
+      if(ageDiff > 0){
+        if(nowMonth == birthMonth) {
+          let dayDiff = nowDay - birthDay;//日之差
+          if(dayDiff < 0) {
+            returnAge = ageDiff - 1;
+          }else {
+            returnAge = ageDiff;
+          }
+        }else {
+          let monthDiff = nowMonth - birthMonth;//月之差
+          if(monthDiff < 0) {
+            returnAge = ageDiff - 1;
+          }
+          else {
+            returnAge = ageDiff ;
+          }
+        }
+      }else {
+        returnAge = -1;//返回-1 表示出生日期输入错误 晚于今天
+      }
+    }
+    return returnAge;//返回周岁年龄
+  },
+      todate(){
+        this.dateshow=true;
+      },
+      cancel(){
+        this.dateshow=false;
+          this.sexshow=false;
+      },
+      updIMnick(){
+         let nick=this.uname+','+this.sex+','+this.image+','+2+','+0;  //image==im age
+         console.log(nick);
+        // 修改个人标配资料
+        let promise = tim.updateMyProfile({
+          nick: nick,
+        });
+        promise.then(function(imResponse) {
+          console.log(imResponse.data); // 更新资料成功
+        }).catch(function(imError) {
+          console.warn('updateMyProfile error:', imError); // 更新资料失败的相关信息
+        });
+      }
+
+      },
+  }
+</script>
+
+<style scoped lang="less">
+  .userupdinfo {
+    .u_top {
+      padding-top: 0.25rem;
+      padding-left: 0.44rem;
+      font-size: 0.26rem;
+      color: #949494;
+      height: 0.6rem;
+      background: #EFEFEF;
+    }
+
+    .u_div {
+      height: 1.3rem;
+      border-bottom: 0.03rem solid #F4F1F4;
+      display: flex;
+      justify-content: flex-start;
+    }
+    .fillinput{
+      font-size: 0.3rem;
+      color: #777777;
+      line-height:0.7rem;
+      padding-left: 0.1rem;
+      margin-top: 0.3rem;
+      margin-left: 0.2rem;
+      width: 2.28rem;
+      height: 0.7rem;
+      border: 0.02rem solid #C1BEC1;
+      border-radius: 0.08rem;
+      input{
+        width: 2rem;
+        height: 0.56rem;
+      }
+    }
+    .u_name {
+      margin-left: 0.52rem;
+      margin-top: 0.5rem;
+      color: #777777;
+      font-size: 0.3rem;
+      font-weight: bold;
+    }
+    .u_tip{
+      width: 2rem;
+      height: 0.23rem;
+      font-size: 0.24rem;
+      color: #E60012;
+    }
+    .u_inp {
+      width: 4.5rem;
+      margin-left: 0.3rem;
+      margin-top: 0.5rem;
+      font-size: 0.3rem;
+      color: #717071;
+
+      img {
+        margin-left: 3.8rem;
+        margin-top: -0.25rem;
+        width: 0.21rem;
+        height: 0.19rem;
+      }
+      .u_sex{
+        width: 0.3rem;
+      }
+    }
+    .u_tipf{
+      margin-left: 0.3rem;
+      width: 2rem;
+      height: 0.23rem;
+      font-size: 0.24rem;
+      color: #E60012;
+    }
+    .u_datef{
+      padding-left: 0.1rem;
+      margin-top: 0.4rem;
+      margin-left: 0.3rem;
+      width: 4.2rem;
+      height: 0.56rem;
+      border: 0.02rem solid #E60012;
+      border-radius: 0.14rem;
+      background: url("../../../../assets/imgs/xfill1_date.png") no-repeat 3.7rem;
+      background-size: 0.38rem 0.35rem;
+    }
+    .u_date {
+      font-size: 0.3rem;
+      padding-left: 0.1rem;
+      margin-top: 0.4rem;
+      margin-left: 0.3rem;
+      width: 4.2rem;
+      height: 0.56rem;
+      border: 0.02rem solid #B7B7B7;
+      border-radius: 0.14rem;
+      background: url("../../../../assets/imgs/xfill1_date.png") no-repeat 3.7rem;
+      background-size: 0.38rem 0.35rem;
+    }
+    .u_btn{
+      position: absolute;
+      bottom: 1.35rem;
+      left: 50%;
+      margin-left: -1.74rem;
+      width: 3.48rem;
+      height: 0.66rem;
+      img{
+        width: 3.48rem;
+        height: 0.66rem;
+      }
+    }
+  }
+</style>
+<style>
+@import url("../../../../assets/less/vantstyle/picker.css");
+</style>

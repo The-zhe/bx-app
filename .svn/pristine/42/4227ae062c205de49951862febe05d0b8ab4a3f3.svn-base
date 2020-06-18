@@ -1,0 +1,28 @@
+/*分页*/
+.el-pagination {
+  text-align: right;
+}
+.el-pager li {
+  color: #646464;
+  background: #F2F2F2;
+  margin: 0 5px;
+  padding: 0;
+  border:1px solid #dcdcdc;
+}
+.el-pager li.active {
+  color: #ffffff;
+  background-color: #2C8489;
+  border:1px solid #2C8489;
+  cursor: default;
+}
+.el-pager li.active:hover {
+  color: #ffffff;
+  background-color: #2C8489;
+  cursor: default;
+}
+.el-pager li:hover{
+  color: #2C8489;
+}
+
+/*分页end*/
+

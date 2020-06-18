@@ -1,0 +1,288 @@
+// 2020/3/31 created by xtt
+<template>
+  <div class="doctorperinfo">
+    <van-popup v-model="dateshow" position="bottom">
+      <van-datetime-picker
+        v-model="currentDate"
+        type="date"
+        :min-date="minDate"
+        :max-date="maxDate"
+        @confirm="confirmdate"
+        @cancel="dateshow=false"
+      />
+    </van-popup>
+    <van-popup v-model="selectshow" position="bottom">
+      <van-picker show-toolbar :columns="columns" @cancel="selectshow=false" @confirm="confirmsex" />
+    </van-popup>
+    <div class="top">填写个人资料</div>
+    <div class="content">
+      <div class="title">姓名</div>
+      <div class="name">
+        <div class="text">
+          <input v-model="nickname" />
+        </div>
+        <img style="height: 0.3rem" :src="nextIcon" />
+      </div>
+    </div>
+    <div class="content" @click="selectsex">
+      <div class="title">性别</div>
+      <div class="name">
+        <div class="text">{{sex}}</div>
+        <img :src="selectIcon" />
+      </div>
+    </div>
+    <div class="content" @click="selectdate">
+      <div class="title">出生年月</div>
+      <div class="name">
+        <div class="text">{{birthday}}</div>
+        <img :src="selectIcon" />
+      </div>
+    </div>
+    <div class="detail_content">
+      <practice-points ref="practicePoints"></practice-points>
+      <!-- 执业点选择-->
+      <!-- <div class="content" @click="selectduty">
+        <div class="title">执业点</div>
+        <div class="name">
+          <div class="text">{{sex}}</div>
+          <img :src="selectIcon" />
+        </div>
+      </div> -->
+      <!-- 科室选择-->
+      <!-- <div class="content" @click="selectsex">
+        <div class="title">科室</div>
+        <div class="name">
+          <div class="text">{{sex}}</div>
+          <img :src="selectIcon" />
+        </div>
+      </div>
+      <div class="content" @click="selectsex">
+        <div class="title">专业方向</div>
+        <div class="name">
+          <div class="text">{{sex}}</div>
+          <img :src="selectIcon" />
+        </div>
+      </div>
+      <div class="content" @click="selectsex">
+        <div class="title">职称</div>
+        <div class="name">
+          <div class="text">{{sex}}</div>
+          <img :src="selectIcon" />
+        </div>
+      </div> -->
+    </div>
+    <div class="fixbtn">
+      <div class="btn back" @click="toback">返回</div>
+      <div class="btn next" @click="tonext">下一步</div>
+    </div>
+    <div class="contact_box">
+      <a href="tel:13828172679">
+        <img
+          v-if="contactShow"
+          class="contact"
+          src="../../../../assets/imgs/pop_bm_lxyz.png"
+          alt="联系我们"
+        />
+      </a>
+      <span class="cancel" @click="contactShow = false"></span>
+    </div>
+  </div>
+</template>
+
+<script>
+import moment from "moment";
+import Toast from "vant/es/toast";
+import practicePoints from "./practicePoints";
+
+export default {
+  name: "doctorperinfo",
+  components: { practicePoints },
+  data() {
+    return {
+      nextIcon: require("../../../../assets/imgs/btn_grzx_jbzl_next.png"),
+      selectIcon: require("../../../../assets/imgs/btn_grzx_select.png"),
+      minDate: new Date(1950, 0, 1),
+      maxDate: new Date(),
+      currentDate: new Date(),
+      dateshow: false,
+      selectshow: false,
+      pointshow: false,
+      columns: ["男", "女"],
+      sex: "男",
+      birthday: "",
+      nickname: "",
+      point: "", //执业点,
+      addlist: [],
+      tonextAllow: false,
+      contactShow: true
+    };
+  },
+  methods: {
+    confirmdate(val) {
+      this.birthday = moment(val).format("YYYY-MM-DD");
+      this.dateshow = false;
+    },
+    confirmsex(val) {
+      this.sex = val;
+      this.selectshow = false;
+    },
+    selectdate() {
+      this.dateshow = true;
+    },
+    selectsex() {
+      this.selectshow = true;
+    },
+    checkChildInfo() {
+      this.$refs.practicePoints.checkInfo();
+      console.log(this.$refs.practicePoints.check);
+      if (this.$refs.practicePoints.check == false) {
+        this.tonextAllow = false;
+      } else {
+        this.tonextAllow = true;
+      }
+      //this.$refs.practicePoints.$emit('checkChildInfo')
+    },
+    toPoints() {
+      //toPoints方法
+      this.$router.push({ path: "/practicePoints", query: { id: 1 } });
+    },
+    tonext() {
+      if (!this.nickname) {
+        Toast("请输入姓名");
+      } else if (!this.birthday) {
+        Toast("请选择出生年月");
+      } else if (!localStorage.getItem("addlist")) {
+        Toast("请填写您的执业点");
+      } else {
+        this.checkChildInfo();
+        if (this.tonextAllow == true) {
+          //才可以跳转
+          localStorage.setItem(
+            "doctorperinfo",
+            JSON.stringify({
+              name: this.nickname,
+              sex: this.sex,
+              birthday: this.birthday
+            })
+          );
+          //console.log(localStorage.getItem('addlist'));
+          this.$router.push({ path: "/doctorserve" }); //此处路由修改指向服务意愿 4.28
+        }
+      }
+    },
+    toback() {
+      this.$router.push({ path: "/doctorphone" });
+    }
+  },
+  mounted() {
+    if (localStorage.getItem("doctorperinfo")) {
+      let doctorperinfo = JSON.parse(localStorage.getItem("doctorperinfo"));
+      this.nickname = doctorperinfo.name;
+      this.sex = doctorperinfo.sex;
+      this.birthday = doctorperinfo.birthday;
+    }
+  }
+};
+</script>
+
+<style scoped lang="less">
+.doctorperinfo {
+  font-size: 0.3rem;
+  .top {
+    height: 0.88rem;
+    background: url("../../../../assets/imgs/x_filltop.png") no-repeat;
+    background-size: 100% 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.36rem;
+    color: #ffffff;
+  }
+  .content {
+    margin: 0 auto;
+    width: 6.9rem;
+    height: 1rem;
+    align-items: center;
+    border-bottom: 0.02rem solid #f3f0f3;
+    display: flex;
+    justify-content: space-between;
+    .title {
+      margin-left: 0.15rem;
+      color: #777777;
+      font-weight: bold;
+    }
+    .name {
+      color: #8e8e8e;
+      width: 3.2rem;
+      height: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      .text {
+        text-align: right;
+        width: 2.6rem;
+        height: 0.4rem;
+        input {
+          text-align: right;
+          width: 2rem;
+          height: 0.4rem;
+        }
+      }
+      img {
+        width: 0.16rem;
+        height: 0.13rem;
+      }
+    }
+  }
+  .detail_content {
+    padding-top: 0.15rem;
+    background-color: #f3f0f3;
+    .practicePoints {
+      background-color: #fff;
+    }
+  }
+  .fixbtn {
+    width: 6.5rem;
+    position: fixed;
+    bottom: 0;
+    padding-left: 0.5rem;
+    height: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    .btn {
+      font-size: 0.32rem;
+      width: 3.1rem;
+      height: 0.7rem;
+      line-height: 0.7rem;
+      text-align: center;
+    }
+    .back {
+      color: #00a99d;
+      background: url("../../../../assets/imgs/bg_grzx_brn_nor.png") no-repeat;
+      background-size: 3.1rem 0.7rem;
+    }
+    .next {
+      color: white;
+      background: url("../../../../assets/imgs/bg_grzx_brn_pre.png") no-repeat;
+      background-size: 3.1rem 0.7rem;
+    }
+  }
+  .contact_box {
+    position: relative;
+    .contact {
+      float: right;
+      position: relative;
+      top: -0.5rem;
+      right: 0.2rem;
+      height: 1.5rem;
+    }
+    .cancel {
+      position: absolute;
+      width: 0.3rem;
+      height: 0.3rem;
+      right: 0.3rem;
+      top: -0.5rem;
+    }
+  }
+}
+</style>

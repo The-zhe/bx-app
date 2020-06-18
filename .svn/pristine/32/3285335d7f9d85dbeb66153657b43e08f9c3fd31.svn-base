@@ -1,0 +1,314 @@
+// 2020/1/8 created by xtt
+<template>
+   <div class="adviceHistory">
+     <search-popup ref="pop" @confirm="searchList" :typeList="typeList" :typeTitle="typeTitle"></search-popup>
+     <div class="a_advice" v-for="item in adviceList">
+       <div class="a_person">
+         <div class="a_photo" v-show="item.catCd==='0'"><img :src="item.imgUrl?item.imgUrl:doctorImg">
+           <div class="a_pimg" v-show="item.catCd==='0'">私人医生</div>
+           <div class="a_pimg" v-show="item.catCd==='1'">私人护士</div>
+           <div class="a_pimg" v-show="item.catCd==='2'">私人管家</div>
+         </div>
+         <div class="a_photo" v-show="item.catCd==='1'"><img :src="item.imgUrl?item.imgUrl:nurseImg">
+           <div class="a_pimg" v-show="item.catCd==='0'">私人医生</div>
+           <div class="a_pimg" v-show="item.catCd==='1'">私人护士</div>
+           <div class="a_pimg" v-show="item.catCd==='2'">私人管家</div>
+         </div>
+         <div class="a_photo" v-show="item.catCd==='2'"><img :src="item.imgUrl?item.imgUrl:stewardImg">
+           <div class="a_pimg" v-show="item.catCd==='0'">私人医生</div>
+           <div class="a_pimg" v-show="item.catCd==='1'">私人护士</div>
+           <div class="a_pimg" v-show="item.catCd==='2'">私人管家</div>
+         </div>
+         <div class="a_pinfo">
+           {{item.doctorName}}
+           <div class="a_prank">{{item.position}}</div>
+         </div>
+         <div class="a_ptime">
+           {{item.crtTm}}
+           <div class="a_gt" @click="toAdviceInfo(item.doctorId)"><img src="../../../assets/imgs/btn_da_next.png"></div>
+         </div>
+       </div>
+       <div class="p_content">
+         {{item.msg}}
+       </div>
+     </div>
+    <!-- <van-popup
+       v-model="show"
+       position="top"
+     >
+      &lt;!&ndash; :style="{ height: '50%' }"&ndash;&gt;
+       <div class="s_title">请选择筛选条件</div>
+       <div class="s_solid"></div>
+       <div class="s_timetitle">时间区间</div>
+       <div class="s_timeselect">
+         <div class="s_input" @click="toShowTime">开始时间</div>
+         <div>-</div>
+         <div class="s_input" @click="toShowTime">结束时间</div>
+       </div>
+       <div class="s_smallsolid"></div>
+       <div class="s_timetitle">建议类型</div>
+       <div class="s_adviceselect">
+         <div :class="adviceindex===1?'s_selectdiv':'s_div'" @click="toselect">医生建议
+         <div v-if="exitshow" class="exitshow" @click.stop="toexit"><img src="../../../assets/imgs/advicehistory3.png"/></div>
+         </div>
+         <div class="s_div">护士建议</div>
+         <div class="s_div">管家建议</div>
+       </div>
+       <div class="s_smallsolid"></div>
+       <div class="s-btn1"><img src="../../../assets/imgs/advicehistory2.png"/></div>
+       <div class="s-btn2"><img src="../../../assets/imgs/advicehistory1.png"/></div>
+     </van-popup>-->
+     <!--<van-calendar v-model="timeshow" @confirm="onConfirmtime" />-->
+   </div>
+</template>
+
+<script>
+  import searchPopup from "../../../components/searchPopup";
+  import {getAdviceListSearch} from '../../../api/index';
+  import moment from "moment";
+    export default {
+        name: "adviceHistory",
+      components:{searchPopup},
+      data(){
+          return{
+            doctorImg:require("../../../assets/imgs/img_yhtd_doctor.png"),
+            nurseImg:require("../../../assets/imgs/img_yhtd_nurse.png"),
+            stewardImg:require("../../../assets/imgs/img_yhtd_steware.png"),
+            typeList: ["医生建议", "护士建议","管家建议"],
+            typeTitle: "建议人员",
+            timeshow:false,
+            exitshow:false,
+            adviceindex:0,
+            show:false,
+            ptime:moment().format('YYYY-MM-DD HH:mm'),
+            adviceList:[],
+          }
+      },
+      methods:{
+        toAdviceInfo(id){
+          this.$router_({path:'/adviceInfo',query:{id:id}});
+        },
+        showSearchPopup() {
+          this.$refs["pop"].showPop();
+        },
+        searchList(val){
+          let memberId='4535481258038273';
+          getAdviceListSearch(memberId,1,val.startTime,val.endTime,val.val).then(res=>{
+            console.log('aaSSearch',res);
+            this.adviceList=res.data.list;
+          });
+        },
+          getInfo(){
+            let memberId='4535481258038273';
+            getAdviceListSearch(memberId,1).then(res=>{
+              this.adviceList=res.data.list;
+               console.log('adHHH',res.data.list);
+            })
+          },
+        changeshow(){
+          this.show=true;
+        },
+        toselect(){
+          console.log("aaa")
+         this.adviceindex=1;
+         this.exitshow=true;
+        },
+        toexit(){
+          this.adviceindex=0;
+          this.exitshow=false;
+          console.log(this.adviceindex,this.exitshow);
+        },
+        onConfirmtime(){
+
+        },
+        toShowTime(){
+          this.timeshow=true;
+        },
+      },
+      mounted() {
+        this.getInfo();
+        this.toAdvices();
+      }
+    }
+</script>
+<style lang="less">
+  .adviceHistory {
+  .van-popup--top {
+    top: 1.5rem !important;
+    //height: 6.5rem !important;
+   }
+  }
+</style>
+<style scoped lang="less">
+  .adviceHistory{
+    width: 100%;
+    .a_advice{
+      width: 7rem;
+      height: 3rem;
+      margin: 0.2rem auto;
+      background: white;
+      border-radius: 0.2rem;
+      box-shadow: 0 0 0.08rem #bebcbc;
+      .a_person{
+        margin: 0 auto;
+        width: 6.4rem;
+        height: 1.7rem;
+        border-bottom: 0.01rem solid #F9F9FA;
+        display: flex;
+        justify-content: space-between;
+        .a_photo{
+          width: 1.3rem;
+          height: 1.2rem;
+          img{
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 0.6rem;
+            margin-top: 0.2rem;
+          }
+          .a_pimg{
+            position: absolute;
+            padding-top: 0.1rem;
+            margin-top: -0.3rem;
+            margin-left: -0.02rem;
+            color: white;
+            font-size: 0.18rem;
+            text-align: center;
+            width: 1.3rem;
+            height: 0.33rem;
+            background: url("../../../assets/imgs/advice2.png");
+            background-size: 1.3rem 0.43rem;
+          }
+        }
+        .a_pinfo{
+          margin-left: 0.2rem;
+          margin-top: 0.5rem;
+          color: #5B5B5B;
+          font-size: 0.3rem;
+          font-weight: bold;
+          width: 2rem;
+          height: 0.8rem;
+          .a_prank{
+            color: #777777;
+            font-weight: normal;
+          }
+        }
+        .a_ptime{
+          margin-top: 0.5rem;
+          color: #777777;
+          font-size: 0.28rem;
+          .a_gt{
+            float: right;
+            margin-top: 0.5rem;
+            img{
+              width: 0.15rem;
+              height: 0.27rem;
+            }
+          }
+
+        }
+      }
+      .p_content{
+        margin: 0.2rem auto;
+        width: 6.4rem;
+        height: 0.7rem;
+        color: #969696;
+        font-size: 0.28rem;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    .s_title{
+      width: 7rem;
+      margin: 0.3rem auto;
+      font-size: 0.3rem;
+      color: #5B5B5B;
+      font-weight: bold;
+    }
+    .s_solid{
+      margin: 0.3rem auto;
+      width: 7rem;
+      height: 0.2rem;
+      background: #f4f4f4;
+    }
+    .s_smallsolid{
+      margin: 0.3rem auto;
+      width: 7rem;
+      height: 0.02rem;
+      background: #f4f4f4;
+    }
+    .s_timetitle{
+      width: 7rem;
+      margin: 0.3rem auto;
+      font-size: 0.3rem;
+      color: #5B5B5B;
+      font-weight: bold;
+    }
+    .s_timeselect{
+      width: 7rem;
+      margin: 0.3rem auto;
+      height: 0.65rem;
+      display: flex;
+      justify-content: space-between;
+      .s_input{
+        text-align: center;
+        width: 3.2rem;
+        height: 0.6rem;
+        line-height: 0.6rem;
+        background: #F4F4F4;
+        border-radius: 0.3rem;
+      }
+    }
+    .s_adviceselect{
+      width: 7rem;
+      height: 0.85rem;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      .s_div{
+        width: 2.2rem;
+        height: 0.8rem;
+        line-height: 0.8rem;
+        text-align: center;
+        background: #f4f4f4;
+      }
+      .s_selectdiv{
+        width: 2.2rem;
+        height: 0.8rem;
+        line-height: 0.8rem;
+        text-align: center;
+        background: #c4f3eb;
+        .exitshow{
+          width: 0.6rem;
+          height: 0.6rem;
+          margin-left: 1.6rem;
+          margin-top:-0.6rem;
+          img{
+            width: 0.6rem;
+            height: 0.6rem;
+          }
+        }
+      }
+
+    }
+    .s-btn1{
+        position: absolute;
+        right: 1.7rem;
+        img{
+          width: 1.5rem;
+          height: 0.7rem;
+        }
+      }
+    .s-btn2{
+      position: absolute;
+      right: 0.2rem;
+      img{
+        width: 1.5rem;
+        height: 0.7rem;
+      }
+    }
+  }
+
+</style>

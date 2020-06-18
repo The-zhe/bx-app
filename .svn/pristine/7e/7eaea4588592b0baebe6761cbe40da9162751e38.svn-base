@@ -1,0 +1,207 @@
+// 2020/1/8 created by xtt
+<template>
+    <div class="managementReport">
+      <div class="a_top">
+        <div class="a_select">
+          <div>{{value}}</div>
+          <div class="a_triangle" @click="toselect"></div>
+        </div>
+        <van-popup v-model="showPicker" position="bottom">
+          <van-picker
+            show-toolbar
+            :columns="columns"
+            @cancel="showPicker = false"
+            @confirm="onConfirm"
+          />
+        </van-popup>
+        <div class="a_more" @click="tomore">查看更多<img src="../../../assets/imgs/btn_da_next.png"></div>
+      </div>
+      <div class="a_content">
+        <div class="a_report">
+          <div class="r_top">
+              <div class="r_title">胃部B超</div>
+              <div class="a_gt"><img src="../../../assets/imgs/btn_da_next.png"></div>
+            </div>
+          <div class="r_content">
+           <div class="r_div">检查日期：{{rtime}}</div>
+            <div class="r_div">医疗机构：宁波市医疗中心李惠利医院（兴宁院区）以清单为主</div>
+            <div class="r_div1">医生建议：近期饮食需要以清单为主，不要吃油以清单为主</div>
+          </div>
+        </div>
+        <div class="a_report"></div>
+
+      </div>
+    </div>
+</template>
+
+<script>
+  import moment from "moment"
+    export default {
+        name: "managementReport",
+      data(){
+          return{
+            rtime:moment().format('YYYY-MM-DD HH:mm'),
+            value:'今 日',
+            showPicker:false,
+            isselect:false,
+            columns: ['今 日', '近7天', '近一个月', '近三个月']
+          }
+      },
+      methods:{
+        toselect(){
+          this.showPicker=true;
+        },
+        onConfirm(value){
+          this.value=value;
+          this.showPicker = false;
+        },
+        //查看更多
+        tomore(){
+
+        }
+      }
+    }
+</script>
+<style scoped lang="less">
+  .managementReport {
+    .a_top {
+      height: 90px;
+      background: white;
+      .a_select {
+        margin-top: 15px;
+        margin-left: 25px;
+        float: left;
+        width: 270px;
+        height: 50px;
+        border-radius: 60px;
+        border: 2px #40b2a0 solid;
+        font-size: 30px;
+        color: #40b2a0;
+        padding-left: 30px;
+        padding-top: 10px;
+        display: flex;
+        justify-content: space-between;
+
+        .a_triangle {
+          margin-top: 10px;
+          margin-right: 20px;
+          height: 0px;
+          width: 0px;
+          z-index: 1; /*这个与后面的空心三角形有关*/
+          border-left: 10px solid transparent;
+          border-right: 10px solid transparent;
+          border-top: 20px solid #048A83;
+        }
+      }
+
+      .a_select1 {
+        margin-left: 25px;
+        position: absolute;
+        margin-top: 80px;
+        width: 270px;
+        height: auto;
+        border-radius: 10px;
+        border-left: 1px #f4f4f4 solid;
+        border-right: 1px #f4f4f4 solid;
+        border-bottom: 1px #f4f4f4 solid;
+        font-size: 30px;
+        color: #40b2a0;
+        padding-left: 30px;
+        padding-top: 10px;
+        background: white;
+
+        .onselect {
+          width: 200px;
+          height: 50px;
+          border-top: 1px solid #F4F4F4;
+        }
+      }
+
+      .a_more {
+        margin-top: 25px;
+        margin-right: 50px;
+        float: right;
+        font-size: 30px;
+        color: #048A83;
+
+        img {
+          margin-left: 15px;
+          display: inline-block;
+          width: 15px;
+          height: 27px;
+        }
+      }
+    }
+    .a_content{
+      .a_report{
+        width: 700px;
+        height: 330px;
+        margin: 20px auto;
+        background: white;
+        border-radius: 20px;
+        box-shadow: 0 0 8px #bebcbc;
+        .r_top{
+          margin: 0 auto;
+          width: 650px;
+          height: 90px;
+          border-bottom: 1px solid #CDCDCD;
+          display: flex;
+          justify-content: space-between;
+          .r_title{
+            margin-top: 30px;
+            margin-left: 10px;
+            color: #40B2A0;
+            font-size: 28px;
+            font-weight: bold;
+          }
+          .a_gt{
+            margin-top: 30px;
+            margin-right: 10px;
+            width: 15px;
+            height: 27px;
+            img{
+              width: 15px;
+              height: 27px;
+            }
+          }
+        }
+        .r_content{
+          margin:0 auto;
+          width: 650px;
+          height: 200px;
+          color: #777777;
+          font-size: 28px;
+          /*margin: 20px auto;*/
+          /*width: 640px;*/
+          /*height: 70px;*/
+          /*color: #969696;*/
+          /*font-size: 28px;*/
+          /*display: -webkit-box;*/
+          /*-webkit-box-orient: vertical;*/
+          /*-webkit-line-clamp: 2;*/
+          /*overflow: hidden;*/
+          /*text-overflow: ellipsis;*/
+          .r_div{
+            margin-left: 10px;
+            margin-top: 20px;
+            width: 640px;
+            height: 60px;
+            border-bottom: 1px dashed #CDCDCD;
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
+          }
+          .r_div1{
+            margin-left: 10px;
+            margin-top: 20px;
+            width: 640px;
+            height: 50px;
+            overflow: hidden;
+            text-overflow:ellipsis;
+            white-space: nowrap;
+          }
+        }
+      }
+    }
+  }
+</style>

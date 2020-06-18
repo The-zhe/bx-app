@@ -1,0 +1,94 @@
+<template>
+  <div class="tab_bar_container">
+    <div
+      class="tab_item"
+      @click="JumpToPage(item,index)"
+      v-for="(item,index) in tabBarList"
+      :key="index"
+    >
+      <div class="item_icon">
+        <img :src="index==currentPageIndex?item.activeIconUrl:item.iconUrl" />
+      </div>
+      <div class="item_title">{{item.title}}</div>
+    </div>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "TabBar",
+  data() {
+    return {
+      currentPageIndex: 0,
+      tabBarList: [
+        {
+          title: "首页",
+          iconUrl: require("../assets/imgs/home_page.png"),
+          activeIconUrl: require("../assets/imgs/home_page_active.png"),
+          PageName:'HomePage'
+        },
+        {
+          title: "商城",
+          iconUrl: require("../assets/imgs/mall.png"),
+          activeIconUrl: require("../assets/imgs/mall_active.png"),
+          PageName:'Mall'
+        },
+        {
+          title: "服务",
+          iconUrl: require("../assets/imgs/service.png"),
+          activeIconUrl: require("../assets/imgs/service_active.png"),
+          PageName:'Service'
+        },
+        {
+          title: "档案",
+          iconUrl: require("../assets/imgs/archives.png"),
+          activeIconUrl: require("../assets/imgs/archives_active.png"),
+          PageName:'Archive'
+        },
+        {
+          title: "我的",
+          iconUrl: require("../assets/imgs/mine.png"),
+          activeIconUrl: require("../assets/imgs/mine_active.png"),
+          PageName:'Mine'
+        }
+      ]
+    };
+  },
+  methods: {
+    JumpToPage(item, index) {
+        this.currentPageIndex=index
+        this.$router.push({name:item.PageName})
+    }
+  },
+  mounted() {}
+};
+</script>
+
+<style lang="less" scoped>
+@import "../../static/lessfunc.less";
+.tab_bar_container {
+    .w(750px);
+    .bgc(#ffffff);
+  .bb();
+  .pdl(52px);
+  .h(100px);
+  .flex_y_center();
+  .tab_item {
+    .flex_x_center();
+    .item_icon {
+      img {
+        .w(44px);
+        .h(44px);
+      }
+    }
+    .item_title {
+      .mgt(5px);
+      .fc(#878787);
+      .fs(20px);
+    }
+    &:not(:first-child) {
+      .mgl(101px);
+    }
+  }
+}
+</style>

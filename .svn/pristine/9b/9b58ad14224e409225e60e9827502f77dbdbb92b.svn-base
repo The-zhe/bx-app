@@ -1,0 +1,194 @@
+<template>
+  <div class="healthInfo_container">
+    <div class="information_list_container">
+      <div
+        :class="index==0?'first_item':'info_item'"
+        @click="JumpToDetail(item)"
+        :key="index"
+        v-for="(item,index) in informationList"
+      >
+        <div class="info_img">
+          <img :src="item.imgUrl" />
+        </div>
+        <div class="info_text">
+          <div class="info_title">{{item.title}}</div>
+          <div class="info_bottom">
+            <div class="info_publishTime">{{item.crtTm|fromNowTime}}</div>
+            <div class="info_checkNum">
+              <div class="check_icon">
+                <img src="../../assets/imgs/check_icon.png" />
+              </div>
+              <div class="check_text">{{item.commentNum}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+<script>
+import moment from "moment";
+import { getHealthInfoList } from "../../api/index";
+export default {
+  components: {},
+  name: "healthInfo",
+  filters: {
+    fromNowTime: function(value) {
+      let array = moment(value)
+        .fromNow()
+        .split(" ");
+      array[0] = array[0] == "a" ? "1" : array[0] == "an" ? "1" : array[0] + "";
+      let EN = [
+        "minute",
+        "minutes",
+        "hour",
+        "hours",
+        "day",
+        "days",
+        "month",
+        "months",
+        "year",
+        "years"
+      ];
+      let CN = ["分钟", "小时", "天", "个月", "年"];
+      array[1] = CN[parseInt(EN.indexOf(array[1]) / 2)];
+      return array.length == 4
+        ? "几秒前"
+        : new Array(array[0], array[1]).join("") + "前";
+    }
+  },
+  data() {
+    return {
+      informationList: []
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {
+    getHealthInfoList().then(res => {
+      this.informationList = res.data.data.list;
+    });
+  },
+  methods: {
+    JumpToDetail(item) {
+      sessionStorage.setItem("healthInfoId", item.id);
+      this.$router.push({ name: "healthInfoDetail" });
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+@import "../../../static/lessfunc.less";
+.healthInfo_container {
+  height: 100%;
+  background-color: #ffffff;
+  .information_list_container {
+    .info_item {
+      position: relative;
+      padding: 18px 33px 23px 31px;
+      display: flex;
+      flex-direction: row-reverse;
+      .info_img {
+          margin-right: 10px;
+        img {
+          width: 220px;
+          height: 146px;
+        }
+      }
+      .info_text {
+          display: flex;
+          padding-right: 40px;
+          flex-direction: column;
+          justify-content: space-between;
+        flex: 1;
+        .info_title {
+          margin-left: 7px;
+          font-size: 30px;
+          color: #000000;
+        }
+        .info_bottom {
+          margin-top: 24px;
+          font-size: 24px;
+          color: #848383;
+          display: flex;
+          justify-content: space-between;
+          .info_publishTime {
+            margin-left: 9px;
+          }
+          .info_checkNum {
+            display: flex;
+            align-items: center;
+            .check_icon {
+              img {
+                width: 30px;
+                height: 21px;
+              }
+            }
+            .check_text {
+                margin-left: 9px;
+            }
+          }
+        }
+      }
+      &::after {
+        position: absolute;
+        content: "";
+        height: 2px;
+        bottom: 0;
+        width: 700px;
+        background-color: #f1f1f1;
+      }
+    }
+    .first_item {
+        position: relative;
+      .info_img {
+        img {
+          width: 100%;
+          height: 350px;
+        }
+      }
+      .info_text {
+        padding: 29px 25px;
+        .info_title {
+          font-size: 30px;
+          color: #000000;
+        }
+        .info_bottom {
+          margin-top: 24px;
+          font-size: 24px;
+          color: #848383;
+          display: flex;
+          justify-content: space-between;
+          .info_publishTime {
+          }
+          .info_checkNum {
+            display: flex;
+            align-items: center;
+            .check_icon {
+                
+              img {
+                width: 30px;
+                height: 21px;
+              }
+            }
+            .check_text {
+                margin-left: 9px;
+            }
+          }
+        }
+      }
+      &::after {
+        position: absolute;
+        left: 20px;
+        content: "";
+        height: 2px;
+        bottom: 0;
+        width: 700px;
+        background-color: #f1f1f1;
+      }
+    }
+  }
+}
+</style>

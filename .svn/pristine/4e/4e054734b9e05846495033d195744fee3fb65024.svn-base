@@ -1,0 +1,22 @@
+import axios from 'axios'
+import store from '../../vuex/store'
+import {baseUrl} from './variable'
+
+axios.defaults.withCredentials = true;
+
+let token = store.state.token
+
+export const getData = (url,data) =>{
+    return new Promise(function(resolve,reject){
+        axios.get(baseUrl+url,{params: data,headers: {'Content-Type':'application/json;charset=UTF-8','zcps_token':token}}).then(
+          (res)=>{
+            if(res.status===200){
+              resolve(res)
+            }else{
+              reject(res)
+            }
+          }
+        )
+      })
+}
+

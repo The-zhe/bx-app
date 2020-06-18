@@ -1,0 +1,54 @@
+{
+  "_args": [
+    [
+      "agora-rtc-sdk@2.7.0",
+      "C:\\project\\wechat_project"
+    ]
+  ],
+  "_from": "agora-rtc-sdk@2.7.0",
+  "_id": "agora-rtc-sdk@2.7.0",
+  "_inBundle": false,
+  "_integrity": "sha512-8eA0cdNKXnwJ9aYUH/L7wPXVLgFmDqPFbX4TGq1t1oTTn1p2M33KyTIGfidyXd3rokY6D4kzKYpIGoqW1iqTew==",
+  "_location": "/agora-rtc-sdk",
+  "_phantomChildren": {},
+  "_requested": {
+    "type": "version",
+    "registry": true,
+    "raw": "agora-rtc-sdk@2.7.0",
+    "name": "agora-rtc-sdk",
+    "escapedName": "agora-rtc-sdk",
+    "rawSpec": "2.7.0",
+    "saveSpec": null,
+    "fetchSpec": "2.7.0"
+  },
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "https://registry.npmjs.org/agora-rtc-sdk/-/agora-rtc-sdk-2.7.0.tgz",
+  "_spec": "2.7.0",
+  "_where": "C:\\project\\wechat_project",
+  "author": {
+    "name": "agora"
+  },
+  "bugs": {
+    "url": "https://github.com/AgoraIO/web-archive/issues"
+  },
+  "description": "AgoraRTC SDK for web",
+  "homepage": "https://github.com/AgoraIO/web-archive#readme",
+  "keywords": [
+    "Agora",
+    "Webrtc",
+    "Javascript"
+  ],
+  "license": "SEE LICENSE IN LICENSE.md",
+  "main": "AgoraRTCSDK.min.js",
+  "name": "agora-rtc-sdk",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/AgoraIO/web-archive.git"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "version": "2.7.0"
+}

@@ -1,0 +1,176 @@
+*{
+  margin: 0;
+  padding: 0;
+}
+html,body{
+  color: #323232;
+  font-size: 32px;
+/*   background-color: #ffffff; */
+  font-family: '微软雅黑';
+}
+#app{
+  font-size:32px;
+}
+.flex_between{
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.flex_center{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.flex_start{
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.flex_start_top{
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-wrap: wrap;
+}
+.flex_end{
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.flex_around{
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  flex-wrap: wrap;
+}
+.overflow{
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
+.overflow_2{
+  overflow: hidden;
+  text-overflow: ellipsis;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
+}
+input,textarea{
+  border:none;
+  outline: none;
+}
+img{
+  display: block;
+}
+li{
+  list-style: none;
+}
+.ali_center{
+  text-align: center;
+}
+.ali_left{
+  text-align: left;
+}
+.ali_right{
+  text-align: right;
+}
+textarea{outline:none;resize:none;}
+
+.van-toast{
+  height: 80px;
+  line-height: 80px;
+  width: 250px;
+  font-size: 32px;
+}
+
+.fs_32{
+  font-size: 32px;
+}
+.fs_20{
+  font-size: 20px;
+}
+.fs_24{
+  font-size: 24px;
+}
+.fs_12{
+  font-size: 12px;
+}
+.fs_26{
+  font-size: 26px;
+}
+.fs_28{
+  font-size: 28px;
+}
+.fs_36{
+  font-size: 36px;
+}
+.fs_40{
+  font-size: 40px;
+}
+
+.fw_500{
+  font-weight: 500;
+}
+.fw_600{
+  font-weight: 600;
+}
+.c_white{
+  color: #ffffff;
+}
+.c_gray{
+  color: #646464;
+}
+.c_gray_2{
+  color: #969696;
+}
+.c_orange{
+  color: #eb6c1a;
+}
+.c_blue{
+  color: #2C8489;
+}
+.c_black{
+  color: #323232;
+}
+.c_red{
+  color: #F45656;
+}
+
+
+button,input{
+  border: none;
+}
+input::-webkit-input-placeholder {
+
+  color: #ACACAC;
+
+}
+
+
+
+input::-moz-placeholder {
+
+  color: #ACACAC;
+
+}
+
+
+
+input:-ms-input-placeholder {
+
+  color: #ACACAC;
+
+}
+
+
+input::placeholder {
+
+  color: #ACACAC;
+
+}
+

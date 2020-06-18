@@ -1,0 +1,265 @@
+<template>
+  <div class="slowphone">
+    <div class="filltop">
+      联系电话
+    </div>
+    <div class="filltip">医生咨询消息将以手机短信方式发送至您的手机,</div>
+    <div class="filltip"> 请填写你的真实手机号码</div>
+    <div class="login_content">
+      <div class="l_phone">
+        <div class="p_img"><img src="../../../assets/imgs/x_loginp.png"/></div>
+        <div class="p_input"><input placeholder="请输入手机号" type="number" pattern="\d*" v-model="phone"/></div>
+      </div>
+      <div class="l_phone">
+        <div class="p_img"><img src="../../../assets/imgs/x_loginc.png"/></div>
+        <div class="p_input"><input placeholder="请输入验证码" type="number" pattern="\d*" v-model="code"/>
+          <span style="color:#D6D8D9">|</span>
+          <span @click="tocheck" v-show="iscode">获取验证码</span>
+          <span v-show="!iscode">重新发送{{second}}s</span>
+        </div>
+      </div>
+    </div>
+    <div class="fillbtn">
+      <div class="fillzx" @click="toahead"></div>
+      <div class="fillnext" @click="tonext"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import {getmbcode} from "../../../api";
+  import Toast from "vant/es/toast";
+
+  export default {
+    name: "slowphone",
+    data() {
+      return {
+        issubmit:false,
+        iscode: true,
+        phone: '',
+        code: '',
+        second: '60',
+        isapp: true,
+        userId: '',
+        userSig: '',
+        isuserId: localStorage.getItem('userId'),
+      }
+    },
+    methods: {
+      tocheack() {
+        if (!this.phone) {
+          Toast('请输入手机号');
+        } else if (this.phone && this.phone.length !== 11) {
+          Toast('请输入正确的手机号');
+        } else {
+          this.iscode = false;
+          getmbcode(this.phone).then((res) => {
+            console.log('slowcode', res);
+            this.second = '60';
+            this.set_interval(this.second);
+          });
+        }
+      },
+      set_interval(second) {
+        let time = second;
+        let secondInterval = setInterval(() => {
+          if (time === 0) {
+            clearInterval(secondInterval);
+            this.second = '0';
+            this.iscode = true;
+          } else {
+            time--;
+            this.second = time
+          }
+        }, 1000)
+      },
+      //登录腾讯im获取秘钥
+      getUserSig() {
+        let userid = this.userId + '';
+        getSig(userid).then(res => {
+          this.userSig = res.data.data;
+          this.getIMBegin();
+        });
+      },
+      //登录im
+      getIMBegin() {
+        let userid = this.userId + '';
+        let promise = this.tim.login({
+          userID: userid, //登录的会员id
+          userSig: this.userSig
+        });
+        promise.then(imResponse => {
+          console.log("IM登录成功", imResponse);
+        })
+          .catch(function (imError) {
+            console.warn("login error:", imError); // 登录失败的相关信息
+          });
+      },
+      toahead() {
+
+      },
+      tonext() {
+        if(this.issubmit){
+          Toast('请勿多次点击');
+        }else {
+           if(!this.code) {
+            Toast('请输入验证码');
+          }
+          else {
+             let hjjkMbConsultRo = {
+               age: sessionStorage.getItem('slowage'),
+               code: this.code,
+               doctorId: 0,
+               illDesc: sessionStorage.getItem('illDesc'),
+               illPurpose: sessionStorage.getItem('illPurpose'),
+               illTypeId: Number(sessionStorage.getItem('mbnameid')),
+               illTypeNm: sessionStorage.getItem('mbname'),
+               imgUrl: sessionStorage.setItem('slowreportImg'),
+               phone: this.phone,
+               sendDate: this.presenttime,
+               sex: sessionStorage.getItem('slowsex'),
+               userId: Number(localStorage['userId']),
+             };
+             getmbtable(hjjkMbConsultRo).then((res) => {
+               this.issubmit=true;
+               console.log('sssphone', res);
+               this.userId = res.data.data;
+               if (res.data.code === 0) {
+                 this.getUserSig();
+                 this.$dialog.confirm({
+                   title: '提交成功',
+                   message: '医生将会尽快回复您的咨询 请注意消息查收！' + '<br>' + '也可下载APP，与医生一对一即时交流',
+                   confirmButtonText: '确 定',
+                   cancelButtonText: '打开APP',
+                   confirmButtonColor: '#56B2AD',
+                   cancelButtonColor: '#56B2AD'
+                 }).then(() => {
+                   this.emptytable();
+                   this.$router_({path: '/'});
+                 }).catch(() => {
+                   this.emptytable();
+                 });
+
+               } else {
+                 let msg = res.data.msg;
+                 Toast(msg);
+               }
+             });
+          }
+        }
+
+      },
+      emptytable() {
+          sessionStorage.removeItem('slowage');
+          sessionStorage.removeItem('illDesc');
+          sessionStorage.removeItem('illPurpose');
+          sessionStorage.removeItem('slowreportImg');
+          sessionStorage.removeItem('slowsex');
+      }
+    }
+  }
+</script>
+
+<style scoped lang="less">
+  .slowphone {
+    font-size: 0.3rem;
+
+    .filltop {
+      height: 0.9rem;
+      background: url("../../../assets/imgs/x_filltop.png");
+      background-size: 100% 0.9rem;
+      font-size: 0.32rem;
+      font-weight: bold;
+      color: white;
+      line-height: 0.9rem;
+      text-align: center;
+      margin-bottom: 0.9rem;
+    }
+
+    .filltip {
+      text-align: center;
+      margin: 0 auto;
+      color: #606060;
+      width: 6.5rem;
+      height: 0.4rem;
+    }
+
+    .login_content {
+      margin: 1.3rem auto;
+      width: 6rem;
+      height: 2.3rem;
+
+      .l_phone {
+        margin-bottom: 0.8rem;
+        width: 6rem;
+        height: 0.8rem;
+        font-size: 0.32rem;
+        display: flex;
+        justify-content: flex-start;
+
+        .p_img {
+          margin: 0.2rem;
+          width: 0.31rem;
+          height: 0.37rem;
+
+          img {
+            width: 0.31rem;
+            height: 0.37rem;
+          }
+        }
+
+        .p_input {
+          padding-left: 0.25rem;
+          padding-top: 0.05rem;
+          width: 5.18rem;
+          height: 0.7rem;
+          border-bottom: 1px solid #D6D8D9;
+
+          input {
+            color: #a7a7aa;
+            width: 2.6rem;
+            height: 0.7rem;
+          }
+
+          input::-webkit-input-placeholder {
+            /* placeholder颜色  */
+            color: #C8C8CC;
+          }
+
+          span {
+            margin-left: 0.15rem;
+            white-space: nowrap;
+            color: #56B2AD;
+          }
+        }
+
+      }
+    }
+
+    .fillbtn {
+      position: fixed;
+      bottom: 6%;
+      width: 6.5rem;
+      height: 0.7rem;
+      display: flex;
+      justify-content: space-between;
+      // margin: 0.3rem auto 0;
+      left: 50%;
+      margin-left: -3.25rem;
+
+      .fillzx {
+        width: 3.1rem;
+        height: 0.72rem;
+        background: url("../../../assets/imgs/x_syb2.png") no-repeat;
+        background-size: 3.1rem 0.72rem;
+      }
+
+      .fillnext {
+        width: 3.1rem;
+        height: 0.72rem;
+        background: url("../../../assets/imgs/x_tj2.png") no-repeat;
+        background-size: 3.1rem 0.72rem;
+      }
+    }
+  }
+</style>

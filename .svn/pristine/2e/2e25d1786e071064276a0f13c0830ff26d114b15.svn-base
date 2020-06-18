@@ -1,0 +1,415 @@
+<template>
+  <div class="body_container">
+    <div class="form_container">
+      <div class="title_container">
+        <div class="title">
+          门诊挂号预约
+        </div>
+        <div class="rest_times">
+          (剩余1次)
+        </div>
+      </div>
+      <div class="server_info_container">
+        <div class="info">
+          说明XXX
+        </div>
+        <div class="understand_sever">
+          了解更多
+        </div>
+      </div>
+      <div class="form_box_container">
+        <div class="_item form_item">
+          <div class="item_label">
+            <span>姓名</span>
+          </div>
+          <div class="item_input">
+            <input type="text" placeholder="请输入姓名" v-model="name" />
+          </div>
+        </div>
+        <div class="_item form_item ">
+          <div class="item_label">
+            <span>证件号</span>
+          </div>
+          <div class="idcard_box">
+            <div class="item_select">
+              <select>
+                <option value ="volvo">身份证</option>
+                <option value ="saab">医保卡</option>
+              </select>
+            </div>
+            <div class="item_input">
+              <input type="text" placeholder="请输入证件号" v-model="idCard" />
+            </div>
+          </div>
+        </div>
+        <div class="_item form_item">
+          <div class="item_label">
+            <span>医院</span>
+          </div>
+          <div class="item_input">
+            <input type="text" placeholder="请填写医院" v-model="hospital" />
+          </div>
+        </div>
+        <div class="_item form_item">
+          <div class="item_label">
+            <span>科室</span>
+          </div>
+          <div class="item_input">
+            <input type="text" placeholder="请选择科室" v-model="department"  />
+          </div>
+        </div>
+        <div class="_item form_item">
+          <div class="item_label">
+            <span>医生</span>
+          </div>
+          <div class="item_input">
+            <input type="text" placeholder="请填写医生姓名" v-model="doctor"  />
+          </div>
+        </div>
+          <div class="_item form_item">
+          <div class="item_label">
+            <span>预约时间</span>
+          </div>
+          <div class="item_input" @click="picktime">
+            <div class="time_box" :class="dateValue==''?'':'picked'">
+              {{dateValue==''?'请选择预约时间':dateValue+''+noonValue}}
+            </div>
+          </div>
+        </div>
+        <div class="_item form_item">
+          <div class="item_label">
+            <span>联系电话</span>
+          </div>
+          <div class="item_input">
+            <input type="text" placeholder="请填写联系电话" v-model="phone" />
+          </div>
+        </div>
+        <div class="_item _last form_item">
+          <div class="item_label">
+            <span>医疗支付</span>
+          </div>
+          <div class="item_input choose">
+            <div class="item_choose" @click="choose_pay(1)" :class="pay_choose==1?'active':''">医保卡</div>
+            <div class="item_choose" @click="choose_pay(2)" :class="pay_choose==2?'active':''">自费</div>
+            <div class="item_choose" @click="choose_pay(3)" :class="pay_choose==3?'active':''">代付</div>
+          </div>
+        </div>
+      </div>
+      <div class="agreement_container">
+        <span class="agreement_icon">
+           <van-checkbox v-model="checked" checked-color="#0FA29C">复选框</van-checkbox> 
+        </span>
+        <div class="agreement_text">请你阅读并同意</div>
+        <div class="agreement_info">《服务协议和隐私政策》</div>
+      </div> 
+      <div class="button_container">
+        <button class="blue_back" @click="order">立即预约</button>
+        <button class="while_back" @click="test">健康管家 一键预约</button>
+      </div>
+    </div>       
+           <van-popup v-model="result_show">
+             <appoint-result :times="residue" @cancel="cancel_result" @buy="buy_result" ></appoint-result>
+          </van-popup>   
+  </div>
+</template>
+
+<script>
+import { Datetime,Group } from 'vux';
+import AppointResult from '@/components/pages/appoint_result'
+export default {
+  name: 'appointment',
+     components: {
+    'datetime':Datetime,
+    'group':Group,
+    AppointResult
+    }, 
+  data (){
+    return{
+      agree:false,
+      name:'',
+      idType:1,
+      idCard:'',
+      hospital:'',
+      department:'',
+      doctor:'',
+      phone:'',
+      pay_choose:1,
+      pId:'',
+      checked:true,
+      noon:0,
+      result_show:false,
+      dateValue:'',
+      noonValue:0,
+      residue:0
+    }
+  },
+  mounted(){
+    
+  },
+  methods:{
+    cancel_result(){
+      this.$router.push({name:'ServiceList'})
+    },
+    buy_result(){
+      this.$router.push({name:'InfoCommon',query:{pId:this.$route.query.pId,pType:2}})
+    },
+    dateformat(date){
+      let year = date.getFullYear()
+      let month =date.getMonth()+1
+      if(month<10){
+        month='0'+month
+      }
+      let day = date.getDate()
+      return year+'-'+month+'-'+day
+    },
+    test(){
+/*       this.$router.push({name:'InfoCommon',query:{pId:this.$route.query.pId,pType:2}}) */
+    },
+    order(){
+        let url = '/hjjk/apntRegister/apnt';
+        let data = {
+            memberId:1,
+            serviceId:1,
+            name:this.name,
+            idType:this.idType,
+            idCard:this.idCard,
+            hospital:this.hospital,
+            doctor:this.doctor,
+            department:this.department,
+            apntDate:this.dateValue,
+            phone:this.phone, 
+            payType:this.pay_choose,
+            apntDay:0
+
+        };
+        let response = (res)=>{
+            this.residue=res.data.residueDegree
+            this.result_show=true
+        };
+        this.$store.state.getMoreDataPost(url,data,response);      
+    },
+    picktime(){
+         this.$vux.datetime.show({
+            cancelText: '取消',
+            confirmText: '确定',
+            format: 'YYYY-MM-DD A',
+            value: '',
+            yearRow:`{value}年`,
+            monthRow:`{value}月`,
+            dayRow:`{value}日`,
+            startDate:this.dateformat(new Date()),
+            onConfirm:(val)=>{
+            this.dateValue=val.slice(0,10)
+            this.noonValue=val.indexOf('AM')==-1?'上午':'下午'
+            },
+            onShow () {
+            },
+            onHide () {
+            }
+        })       
+    },
+  },
+}
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang='less'>
+.body_container{
+  background-color: #F5F6F8; 
+  position: relative;
+  .form_container{
+    background: url('../../assets/images/back@1x.png') no-repeat ;
+    background-size: 100% 80%;
+    padding: 59px 30px 0 34px;
+    .title_container{
+      display: flex;
+      align-items: center;
+      .title{
+        font-size: 40px;
+        color:rgba(242,242,242,1);
+        font-weight: 500;
+      }
+      .rest_times{
+        margin-top: 15px;
+        font-size: 24px;
+        color:rgba(242,242,242,1);
+        margin-left: 10px;
+      }
+    }
+    .server_info_container{
+      display: flex;
+      margin-top: 15px;
+      justify-content: space-between;
+      font-size:24px;
+      color:#F2F2F2;
+      font-weight: 300;
+    }
+    .form_box_container{
+      background-color: #ffffff;
+      border-radius: 6px;
+      height: 727px;
+      //width: 686px;
+      margin-top: 38px;
+      ._item{ 
+        display: flex;
+        align-items: center;
+        height: 90px;
+        border-bottom: 1px solid #ECECEC;
+        font-size: 32px;
+        .item_label{
+          width: 180px;
+          span{
+          font-family:PingFang SC;
+          font-weight:bold;
+          color:rgba(50,50,50,1);
+          float: right;
+          margin-top: 10px;
+          }
+        }
+        .item_select{
+
+          select{
+            border: none;
+            color:rgba(100,100,100,1);
+            background-color: #ffffff;
+          }
+        }
+        .item_input{
+          margin-left: 23px;
+          flex: 1;
+          .time_box{
+            font-size: 32px;
+            color:rgb(172, 172, 172);
+            margin-top: 10px;            
+          }
+          .picked{
+            color: #646464;
+          }
+          input{
+            border: none;
+            font-size: 32px;
+            color: #646464;
+          }
+          .item_choose{
+            margin-right: 23px;
+            border-radius:4px;
+            border:1px solid rgba(222, 222, 222, 1);
+            width:120px;
+            height: 56px;
+            text-align: center;
+            font-size: 32px;
+            line-height: 56px;  
+            color:#646464;
+          }
+          .active{
+            border: 1px solid #0FA29C;
+            color: #0FA29C;
+          }
+        }
+        .choose{
+          display: flex;
+        }
+        .idcard_box{
+          display: flex;
+          margin-left: 23px;
+        }
+      }
+      ._last{
+          border-bottom: none;
+      }
+    }
+    .agreement_container{
+      display: flex;
+      font-size: 20px;
+      margin-top: 22px;
+      .agreement_text{
+        margin-left: 0px;
+        color:#969696;
+      }
+      .agreement_info{
+        color: #3587C3;
+      }
+      .agreement_icon{
+        height: 26px;
+        width: 26px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        img{
+        height: 26px;
+        width: 26px; 
+        }
+      }
+    }
+    .button_container{
+      margin-top: 23px;
+      display: flex;
+      flex-direction: column;
+      button{
+      height: 92px;
+      border-radius:6px;
+      border: none;
+      }
+      .blue_back{
+        background-color: #0FA29C;
+        color: #ffffff;
+        font-size:40px;
+        line-height: 88px;
+      }
+      .while_back{
+        margin-top: 24px;
+        background-color: rgba(245,246,248,1);
+        color:rgba(100,100,100,1);
+        border: 1px solid #DCDCDC;
+        font-size:40px;
+        line-height: 88px;
+      }
+    }
+  }
+}
+</style>
+<style lang="less">
+.van-popup{
+  border-radius: 16px;
+}
+.dp-container{
+  height: 604px;
+  .dp-header{
+    height: 88px;
+    .dp-item{
+      font-size: 32px;
+    }
+    .vux-datetime-cancel{
+      margin-left: 15px;
+    }
+    .vux-datetime-confirm{ 
+      margin-right: 15px;
+    }
+  }
+  .dp-content{
+    height: 386px;
+    padding: 20px 0;
+    .dp-item{
+      height: 476px;
+      .scroller-component{
+        height: 476px;
+        .scroller-mask{
+          background-size:100% 204px;
+        }
+        .scroller-indicator{
+          background-size: 100% 1px;
+          top:204px;
+          height: 68px;
+        }
+        .scroller-content{
+          .scroller-item{
+            height: 68px;
+            line-height: 68px;
+            font-size: 32px;
+          }
+        }
+      }
+    }
+  }
+}
+</style>

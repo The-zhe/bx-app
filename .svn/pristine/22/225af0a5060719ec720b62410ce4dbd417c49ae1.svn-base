@@ -1,0 +1,233 @@
+// 2020/3/31 created by xtt
+<template>
+ <div class="doctorserve">
+   <div class="top">
+     选择服务意愿（可多选）
+   </div>
+   <div class="service_list">
+     <div class="service_item" @click="selectItem(1)" >
+       <div class="select_state">
+         <img :src="is1?selectedIcon:selectIcon"/>
+       </div>
+       <div class="service_name">公益咨询</div>
+     </div>
+     <div class="service_item" @click="selectItem(2)" >
+       <div class="select_state">
+         <img :src="is2?selectedIcon:selectIcon"/>
+       </div>
+       <div class="service_name">收费咨询(图文、电话、视频)</div>
+     </div>
+     <div class="service_item" @click="selectItem(3)" >
+     <div class="select_state">
+       <img :src="is3?selectedIcon:selectIcon"/>
+     </div>
+     <div class="service_name">私人医生服务</div>
+   </div>
+     <div class="service_item" @click="selectItem(4)" >
+       <div class="select_state">
+         <img :src="is4?selectedIcon:selectIcon"/>
+       </div>
+       <div class="service_name">其他特需服务项目<br>(MDT会诊  手术预约  VIP门诊  上门咨询     病理会诊  影像会诊等)</div>
+     </div>
+   </div>
+   <div class="fixbtn">
+     <div class="btn back" @click="toback">上一步</div>
+     <div class="btn next" @click="tonext">提交</div>
+   </div>
+ </div>
+</template>
+
+<script>
+    import Toast from "vant/es/toast";
+    import {doctorAddWithPhone} from "../../../../api/apiz";
+
+    export default {
+        name: "doctorserve",
+      data(){
+          return{
+            selectedIcon:require('@/assets/imgs/btn_syfw_choose_pre.png'),
+            selectIcon:require('@/assets/imgs/btn_syfw_choose_nor.png'),
+            is1:false,
+            is2:false,
+            is3:false,
+            is4:false,
+            serviceOrder:'',
+            check:false,
+            idCardRlImgUrl:'',
+            idotherCardRlImgUrl:'',
+            card:'',
+            certImgUrl:'',
+            certNo:''
+          }
+      },
+      methods:{
+        selectItem(num){
+          if(num===1){
+            this.is1=!this.is1;
+          }else if(num===2){
+            this.is2=!this.is2;
+          }else if(num===3){
+            this.is3=!this.is3;
+          }else {
+            this.is4=!this.is4;
+          }
+        },
+        checkinfo(){
+          this.serviceOrder='';
+          if(!this.is1&&!this.is2&&!this.is3&&!this.is4){
+            Toast('请选择其中一项服务意愿');
+          }else {
+            this.check=true;
+            if(this.is1){
+              if(this.serviceOrder){
+                this.serviceOrder=this.serviceOrder+','+0;
+              }else {
+                this.serviceOrder='0';
+              }
+            }
+            if(this.is2){
+              if(this.serviceOrder){
+                this.serviceOrder=this.serviceOrder+','+1;
+              }else {
+                this.serviceOrder=1;
+              }
+            }
+            if(this.is3){
+              if(this.serviceOrder){
+                this.serviceOrder=this.serviceOrder+','+2;
+              }else {
+                this.serviceOrder=2;
+              }
+            }
+            if(this.is4){
+              if(this.serviceOrder){
+                this.serviceOrder=this.serviceOrder+','+3;
+              }else {
+                this.serviceOrder=3;
+              }
+            }
+          }
+        },
+        tonext(){
+          this.checkinfo();
+          console.log('servie',this.serviceOrder);
+          if(this.check) {
+            let doctorperinfo= JSON.parse(localStorage.getItem('doctorperinfo'));
+            if(localStorage.getItem('certImgUrl')){
+              this.certImgUrl= JSON.parse(localStorage.getItem('certImgUrl')).certImgUrl;
+              this.certNo=JSON.parse(localStorage.getItem('certImgUrl')).certNo;
+            }
+            if(localStorage.getItem('idCardRlImgUrl')){
+               this.idCardRlImgUrl = JSON.parse(localStorage.getItem('idCardRlImgUrl')).idCardRlImgUrl;
+               this.card=JSON.parse(localStorage.getItem('idCardRlImgUrl')).idCardId;
+            }
+            if(localStorage.getItem('idotherCardRlImgUrl')){
+              this.idotherCardRlImgUrl=JSON.parse(localStorage.getItem('idotherCardRlImgUrl')).idCardRlImgUrl;
+            }
+            let addlist = JSON.parse(localStorage.getItem('addlist'));
+            let hjjkHealthTeamRo = {
+              birthday: doctorperinfo.birthday,
+              edu: localStorage.getItem('doctoreducation'),
+              experience: localStorage.getItem('practiceExperience'),
+              graduateTm: localStorage.getItem('doctorgraduationDate'),
+              certImgUrl:this.certImgUrl,
+              certNo: this.certNo,
+              hjjkPracticePlaceVos:addlist,
+              id: 0,
+              card:this.card,
+              idCardGhImgUrl: this.idotherCardRlImgUrl,
+              idCardRlImgUrl: this.idCardRlImgUrl,
+              majorId: localStorage.getItem('doctormajorCd'),
+              majorNm: "",
+              name: doctorperinfo.name,
+              rank: "",
+              school: localStorage.getItem('doctorschool'),
+              serviceOrder: this.serviceOrder,
+              sex: doctorperinfo.sex,
+              titleCd: localStorage.getItem('doctorrankCd'), //职称
+              titleNm: "",
+              userId: Number(localStorage.getItem('doctorId')),
+              skills:localStorage.getItem('professionalInfo'),
+            }
+            doctorAddWithPhone(hjjkHealthTeamRo).then((res) => {
+                  if(res.data.code===0){
+                    localStorage.setItem('hasAuth',1);
+                    this.$router.push({path: '/doctorsubmit'})
+                  }else {
+                    Toast(res.data.msg);
+                  }
+            })
+
+          }
+
+        },
+        toback(){
+          this.$router.push({path:'/doctorlicensed'})
+        }
+      }
+    }
+</script>
+
+<style scoped lang="less">
+.doctorserve{
+  font-size: 0.3rem;
+  .top{
+    height: 0.88rem;
+    background: url('../../../../assets/imgs/x_filltop.png') no-repeat;
+    background-size: 100% 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.36rem;
+    color: #ffffff;
+  }
+  .service_list{
+    padding-left: 1.1rem;
+    margin-top: 1.96rem;
+    font-size: 0.3rem;
+    color: #717071;
+    .service_item{
+      margin-bottom: 1.18rem;
+      display: flex;
+      //align-items: center;
+      .select_state{
+        margin-top: 0.04rem;
+        margin-right: 0.32rem;
+        img{
+          width: 0.33rem;
+          height: 0.33rem;
+        }
+      }
+      .service_name{
+        width: 5.5rem;
+      }
+    }
+  }
+  .fixbtn{
+    width: 6.5rem;
+    position: fixed;
+    bottom: 0;
+    padding-left: 0.5rem;
+    height: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    .btn{
+      font-size: 0.32rem;
+      width: 3.1rem;
+      height: 0.7rem;
+      line-height: 0.7rem;
+      text-align: center;
+    }
+    .back{
+      color: #00A99D;
+      background: url("../../../../assets/imgs/bg_grzx_brn_nor.png");
+      background-size: 3.1rem 0.7rem;
+    }
+    .next{
+      color: white;
+      background: url("../../../../assets/imgs/bg_grzx_brn_pre.png");
+      background-size: 3.1rem 0.7rem;
+    }
+  }
+}
+</style>

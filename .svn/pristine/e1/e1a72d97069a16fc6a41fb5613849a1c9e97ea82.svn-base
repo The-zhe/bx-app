@@ -1,0 +1,60 @@
+<template>
+    <div class="header">
+        <van-icon class="left" name="arrow-left" @click="prev"/>
+        <div class="header_title">{{title}}</div>
+        <van-icon class="right" name="arrow" />
+    </div>
+</template>
+
+<script>
+export default {
+    name:'headertitle',
+    props:['title'],
+    data() {
+        return{
+        }
+    },
+    methods:{
+        prev(){
+    		this.$router.go(-1)
+    	}
+    }
+}
+</script>
+
+<style lang="less" scoped>
+    .header{
+        position: absolute;
+        position: fixed;
+        width:100%;
+        height:3.76rem;
+        background-image: url("../assets/imgs/d_back.png");
+        background-size: 150% 3rem;
+        background-position-x: center;
+        background-repeat:no-repeat;
+        flex-direction: row;
+        display: flex;
+        justify-content: space-between;
+        // z-index: 1000;
+        .header_title{
+            // width:1.47rem;
+            // height:.35rem;
+            font-size: 0.36rem;
+            color: #FFFFFF;
+            margin-top: .9rem;
+        }
+        .left{
+            font-size: 0.36rem;
+            color: #FFFFFF;
+            margin-top: 1rem;
+            margin-left: .3rem;
+        }
+        .right{
+            font-size: 0.36rem;
+            color: #FFFFFF;
+            margin-top: 1rem;
+            visibility: hidden;
+            margin-right: .3rem;
+        }
+    }
+</style>

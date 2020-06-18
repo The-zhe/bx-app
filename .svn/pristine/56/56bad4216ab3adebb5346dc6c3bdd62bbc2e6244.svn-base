@@ -1,0 +1,31 @@
+<template>
+  <div id="app">
+    <router-view></router-view>
+  </div>
+</template>
+
+<script>
+  export default {
+    components: {},
+    name: 'App',
+    data(){
+        return{
+          login: this.$store.state.token
+        }
+    },
+    created(){
+
+    },
+    mounted(){
+
+    },
+    methods:{
+
+    }
+}
+</script>
+
+<style lang="less">
+
+
+ </style>

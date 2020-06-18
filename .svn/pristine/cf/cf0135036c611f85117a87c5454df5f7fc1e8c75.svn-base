@@ -1,0 +1,96 @@
+<template>
+  <div class="prescriptionDetail_container">
+      <div class="detail_item" v-for="item in prescriptionDetailList">
+          <div class="item_title">{{item.title}}</div>
+          <div class="item_dose">
+              <div class="title">开药量：</div>
+              <div class="text">{{item.a}}</div>
+          </div>
+          <div class="item_specs">
+                            <div class="title">规&emsp;格：</div>
+              <div class="text">{{item.b}}</div>
+          </div>
+          <div class="item_usage">
+                            <div class="title">用&emsp;法：</div>
+              <div class="text">{{item.c}}</div>
+          </div>
+      </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    components: {},
+    name: 'prescriptionDetail',
+    data(){
+        return{
+            prescriptionDetailList:[
+                {
+                    title:'安必仙（青霉素）',
+                    a:' 0.4g*36粒/盒 x1',
+                    b:'0.4g*粒/盒',
+                    c:'一日三次，每次2~4粒，饭前服用'
+                },
+                {
+                    title:'安必仙（青霉素）',
+                    a:' 0.4g*36粒/盒 x1',
+                    b:'0.4g*粒/盒',
+                    c:'一日三次，每次2~4粒，饭前服用'
+                },
+            ]
+        }
+    },
+    created(){
+
+    },
+    computed:{
+    },
+    watch:{
+
+    },
+    mounted(){
+    },
+    methods:{
+
+    }
+}
+</script>
+
+<style lang="less" scope>
+.prescriptionDetail_container{
+    font-size: 28px;
+    color: #777777;
+    .detail_item{
+        border-bottom: 20px solid #f4f4f4;
+        padding: 0 25px;
+        .item_title{
+            height: 85px;
+            line-height: 85px;
+            font-weight: 600;
+            box-sizing: border-box;
+            border-bottom: 2px solid #dadada;
+            padding-left: 18px;
+        }
+        .item_dose{
+            padding-left: 18px;
+            display: flex;
+            height: 86px;
+            line-height: 86px;
+            border-bottom: 2px dashed #dadada;
+        }
+        .item_specs{
+            display: flex;
+            padding-left: 18px;
+            height: 83px;
+            line-height: 83px;
+            border-bottom: 2px dashed #dadada;
+        }
+        .item_usage{
+            display: flex;
+            padding-left: 18px;
+            height: 88px;
+            line-height: 88px
+        }
+    }
+}
+ </style>

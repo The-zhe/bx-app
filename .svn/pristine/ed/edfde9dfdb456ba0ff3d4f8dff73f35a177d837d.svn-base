@@ -1,0 +1,69 @@
+/**
+ * Created by apple on 2019/7/2.
+ */
+import  Vue from 'vue'
+import Vuex from 'vuex'
+import axios from 'axios'
+
+//让ajax携带cookie
+
+Vue.use(Vuex);
+
+
+const state = {
+  userId:4535481258038272,
+  token : 111,//sessionStorage.getItem('_token')
+  getMoreData : (url,data,response) =>{
+    axios.get(state.baseURL+url,{params: data,headers: {'Content-Type':'application/json;charset=UTF-8','zcps_token':state.token}})
+      .then(res => {
+        let result = res.data;
+
+        if(result.code == 0){
+          response(result);
+        }else{
+          console.log(result.msg)
+        }
+
+      },err => {
+        console.log(err)
+      })
+  },
+  getListData:(url,query,response) => {
+    axios.get(state.baseURL+`${ url }?query=${ encodeURI(JSON.stringify(query)) }`,{headers: {'Content-Type':'application/json;charset=UTF-8','zcps_token':state.token}}).then(res =>{
+      let result = res.data;
+
+      if(result.code == 0){
+        response(result);
+      }else{
+        console.log(result.msg)
+      }
+    })
+  },
+  getMoreDataPost : (url,data,response) =>{
+    axios.post(state.baseURL+url,data,{headers: {'Content-Type':'application/json;charset=UTF-8','zcps_token':state.token}})
+      .then(res => {
+        let result = res.data;
+
+        if(result.code == 0){
+          response(result);
+        }else{
+          console.log(result.msg)
+        }
+
+      },err => {
+        console.log(err)
+      })
+  },
+};
+const mutations={
+  setNewToken: (state,token) => {
+    sessionStorage.setItem('_token',token);
+    state.token = token;
+  },
+};
+
+
+export default new Vuex.Store({
+  state,
+  mutations
+})

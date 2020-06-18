@@ -1,0 +1,110 @@
+// 2020/1/8 created by xtt
+<template>
+  <div class="healthIndicator">
+    <div class="h_content">
+      <div class="h_content_top">
+        <img src="../../../assets/imgs/healthIndicator1.png">
+        <div class="h_content_top_text">
+          心率
+          <div class="h_content_top_text_num">82
+          <span class="h_content_top_text_num_span1">bmp</span>
+            <span class="h_content_top_text_num_span2">08-19 22:00</span>
+          </div>
+        </div>
+        <div class="h_content_top_tip">正常</div>
+      </div>
+      <div class="h_contetn_pic"></div>
+    </div>
+    <div class="h_line"></div>
+    <div class="h_btn">上传指标</div>
+  </div>
+</template>
+
+<script>
+    export default {
+        name: "healthIndicator"
+    }
+</script>
+
+<style scoped lang="less">
+ .healthIndicator{
+   display: flex;
+   flex-direction: column;
+   align-items: center;
+   width: 100%;
+   height: 100%;
+   .h_content{
+     width: 700px;
+     height: 220px;
+     background: white;
+     border-radius: 20px;
+     margin: 20px auto;
+     box-shadow: 0 0 8px #bebcbc;
+     .h_content_top{
+       padding-top: 20px;
+       margin: 0 auto;
+       width: 650px;
+       height: 100px;
+       display: flex;
+       justify-content: space-between;
+       img{
+         margin-top: 15px;
+         width: 81px;
+         height: 71px;
+       }
+       .h_content_top_text{
+         font-size: 28px;
+         color: #606060;
+         .h_content_top_text_num{
+           font-size: 42px;
+           font-weight: bold;
+           .h_content_top_text_num_span1{
+             font-size: 28px;
+             font-weight: normal;
+           }
+           .h_content_top_text_num_span2{
+             font-size: 28px;
+             font-weight: normal;
+             color: #AFAFAF;
+           }
+         }
+       }
+       .h_content_top_tip{
+         margin-top: 20px;
+          width: 100px;
+         height: 50px;
+         line-height: 50px;
+         text-align: center;
+         color: #048A83;
+         font-size: 30px;
+         border: 2px solid #048A83;
+         border-radius: 50px;
+       }
+     }
+     .h_contetn_pic{
+       margin: 0 auto;
+       width: 650px;
+       height: 100px;
+       border: 1px solid black;
+     }
+   }
+   .h_line{
+    // margin-top: auto;
+     width: 700px;
+     height: 2px;
+     background: #CDCDCD;
+   }
+   .h_btn{
+     margin-top: auto;
+     width: 300px;
+     height: 60px;
+     background: #3EB4A1;
+     border-radius: 60px;
+     color: white;
+     font-size: 30px;
+     line-height: 60px;
+     text-align: center;
+   }
+
+ }
+</style>

@@ -1,0 +1,132 @@
+<template>
+    <div class="serviceWish_container">
+        <div class="top">
+          选择服务意愿（可多选）
+        </div>
+        <div class="service_list">
+            <div class="service_item" :key="item.id" v-for="item in serviceList" @click="selectItem(item)" >
+                <div class="select_state">
+                    <img :src="selectedList.includes(item.id)?selectedIcon:selectIcon"/>
+                </div>
+                <div class="service_name">{{item.cont}}</div>
+            </div>
+        </div>
+        <div class="button_container">
+            <img :src="prevIcon" class="prevIcon" @click="prevClick" />
+            <img class="nextIcon" :src="nextIcon" @click="nextClick" />
+        </div>
+    </div>
+</template>
+
+<script>
+import {getServiceWishList} from '../../../../api/apiz'
+import Toast from "vant/es/toast";
+export default {
+name:"serviceWish",
+data(){
+    return{
+        selectedIcon:require('@/assets/imgs/btn_syfw_choose_pre.png'),
+        selectIcon:require('@/assets/imgs/btn_syfw_choose_nor.png'),
+        prevIcon:require('@/assets/imgs/x_syb.png'),
+        nextIcon:require('@/assets/imgs/x_xyb2.png'),
+        serviceList:[],
+        selectedList:[],
+    }
+},
+mounted(){
+    if(sessionStorage.getItem('hjjkServiceVos')){
+        let array = JSON.parse(sessionStorage.getItem('hjjkServiceVos')).selectedList
+        array.forEach(element => {
+            this.selectedList.push(element.id)
+        });
+    }
+    this.getServiceWishListFun()
+},
+methods:{
+    getServiceWishListFun(){
+        getServiceWishList().then(res=>{
+            this.serviceList=res.data.list
+        })
+    },
+    selectItem(item){
+        if(this.selectedList.indexOf(item.id)<0){
+            this.selectedList.push(item.id)
+        }else{
+            this.selectedList.splice(this.selectedList.indexOf(item.id),1)
+        }
+    },
+    prevClick(){
+        this.$router.go(-1)
+    },
+    nextClick(){
+      if(this.selectedList.length===0){
+        Toast('请选择服务意愿');
+      }else {
+        sessionStorage.setItem('hjjkServiceVos', JSON.stringify({
+          selectedList: this.selectedList.map(item => {
+            return {id: item}
+          })
+        }));
+        this.$router_({name: 'workAttestation'})
+      }
+    }
+},
+
+
+};
+</script>
+
+<style scoped lang="less">
+.serviceWish_container{
+    .top{
+    height: 0.88rem;
+    background: url('../../../../assets/imgs/x_filltop.png') no-repeat;
+    background-size: 100% 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.32rem;
+    color: #ffffff;
+    font-weight: bold;
+    }
+    .service_list{
+        padding-left: 1.1rem;
+        margin-top: 1.96rem;
+        font-size: 0.3rem;
+        color: #717071;
+        .service_item{
+            margin-bottom: 1.18rem;
+            display: flex;
+            align-items: center;
+            .select_state{
+                margin-right: 0.32rem;
+                img{
+                width: 0.33rem;
+                height: 0.33rem;
+                }
+            }
+            .service_name{
+
+            }
+        }
+    }
+    .button_container{
+      padding-top: 0.24rem;
+      height: 0.96rem;
+      position: fixed;
+      bottom: 0;
+      display: flex;
+      background: white;
+        img{
+            width: 3.09rem;
+            height:0.7rem;
+        }
+        .prevIcon{
+            margin-left: 0.46rem;
+        }
+        .nextIcon{
+            margin-left: .38rem;
+        }
+    }
+}
+</style>

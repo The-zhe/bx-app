@@ -1,0 +1,230 @@
+<template>
+  <div class="wxpersonalcenter">
+    <div class="bdiv" @click="toPersonal">
+      <div class="dimg">
+        <img class="imgo" src="../../../assets/imgs/xpimg1.png" />
+      </div>
+      <div class="dtext">个人信息</div>
+      <div>
+        <img class="nextimg" :src="nextimg" />
+      </div>
+    </div>
+    <div class="sdiv"  @click="toMessage">
+      <div class="dimg">
+        <img class="imgt" src="../../../assets/imgs/xpimg2.png" />
+      </div>
+      <div class="dtext">消息中心</div>
+      <div>
+        <img class="nextimg" :src="nextimg" />
+      </div>
+    </div>
+    <div class="sdiv" @click="toaddressManagement" v-show="!isDoctor">
+      <div class="dimg">
+        <img class="imgth" src="../../../assets/imgs/xpimg3.png" />
+      </div>
+      <div class="dtext">地址管理</div>
+      <div>
+        <img class="nextimg" :src="nextimg" />
+      </div>
+    </div>
+    <div class="bdiv"  @click="toModifypwd">
+      <div class="dimg">
+        <img class="imgf" src="../../../assets/imgs/xpimg4.png" />
+      </div>
+      <div class="dtext">修改密码</div>
+      <div>
+        <img class="nextimg" :src="nextimg" />
+      </div>
+    </div>
+    <div class="sdiv">
+      <div class="dimg">
+        <img class="imgfive" src="../../../assets/imgs/xpimg5.png" />
+      </div>
+      <div class="dtext">APP下载</div>
+      <img class="nextimg" :src="nextimg" />
+    </div>
+    <div class="bdiv" @click="toAboutbx">
+      <div class="dimg">
+        <img class="imgsix" src="../../../assets/imgs/xpimg6.png" />
+      </div>
+      <div class="dtext">关于倍熙</div>
+      <img class="nextimg" :src="nextimg" />
+    </div>
+    <div class="loginout" @click="loginout">
+      <div class="l_txt">退出</div>
+    </div>
+    <div class="bottom">
+      <span @click="touseragreement">用户协议</span>&emsp;|&emsp;
+      <span @click="toprivacypolicy">隐私政策</span>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getdoctorstate } from "../../../api";
+
+export default {
+  name: "wxpersonalcenter",
+  data() {
+    return {
+      nextimg: require("../../../assets/imgs/xpimg7.png"),
+      isDoctor: Boolean(Number(localStorage['isDoctor'])),
+    };
+  },
+  methods: {
+    toAboutbx(){
+      this.$router.push({path:"/aboutinfo"});
+    },
+    touseragreement() {
+      this.$router_({ path: "/useragreement" });
+    },
+    toprivacypolicy() {
+      this.$router_({ path: "/privacypolicy" });
+    },
+    getNativeloginout(){
+     this.$bridge.callHandler('toLoginOut','',(res)=>{
+
+     })
+    },
+    //退出
+    loginout() {
+      if(this.isDoctor){
+        let id = Number(localStorage.getItem("doctorId"));
+        getdoctorstate(id).then(res => {
+          localStorage.removeItem("isDoctor");
+          localStorage.removeItem("doctorId");
+          sessionStorage.removeItem("hasAuth");
+        });
+      }
+      localStorage.removeItem("userId");
+      localStorage.removeItem('tablephone');
+      localStorage.removeItem('persex');
+      localStorage.removeItem('perage');
+      this.$router_({ path: "/" });
+      this.getNativeloginout();
+      /*let promise = tim.logout();
+      promise
+        .then(function(imResponse) {
+          that.$router_({ path: "/" });
+          console.log(imResponse.data); // 登出成功
+        })
+        .catch(function(imError) {
+          console.warn("logout error:", imError);
+        });*/
+    },
+    toModifypwd() {
+      this.$router_({ path: "/wxmodifypassword" });
+    },
+    toPersonal() {
+      let isD = Boolean(Number(localStorage['isDoctor']))
+      if (isD) {
+        this.$router_({ path: "/doctorPersonalInfo" });
+      } else {
+        this.$router_({ path: "/personalInfo" });
+      }
+    },
+    toaddressManagement() {
+      this.$router_({ path: "/addressmanage" });
+    },
+    toMessage() {
+      this.$router_({ path: "/myMessage" });
+    }
+  },
+  beforeRouteEnter(to, from, next) {
+    let hasLogin = Boolean(localStorage["userId"] || localStorage["doctorId"]);
+    if (hasLogin) {
+      next();
+    } else {
+      next("/userlogin");
+    }
+  }
+};
+</script>
+
+<style scoped lang="less">
+.wxpersonalcenter {
+  background: #f0edf1;
+  height: 100%;
+  font-size: 0.3rem;
+  color: #777777;
+  .bottom {
+    left: 50%;
+    margin-left: -2rem;
+    text-align: center;
+    position: absolute;
+    bottom: 0.5rem;
+    width: 4rem;
+    height: 0.3rem;
+    font-size: 0.32rem;
+    color: #56b2ad;
+  }
+  .nextimg {
+    margin-top: 0.3rem;
+    margin-right: 0.64rem;
+    width: 0.16rem;
+    height: 0.31rem;
+  }
+  .dtext {
+    margin-top: 0.28rem;
+    width: 5.4rem;
+    height: 0.44rem;
+  }
+  .dimg {
+    margin-top: 0.25rem;
+    margin-left: 0.48rem;
+    width: 0.5rem;
+    height: 0.5rem;
+  }
+  .bdiv {
+    height: 0.95rem;
+    background: white;
+    border-bottom: 0.15rem solid #f0edf1;
+    display: flex;
+    justify-content: space-between;
+    .imgo {
+      width: 0.41rem;
+      height: 0.43rem;
+    }
+    .imgf {
+      width: 0.39rem;
+      height: 0.43rem;
+    }
+    .imgsix {
+      width: 0.43rem;
+      height: 0.43rem;
+    }
+  }
+  .sdiv {
+    height: 0.95rem;
+    background: white;
+    border-bottom: 0.03rem solid #f0edf1;
+    display: flex;
+    justify-content: space-between;
+    .imgt {
+      width: 0.39rem;
+      height: 0.44rem;
+    }
+    .imgth {
+      width: 0.37rem;
+      height: 0.44rem;
+    }
+    .imgfive {
+      width: 0.29rem;
+      height: 0.43rem;
+    }
+  }
+  .loginout {
+    padding-top: 0.3rem;
+    height: 0.8rem;
+    background: white;
+    .l_txt {
+      text-align: center;
+      margin: 0 auto;
+      width: 1rem;
+      height: 0.4rem;
+      font-size: 0.36rem;
+      color: #f63e3e;
+    }
+  }
+}
+</style>

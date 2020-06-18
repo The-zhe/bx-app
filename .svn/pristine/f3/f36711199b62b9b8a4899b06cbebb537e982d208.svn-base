@@ -1,0 +1,24 @@
+<template>
+  <div>
+      Mall
+  </div>
+</template>
+
+<script>
+export default {
+  name: "Mall",
+  data() {
+    return {
+
+    };
+  },
+  methods: {
+
+  },
+  mounted() {}
+};
+</script>
+
+<style lang="less" scoped>
+
+</style>

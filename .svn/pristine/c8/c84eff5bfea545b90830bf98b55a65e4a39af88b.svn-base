@@ -1,0 +1,355 @@
+// 2020/1/19 created by xtt
+<template>
+  <div class="serviceList">
+    <div class="o_top" >
+      <div :class="index===selectIndex?'o_top_text_select':'o_top_text'" v-for="(item,index) in titlebar" @click="toSelect(index)">{{item.name}}</div>
+    </div>
+    <div class="o_content" v-show="selectIndex===0">
+      <div class="o_content_title">
+        <div class="o_content_title_info">
+          <div class="o_content_title_img"></div>
+          <div class="o_content_title_text">挂号服务</div>
+          <div class="o_content_title_right"></div>
+        </div>
+        <div class="o_content_title_tip">等待审核中</div>
+      </div>
+      <div class="o_content_info">
+        <div class="o_content_info_img"></div>
+        <div class="o_content_info_name">
+          <div class="o_content_info_h">宁波市第一医院</div>
+          <div class="o_coontent_info_n">李建波  普通内科  2019-12-27</div>
+          <div class="o_content_info_m">合计 <span style="color:#F48100;">58.00</span>  元</div>
+        </div>
+      </div>
+      <div class="o_content_info_btn">
+        <div class="o_content_info_cancel" @click="toCancel">取消</div>
+        <div class="o_content_info_watch" @click="togetInfo">查看详情</div>
+      </div>
+    </div>
+    <div class="o_content" v-show="selectIndex===1">
+      <div class="o_content_title">
+        <div class="o_content_title_info">
+          <div class="o_content_title_img"></div>
+          <div class="o_content_title_text">挂号服务</div>
+          <div class="o_content_title_right"></div>
+        </div>
+        <div class="o_content_title_tip">等待审核中</div>
+      </div>
+      <div class="o_content_info">
+        <div class="o_content_info_img"></div>
+        <div class="o_content_info_name">
+          <div class="o_content_info_h">宁波市第一医院</div>
+          <div class="o_coontent_info_n">李建波  普通内科  2019-12-27</div>
+          <div class="o_content_info_m">合计 <span style="color:#F48100;">58.00</span>  元</div>
+        </div>
+      </div>
+      <div class="o_content_info_btn">
+        <div class="o_content_info_cancel" @click="toCancel">取消</div>
+        <div class="o_content_info_watch" @click="togetInfo">查看详情</div>
+      </div>
+    </div>
+    <div class="o_content" v-show="selectIndex===2">
+      <div class="o_content_title">
+        <div class="o_content_title_info">
+          <div class="o_content_title_img"></div>
+          <div class="o_content_title_text">挂号服务</div>
+          <div class="o_content_title_right"></div>
+        </div>
+        <!-- <div class="o_content_title_tip">等待审核中</div>-->
+      </div>
+      <div class="o_content_info">
+        <div class="o_content_info_img"></div>
+        <div class="o_content_info_name">
+          <div class="o_content_info_h">宁波市第一医院</div>
+          <div class="o_coontent_info_n">李建波  普通内科  2019-12-27</div>
+          <div class="o_content_info_m">合计 <span style="color:#F48100;">58.00</span>  元</div>
+        </div>
+      </div>
+      <div class="o_content_info_btn">
+        <div class="o_content_info_empt"></div>
+        <div class="o_content_info_watch" @click="togetInfo">查看详情</div>
+      </div>
+    </div>
+    <div class="o_content" v-show="selectIndex===3">
+      <div class="o_content_title">
+        <div class="o_content_title_info">
+          <div class="o_content_title_img"></div>
+          <div class="o_content_title_text">挂号服务</div>
+          <div class="o_content_title_right"></div>
+        </div>
+        <!-- <div class="o_content_title_tip">等待审核中</div>-->
+      </div>
+      <div class="o_content_info">
+        <div class="o_content_info_img"></div>
+        <div class="o_content_info_name">
+          <div class="o_content_info_h">宁波市第一医院</div>
+          <div class="o_coontent_info_n">李建波  普通内科  2019-12-27</div>
+          <div class="o_content_info_m">合计 <span style="color:#F48100;">58.00</span>  元</div>
+        </div>
+      </div>
+      <div class="o_content_info_btn">
+        <div class="o_content_info_cancel" @click="todelete">删除</div>
+        <div class="o_content_info_watch" @click="togetInfo">查看详情</div>
+      </div>
+    </div>
+    <van-dialog
+      v-model="cancelShow"
+      :show-confirm-button="false"
+    >
+      <div class="o_pop_title" >取消订单</div><div class="o_pop_x" @click="toExit"><img src="../../assets/imgs/management_x.png"></div>
+      <div class="o_pop_reason">
+        <input placeholder="选择取消原因"/>
+        <div class="o_pop_right"></div>
+      </div>
+      <div class="o_pop_info">
+        <textarea placeholder="请补充详细信息以便更快帮您处理（选填）"></textarea>
+      </div>
+      <div class="o_pop_btn">确认提交</div>
+    </van-dialog>
+  </div>
+</template>
+
+<script>
+    export default {
+        name: "serviceList",
+      data(){
+          return{
+            cancelShow:false,
+            titlebar:[
+              {name:'全部'},
+              {name:'待审核'},
+              {name:'服务中'},
+              {name:'已完成'},],
+            selectIndex:0,
+          }
+      },
+      methods:{
+        toSelect(index){
+          console.log('oiii',index);
+          this.selectIndex=index;
+        },
+        toCancel(){
+          this.cancelShow=true;
+        },
+        //删除
+        todelete(){
+
+
+        },
+        toExit(){
+          this.cancelShow=false;
+        },
+        togetInfo(){
+          this.$router_({path:'/serviceinfo'});
+        }
+      }
+    }
+</script>
+<style>
+  @import url('../../assets/less/vantstyle/dialog.css');
+  @import url('../../assets/less/vantstyle/button.css');
+</style>
+<style scoped lang="less">
+.serviceList{
+  width: 100%;
+  .o_top{
+    height: 140px;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+    .o_top_text{
+      color: #5E656D;
+      font-size: 30px;
+    }
+    .o_top_text_select{
+      font-weight: bold;
+      height: 40px;
+      color: #048A83;
+      font-size: 30px;
+      border-bottom: 5px solid #048A83;
+    }
+  }
+  .o_content{
+    margin: 20px auto;
+    width: 700px;
+    height: 345px;
+    background: white;
+    border-radius: 20px;
+    box-shadow: 0 0 20px #bebcbc;
+    .o_content_title{
+      padding-top: 30px;
+      margin-left: 30px;
+      width: 645px;
+      height: 50px;
+      display: flex;
+      justify-content: space-between;
+      .o_content_title_info{
+        width: 240px;
+        height: 50px;
+        display: flex;
+        justify-content: flex-start;
+        .o_content_title_img{
+          width: 50px;
+          height: 50px;
+          background: #40b2a0;
+        }
+        .o_content_title_text{
+          margin-left: 20px;
+          width: 125px;
+          height: 30px;
+          font-size: 30px;
+          color: #606060;
+          font-weight: bold;
+        }
+        .o_content_title_right{
+          margin-top: 10px;
+          margin-left: 20px;
+          width: 18px;
+          height: 27px;
+          background: url("../../assets/imgs/btn_da_next.png");
+          background-size: 18px 27px;
+        }
+      }
+      .o_content_title_tip{
+        width: 143px;
+        height: 30px;
+        color: #048A83;
+        font-size: 28px;
+      }
+
+    }
+    .o_content_info{
+      margin: 20px auto;
+      width: 645px;
+      height: 145px;
+      display: flex;
+      justify-content: flex-start;
+      .o_content_info_img{
+        width: 140px;
+        height: 140px;
+        background: #40b2a0;
+        border-radius: 10px;
+      }
+      .o_content_info_name{
+        width: 480px;
+        height: 140px;
+        font-size: 28px;
+        color: #606060;
+        margin-left: 20px;
+        .o_content_info_h{
+          width: 200px;
+          height: 30px;
+        }
+        .o_coontent_info_n{
+          margin-top: 24px;
+          width: 410px;
+          height: 30px;
+        }
+        .o_content_info_m{
+          margin-top: 22px;
+          margin-left: 280px;
+          width: 192px;
+          height: 27px;
+        }
+      }
+    }
+    .o_content_info_btn{
+      width: 312px;
+      height: 58px;
+      margin-left: 350px;
+      color: #606060;
+      font-size: 28px;
+      display: flex;
+      justify-content: space-between;
+      .o_content_info_cancel{
+        text-align: center;
+        line-height: 53px;
+        width: 123px;
+        height: 53px;
+        border-radius: 30px;
+        border: 2px solid #C5C5C5;
+      }
+      .o_content_info_watch{
+        text-align: center;
+        line-height: 53px;
+        width: 163px;
+        height: 53px;
+        border-radius: 30px;
+        border: 2px solid #C5C5C5;
+      }
+      .o_content_info_empt{
+        width: 120px;
+      }
+      .o_content_info_pay{
+        text-align: center;
+        line-height: 53px;
+        color:white;
+        width: 120px;
+        height: 53px;
+        border-radius: 30px;
+        background-color: #3EB4A1;
+      }
+    }
+  }
+  .o_pop_title{
+    margin: 60px auto;
+    width: 150px;
+    height: 34px;
+    font-size: 36px;
+    color: #7C7C7C;
+    font-weight: bold;
+  }
+  .o_pop_x{
+    position: absolute;
+    top: 60px;
+    right: 40px;
+    width: 22px;
+    height: 22px;
+    img{
+      width: 22px;
+      height: 22px;
+    }
+  }
+  .o_pop_reason{
+    width: 525px;
+    height: 60px;
+    margin: 20px auto;
+    border-bottom: 2px solid #DFDFDF;
+    display: flex;
+    justify-content: space-between;
+    input{
+      width: 380px;
+      height: 40px;
+      font-size: 30px;
+      color: #777777;
+    }
+    .o_pop_right{
+      width: 15px;
+      height: 26px;
+      background: url("../../assets/imgs/btn_da_next.png");
+      background-size: 15px 26px;
+    }
+  }
+  .o_pop_info{
+    margin: 20px auto;
+    width: 520px;
+    height: 300px;
+    border: 1px solid #DFDFDF;
+    font-size: 26px;
+    color: #B2B2B2;
+    .textarea{
+
+    }
+  }
+  .o_pop_btn{
+    margin: 100px auto 30px auto;
+    width: 500px;
+    height: 70px;
+    line-height: 70px;
+    text-align: center;
+    color: white;
+    background: #3EB4A1;
+    border-radius: 50px;
+  }
+}
+</style>

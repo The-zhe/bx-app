@@ -1,0 +1,44 @@
+<template>
+<div>
+  <swiper :options="swiperOption" ref="mySwiper">
+    <!-- slides -->
+     <swiper-slide v-for="(item,index) in NoticeList" :key="index">
+      {{item}}
+    </swiper-slide> 
+  </swiper>
+</div>
+</template>
+
+<script>
+import 'swiper/dist/css/swiper.css'
+import {swiper,swiperSlide} from 'vue-awesome-swiper'
+export default {
+    name:"NoticeBar",
+    props:['NoticeList'],
+    components:{swiper,swiperSlide},
+    data(){
+        return{
+            swiperOption: {
+                loop:true,
+                direction:'vertical',
+                paginationClickable:true,
+                autoplay:{
+                    delay:6000
+                },
+            }
+        }
+    },
+    computed: {
+      swiper() {
+        return this.$refs.mySwiper.swiper
+      }
+    },
+    mounted() {
+
+    }
+}
+</script>
+
+<style lang="less">
+
+</style>

@@ -1,0 +1,125 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+import ProductList from '@/components/pages/product_list'
+import ServiceList from '@/components/pages/service_list'
+import InfoCommon from '@/components/pages/info_common'
+import specs from '@/components/pages/specs'
+import Appointment from '@/components/pages/appointment'
+import AppointResult from '@/components/pages/appoint_result'
+import Home from '@/components/pages/home'
+import HomePage from '@/views/HomePage/HomePage'
+import Mine from '@/views/Mine/Mine'
+import Mall from '@/views/Mall/Mall'
+import Service from '@/views/Service/Service'
+import Archive from '@/views/Archive/Archive'
+
+import OffLine from '@/views/Common/OffLine';
+import notFound from '@/views/Common/notFound'
+import LoadFail from '@/views/Common/LoadFail'
+Vue.use(Router);
+export default new Router({
+  //mode: 'history',
+  mode:'hash',
+  routes: [
+    {
+      path:"/homepage",
+      name:"HomePage",
+      component:HomePage,
+    },
+    {
+      path:"/mall",
+      name:"Mall",
+      component:Mall
+    },
+    {
+      path:"/service",
+      name:"Service",
+      component:Service
+    },
+    {
+      path:"/archive",
+      name:"Archive",
+      component:Archive
+    },
+    {
+      path:"/Mine",
+      name:"Mine",
+      component:Mine
+    },
+    {
+      path:'/',
+      name:'Home',
+      component:Home,
+      meta: {
+        title: '首页'
+      }
+    },
+    {
+      path:'/productList',
+      name:'ProductList',
+      component:ProductList,
+      meta: {
+        title: '会员'
+      }
+    },
+    {
+      path:'/serviceList',
+      name:'ServiceList',
+      component:ServiceList,
+      meta: {
+        title: '服务'
+      }
+    },
+    {
+      path:'/infoCommon',
+      name:'InfoCommon',
+      component:InfoCommon,
+      meta: {
+        title: '服务详情'
+      }
+    },
+    {
+      path:'/appointment',
+      name:'appointment',
+      component:Appointment,
+      meta: {
+        title: '预约'
+      }
+    },
+    {
+      path:'/appointresult',
+      name:'appointresult',
+      component:AppointResult,
+      meta: {
+        title: '预约结果'
+      }
+    },
+    {
+      path:'/specs',
+      name:'specs',
+      component:specs,
+      meta: {
+        title: '详情'
+      }
+    },
+    {
+      path:'/offline',
+      name:'offline',
+      component:OffLine,
+    },
+    {
+      path:'/loadfail',
+      name:'loadfail',
+      component:LoadFail,
+    },
+    {
+      path:'/404',
+      name:'notFound',
+      component:notFound
+    },
+    {
+      path:"*",
+      redirect:"/404"
+    }
+  ]
+})

@@ -1,0 +1,230 @@
+// 2020/1/8 created by xtt
+<template>
+   <div class="managementAdvice">
+     <div class="a_top">
+       <div class="a_select">
+         <div>{{value}}</div>
+         <div class="a_triangle" @click="toselect"></div>
+       </div>
+       <van-popup v-model="showPicker" position="bottom">
+         <van-picker
+           show-toolbar
+           :columns="columns"
+           @cancel="showPicker = false"
+           @confirm="onConfirm"
+         />
+       </van-popup>
+<!--       <div v-if="isselect" class="a_select1">-->
+<!--         <div class="onselect" v-for="item in timedata">-->
+<!--           <div class="">{{item.name}}</div>-->
+<!--         </div>-->
+<!--       </div>-->
+       <div class="a_more" @click="tomore">查看更多<img src="../../../assets/imgs/btn_da_next.png"></div>
+     </div>
+     <div class="a_content">
+        <div class="a_advice">
+          <div class="a_person">
+            <div class="a_photo"><img src="../../../assets/imgs/management1.png">
+            <div class="a_pimg">私人医生</div>
+            </div>
+            <div class="a_pinfo">
+              李英
+              <div class="a_prank">副主任医师</div>
+            </div>
+            <div class="a_ptime">
+              {{ptime}}
+            <div class="a_gt"><img src="../../../assets/imgs/btn_da_next.png"></div>
+            </div>
+          </div>
+          <div class="p_content">
+            李晓琴会员，今天是您我们会陪同您一起去妇儿 医院做检查，请您随身携带您的有效证件。证件包儿 医院做检查，请您随身携带
+          </div>
+        </div>
+       <div class="a_advice"></div>
+
+     </div>
+   </div>
+</template>
+
+<script>
+  import moment from "moment";
+    export default {
+      name: "managementAdvice",
+      data(){
+          return{
+            ptime:moment().format('YYYY-MM-DD HH:mm'),
+            value:'今 日',
+            showPicker:false,
+            isselect:false,
+            timedata:[{
+              name:'今 日'
+            },{
+              name:'近7天'
+            },{
+              name:'近一个月'
+            },{
+              name:'近3个月'
+            }
+            ],
+            columns: ['今 日', '近7天', '近一个月', '近三个月']
+          }
+      },
+      methods:{
+        toselect(){
+          this.showPicker=true;
+        },
+        onConfirm(value){
+          this.value=value;
+          this.showPicker = false;
+        },
+        //查看更多
+        tomore(){
+
+        }
+      }
+    }
+</script>
+
+<style scoped lang="less">
+.managementAdvice{
+  .a_top{
+    height: 90px;
+    background: white;
+    .a_select{
+      margin-top: 15px;
+      margin-left: 25px;
+      float: left;
+      width: 270px;
+      height: 50px;
+      border-radius: 60px;
+      border: 2px #40b2a0 solid;
+      font-size: 30px;
+      color:#40b2a0;
+      padding-left: 30px;
+      padding-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      .a_triangle{
+        margin-top: 10px;
+        margin-right: 20px;
+        height: 0px;
+        width: 0px;
+        z-index: 1;/*这个与后面的空心三角形有关*/
+        border-left: 10px solid transparent;
+        border-right: 10px solid transparent;
+        border-top: 20px solid #048A83;
+      }
+    }
+    .a_select1{
+      margin-left: 25px;
+      position: absolute;
+      margin-top: 80px;
+      width: 270px;
+      height: auto;
+      border-radius: 10px;
+      border-left: 1px #f4f4f4 solid;
+      border-right: 1px #f4f4f4 solid;
+      border-bottom:1px #f4f4f4 solid;
+      font-size: 30px;
+      color:#40b2a0;
+      padding-left: 30px;
+      padding-top: 10px;
+      background: white;
+      .onselect{
+        width: 200px;
+        height: 50px;
+        border-top: 1px solid #F4F4F4;
+      }
+    }
+    .a_more{
+      margin-top: 25px;
+      margin-right: 50px;
+      float: right;
+      font-size: 30px;
+      color: #048A83;
+      img{
+        margin-left: 15px;
+        display: inline-block;
+        width: 15px;
+        height: 27px;
+      }
+    }
+  }
+  .a_content{
+    .a_advice{
+      width: 700px;
+      height: 300px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 0 8px #bebcbc;
+      .a_person{
+        margin: 0 auto;
+        width: 640px;
+        height: 170px;
+        border-bottom: 1px solid #F9F9FA;
+        display: flex;
+        justify-content: space-between;
+        .a_photo{
+          width: 130px;
+          height: 120px;
+          img{
+            width: 120px;
+            height: 120px;
+            border-radius: 60px;
+          }
+          .a_pimg{
+            color: white;
+            font-size: 18px;
+            text-align: center;
+            width: 130px;
+            height: 43px;
+            background: url("../../../assets/imgs/advice2.png");
+            background-size: 130px 43px;
+          }
+        }
+        .a_pinfo{
+          margin-left: 20px;
+          margin-top: 50px;
+          color: #5B5B5B;
+          font-size: 30px;
+          font-weight: bold;
+         width: 250px;
+         height: 80px;
+          .a_prank{
+            color: #777777;
+            font-weight: normal;
+          }
+       }
+        .a_ptime{
+          margin-top: 50px;
+          color: #777777;
+          font-size: 28px;
+          .a_gt{
+            float: right;
+            margin-top: 30px;
+            img{
+              width: 15px;
+              height: 27px;
+            }
+          }
+
+        }
+      }
+      .p_content{
+        margin: 20px auto;
+        width: 640px;
+        height: 70px;
+        color: #969696;
+        font-size: 28px;
+        display: -webkit-box;
+        -webkit-box-orient: vertical;
+        -webkit-line-clamp: 2;
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+      }
+    }
+   }
+}
+</style>

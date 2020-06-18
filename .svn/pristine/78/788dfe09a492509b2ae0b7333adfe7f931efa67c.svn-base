@@ -1,0 +1,120 @@
+<template>
+  <div class="selectHospital_container">
+    <div class="navbar_container">
+      <div class="location">
+        <img :src="locationIcon" />
+        {{locationVal}}
+      </div>
+      <div class="search_container">
+        <div class="input">
+          <input type="text" v-model="searchInput" placeholder="搜索医院" />
+        </div>
+        <img :src="searchIcon"/>
+      </div>
+    </div>
+    <div class="city_list">
+      <div class="city_item" :key="item" v-for="item in cityList"> 
+        {{item}}
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    components: {},
+    name: 'selectHospital',
+    data(){
+        return{
+          locationVal:'宁波市',
+          area:require('@/utils/area.js').default,
+          locationIcon:require('@/assets/imgs/icon_bjjy_xzyy_add.png'),
+          searchIcon:require('@/assets/imgs/icon_bjjy_xzyy_search.png'),
+          searchInput:"",
+          cityList:['宁波','上海','杭州','北京','更多 >']
+        }
+    },
+    created(){
+
+    },
+    computed:{
+    },
+    watch:{
+
+    },
+    mounted(){
+    },
+    methods:{
+        selectHospital(){
+            this.$router.go(-1)
+            sessionStorage.setItem('hospital','宁波市第一医院')
+        },
+        selectHospitall(){
+            this.$router.go(-1)
+            sessionStorage.setItem('hospital','宁波市第二医院')
+        }
+    }
+}
+</script>
+
+<style lang="less" scope>
+.selectHospital_container{
+  .navbar_container{
+    height: 110px;
+    background-color: #ffffff;
+    display: flex;
+    align-items: center;
+    box-sizing: border-box;
+    padding:  0 25px;
+    .location{
+      display: flex;
+      font-size: 30px;
+      color: #777777;
+      img{
+        margin-right: 17px;
+        height: 41px;
+        width: 27px;
+      }
+    }
+    .search_container{
+      margin-left: 15px;
+      width: 550px;
+      height: 60px;
+      background-color: #F3F3F4;
+      color: #BCBCBC;
+      font-size: 28px;
+      position: relative;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      box-sizing: border-box;
+      padding: 0 31px 0 33px;
+      .input{
+        input{
+          background-color:#F3F3F4; 
+        }
+      }
+      img{
+        margin-left: auto;
+        width: 34px;
+        height: 34px;
+      }
+    }
+  }
+  .city_list{
+    height: 90px;
+    box-sizing: border-box;
+    display: flex;
+    align-items: center;
+    .city_item{
+      margin-left: 8px;
+        width: 140px;
+        height: 70px;
+        background-color: #E6E6E6;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+  }
+}
+ </style>

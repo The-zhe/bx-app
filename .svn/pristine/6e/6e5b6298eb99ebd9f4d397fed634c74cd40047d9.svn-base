@@ -1,0 +1,253 @@
+<template>
+    <div class="myMessage_container">
+        <div class="headerPart_container"></div>
+        <div class="tab_container">
+            <div class="tab_item" :class="{'active_item':index==activeTabIndex}" @click="changeTab(item,index)" :key="item.title" v-for="(item,index) in tabList">
+                <div class="item_icon">
+                    <img :src="activeTabIndex==index?item.activeIcon:item.icon"/>
+                    <div class="notReadNum" v-if="item.notRead!=0">{{item.notRead}}</div>
+                </div>
+                <div class="item_title">
+                    {{item.title}}
+                </div>
+            </div>
+        </div>
+        <div class="list_container">
+            <div class="item" v-for="item in messageList" :key="item.hjjkMsgVo.id" @click="JumpToDetail(item)">
+                <div class="date">{{item.hjjkMsgVo.crtTm}}</div>
+                <div class="info">
+                    <div class="title">{{tabList[activeTabIndex].item_title}}</div>
+                    <div class="desc">{{item.hjjkMsgVo.title}}</div>
+                    <div class="checkDetail">
+                        <div class="text">查看详情</div>
+                        <div class="icon">
+                            <img :src="arrowIcon"/>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import {getMessageList,setHasRead} from '../../../api/apiz'
+export default {
+name:"myMessage",
+beforeRouteEnter(to,from,next){
+let hasLogin = Boolean(localStorage['userId']||localStorage['doctorId'])
+if(hasLogin){
+    next()
+}else{
+    next('/userlogin')
+}
+},
+data(){
+    return{
+        activeTabIndex:0,
+        arrowIcon:require('@/assets/imgs/btn_da_next.png'),
+        tabList:[
+            {
+                title:'系统消息',
+                icon:require('@/assets/imgs/zzb.png'),
+                activeIcon:require('@/assets/imgs/zzba.png'),
+                cd:'60000.130.100',
+                notRead:0,
+                item_title:'系统消息'
+            },
+            {
+                title:'新冠肺炎咨询',
+                icon:require('@/assets/imgs/zzc.png'),
+                activeIcon:require('@/assets/imgs/zzca.png'),
+                cd:'60000.130.110',
+                notRead:0,
+                item_title:'新冠肺炎咨询回复'
+            },
+            {
+                title:'慢病咨询',
+                icon:require('@/assets/imgs/zza.png'),
+                activeIcon:require('@/assets/imgs/zzaa.png'),
+                cd:'60000.130.120',
+                notRead:0,
+                item_title:'慢病咨询消息回复',
+            },
+            {
+                title:'服务消息',
+                icon:require('@/assets/imgs/zzd.png'),
+                activeIcon:require('@/assets/imgs/zzda.png'),
+                cd:'60000.130.130',
+                notRead:0,
+                item_title:'一对一咨询消息回复'
+            },
+        ],
+        messageList:[],
+    }
+},
+methods:{
+    getMessageListFun(catCd){
+        getMessageList(catCd).then((res)=>{
+            this.tabList[0].notRead=res.data.sysNum
+            this.tabList[1].notRead=res.data.xgfyNum
+            this.tabList[2].notRead=res.data.mbzxNum
+            this.tabList[3].notRead=res.data.ydyzxNum
+            if(this.messageList=res.data.hjjkMsgDtoPage.total){
+                this.messageList=res.data.hjjkMsgDtoPage.records
+            }else{
+                this.messageList=[]
+            }
+        })
+    },
+    changeTab(item,index){
+        this.activeTabIndex=index
+        this.getMessageListFun(item.cd)
+    },
+    JumpToDetail(item){
+        if(this.activeTabIndex!=0){
+            let inApp = Boolean(Number(sessionStorage.getItem('inApp')))
+            let isIos = sessionStorage.getItem('phoneType')=='ios'
+            let isDoctor =Boolean(Number(localStorage.getItem('isDoctor')))
+            if(isDoctor){
+              sessionStorage.setItem('consultId', item.conId);
+              this.setHasReadFun(item.hjjkMsgVo.id)
+              this.$router_({name:'wxconsultdoctor',params:item})
+            }else if(inApp||isIos){
+              sessionStorage.setItem('consultId', item.conId);
+              this.setHasReadFun(item.hjjkMsgVo.id)
+              this.$router_({name:'wxconsultuser',params:item})
+            }
+             else{
+                sessionStorage.setItem('consultId', item.conId);
+                this.$router_({name:'wxdoctorreply',params:item})
+            }
+        }
+    },
+    setHasReadFun(id){
+        setHasRead(id).then(res=>{
+            console.log(res)
+        })
+    }
+},
+mounted(){
+    this.getMessageListFun(this.tabList[this.activeTabIndex].cd)
+}
+
+};
+</script>
+
+<style scoped lang="less">
+.myMessage_container{
+    .headerPart_container{
+        height: 1.13rem;
+        background:url('../../../assets/imgs/img_gldt_home1.png') no-repeat;
+        background-size: 100% 100%;
+    }
+    .tab_container{
+        box-sizing: border-box;
+        padding: 0.4rem;
+        width: 7rem;
+        height: 2.2rem;
+        margin: -0.8rem auto  0;
+        display: flex;
+        justify-content: space-around;
+        border-radius: 0.12rem;
+        box-shadow: 0 0 0.12rem #a9a9a9;    
+        background-color: #ffffff;
+        .tab_item{
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            .item_icon{
+                position: relative;
+                img{
+                        width: 0.91rem;
+                        height: 0.91rem;
+                }
+                .notReadNum{
+                    right: -0.05rem;
+                    top: -0.05rem;
+                    position: absolute;
+                    width: 0.3rem;
+                    height: 0.3rem;
+                    border-radius: 50%;
+                    background-color: #F77D05;
+                    color: #FFFFFF;
+                    font-size: 0.24rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                }
+            }
+            .item_title{
+                margin-top: 0.1rem;
+                font-size: 0.28rem;
+                color: #606060;
+            }
+        }
+        .active_item{
+            .item_title{
+                color: #048A83;
+                font-weight: bold;
+            }
+        }
+    }
+    .list_container{
+        width: 7.02rem;
+        margin: 0 auto;
+        .item{
+            width: 7.02rem;
+            .date{
+                border-radius: 0.08rem;
+                margin:  0.3rem auto 0.2rem;
+                height: 0.38rem;
+                width: 2.42rem;
+                background-color: #D6D3D6;
+                color: #ffffff;
+                font-size: 0.22rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+            }
+            .info{
+                border-radius: 0.08rem;
+                box-sizing: border-box;
+                padding: 0.35rem 0.2rem 0;
+                border: 0.01rem solid #E4E4E4;
+                background-color: #ffffff;
+                .title{
+                    font-weight: bold;
+                    font-size: 0.3rem;
+                    color: #606060;
+                }
+                .desc{
+                    margin-top: 0.15rem;
+                    padding-bottom: 0.15rem;
+                    line-height: 0.5rem;
+                    font-size: 0.28rem;
+                    color: #969696;
+                }
+                .checkDetail{
+                    display: flex;
+                    height: 0.77rem;
+                    border-top: 0.01rem solid #e2dfe3;
+                    align-items: center;
+                    .text{
+                        margin-left: 0.11rem;
+                        color: #048A83;
+                        font-size: 0.28rem;
+                    }
+                    .icon{
+                        margin-left: auto;
+                        margin-right: 0.16rem;
+                        img{
+                            width:0.18rem;
+                            height:0.27rem;
+                        }
+                    }
+                }
+            }
+
+        }
+    }
+}
+</style>

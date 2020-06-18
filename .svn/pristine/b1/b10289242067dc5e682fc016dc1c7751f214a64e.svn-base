@@ -1,0 +1,139 @@
+<template>
+  <div class="healthInfoDetail_container" v-if="Object.keys(healthInfoDetail).length>0">
+    <div class="title">{{healthInfoDetail.title}}</div>
+    <div class="info">
+      <div class="date">{{healthInfoDetail.crtTm.slice(0,10)}}</div>
+      <div class="viewNum">浏览量:{{healthInfoDetail.browse}}</div>
+      <div class="collect" @click="collectEvent">
+        <img :src="healthInfoDetail.isCollect?hasCollectIconUrl:notCollectIconUrl" />
+      </div>
+    </div>
+    <div class="content" v-html="healthInfoDetail.content"></div>
+  </div>
+</template>
+
+<script>
+import {
+  getHealthInfoDetail,
+  cancelCollectHealthInfo,
+  collectHealthInfo
+} from "../../api/index";
+import { Toast } from "vant";
+export default {
+  components: {},
+  name: "healthInfoDetail",
+  data() {
+    return {
+      healthInfoDetail: {},
+      memberId: 0,
+      healthInfoDetailId: 0,
+      hasCollectIconUrl: require("../../assets/imgs/btn_jkzx_collect.png"),
+      notCollectIconUrl: require("../../assets/imgs/btn_jkzx_not_collect.png")
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {
+    let detailId = sessionStorage.getItem("healthInfoId");
+    if (detailId == null) {
+      this.getData();
+    } else {
+      (this.healthInfoDetailId = sessionStorage.getItem("healthInfoId")),
+        this.$nextTick(() => {
+          this.getHealthInfoDetailFun(this.healthInfoDetailId);
+        });
+    }
+  },
+  methods: {
+    getHealthInfoDetailFun(id, memberId) {
+      getHealthInfoDetail(id, memberId).then(res => {
+        this.healthInfoDetail = res.data.data;
+      });
+    },
+    cancelCollectHealthInfoFun(id, memberId) {
+      cancelCollectHealthInfo(id, memberId).then(res => {
+        if (res.data.code === 0) {
+          this.healthInfoDetail.isCollect = 0;
+          Toast({ message: "取消收藏成功", duration: 1000 });
+        } else {
+          Toast({ message: "取消收藏失败，请重试", duration: 1000 });
+        }
+      });
+    },
+    collectHealthInfoFun(id, memberId) {
+      collectHealthInfo(id, memberId).then(res => {
+        if (res.data.code === 0) {
+          this.healthInfoDetail.isCollect = 1;
+          Toast({ message: "已收藏", duration: 1000 });
+        } else {
+          Toast({ message: "收藏失败，请重试", duration: 1000 });
+        }
+      });
+    },
+    collectEvent() {
+      this.healthInfoDetail.isCollect
+        ? this.cancelCollectHealthInfoFun(
+            Number(this.healthInfoDetailId),
+            this.memberId
+          )
+        : this.collectHealthInfoFun(
+            Number(this.healthInfoDetailId),
+            this.memberId
+          );
+    },
+    getData() {
+      this.$bridge.callHandler("getData", "", res => {
+        let obj = JSON.parse(res);
+        this.healthInfoDetailId = obj.id;
+        this.memberId = obj.memberId;
+        this.$nextTick(() => {
+          this.getHealthInfoDetailFun(this.healthInfoDetailId, this.memberId);
+        });
+      });
+    }
+  },
+  destroyed(){
+    sessionStorage.removeItem('healthInfoId')
+  }
+};
+</script>
+
+<style lang="less" scope>
+.healthInfoDetail_container {
+   height: 100%; 
+  background-color: #ffffff;
+  .title {
+    padding-top: 36px;
+    padding-left: 27px;
+    font-size: 40px;
+    color: #000000;
+    font-weight: 600;
+  }
+  .info {
+    padding: 42px 26px 44px 28px;
+    display: flex;
+    align-items: center;
+    color: #767777;
+    font-size: 28px;
+    .date {
+    }
+    .viewNum {
+      margin-left: 128px;
+    }
+    .collect {
+      margin-left: auto;
+      img {
+        width: 40px;
+        height: 38px;
+      }
+    }
+  }
+  .content {
+    padding: 0 25px;
+  }
+}
+</style>
+<style>
+@import url("../../assets/less/vantstyle/toast.css");
+</style>

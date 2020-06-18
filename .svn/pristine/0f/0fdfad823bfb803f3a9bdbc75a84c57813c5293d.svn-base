@@ -1,0 +1,182 @@
+// 2020/1/8 created by xtt
+<template>
+  <div class="adviceInfo">
+    <div class="a_advice">
+      <div class="a_person">
+        <div class="a_photo" v-show="adviceInfo.catCd==='0'"><img :src="adviceInfo.imgUrl?adviceInfo.imgUrl:doctorImg">
+          <div class="a_pimg" v-show="adviceInfo.catCd==='0'">私人医生</div>
+          <div class="a_pimg" v-show="adviceInfo.catCd==='1'">私人护士</div>
+          <div class="a_pimg" v-show="adviceInfo.catCd==='2'">私人管家</div>
+        </div>
+        <div class="a_photo" v-show="adviceInfo.catCd==='1'"><img :src="adviceInfo.imgUrl?adviceInfo.imgUrl:nurseImg">
+          <div class="a_pimg" v-show="adviceInfo.catCd==='0'">私人医生</div>
+          <div class="a_pimg" v-show="adviceInfo.catCd==='1'">私人护士</div>
+          <div class="a_pimg" v-show="adviceInfo.catCd==='2'">私人管家</div>
+        </div>
+        <div class="a_photo" v-show="adviceInfo.catCd==='2'"><img :src="adviceInfo.imgUrl?adviceInfo.imgUrl:stewardImg">
+          <div class="a_pimg" v-show="adviceInfo.catCd==='0'">私人医生</div>
+          <div class="a_pimg" v-show="adviceInfo.catCd==='1'">私人护士</div>
+          <div class="a_pimg" v-show="adviceInfo.catCd==='2'">私人管家</div>
+        </div>
+        <div class="a_pinfo">
+          {{adviceInfo.doctorName}}
+          <div class="a_prank">{{adviceInfo.position}}</div>
+        </div>
+        <div class="a_ptime">
+          {{adviceInfo.crtTm}}
+        </div>
+      </div>
+      <div class="p_content">
+        {{adviceInfo.msg}}
+      </div>
+    </div>
+    <div class="advicebtn1">
+      <a href="tel:400-800-1808">
+      <img src="../../../assets/imgs/adviceInfo1.png"></a>
+    </div>
+    <div class="advicebtn2" @click="toConsult(adviceInfo.doctorId)">
+      <img src="../../../assets/imgs/adviceInfo2.png">
+    </div>
+  </div>
+</template>
+
+<script>
+  import {getAdviceInfo} from '../../../api/index'
+  import moment from "moment"
+    export default {
+        name: "adviceInfo",
+        data(){
+          return{
+            doctorImg:require("../../../assets/imgs/img_yhtd_doctor.png"),
+            nurseImg:require("../../../assets/imgs/img_yhtd_nurse.png"),
+            stewardImg:require("../../../assets/imgs/img_yhtd_steware.png"),
+            ptime:moment().format('YYYY-MM-DD HH:mm'),
+            id:this.$route.query.id,
+            adviceInfo:{
+              catCd:'0'
+            },
+            adviceId:''
+          }
+        },
+        methods:{
+          getNativeAdviceId(){
+            console.log('native');
+            this.$bridge.callHandler("getAdviceId", "", (res) => {
+              this.adviceId = res;
+              this.$nextTick(()=>{
+                getAdviceInfo(this.adviceId).then(res=>{
+                  this.adviceInfo=res.data.data;
+                  console.log(res.data.data);
+                })
+              })
+            });
+          },
+          getInfo(){
+            getAdviceInfo(this.id).then(res=>{
+              this.adviceInfo=res.data.data;
+              console.log(res.data.data);
+            })
+          },
+          toConsult(id){
+            this.$router_({path:'/consultWeb',query:{id:id}});
+          }
+        },
+      mounted() {
+        this.getInfo();
+        this.getNativeAdviceId();
+      }
+    }
+</script>
+
+<style scoped lang="less">
+  .adviceInfo{
+    width: 100%;
+      .a_person{
+        margin: 0 auto;
+        width: 6.4rem;
+        height: 1.7rem;
+        border-bottom: 0.01rem solid #F9F9FA;
+        display: flex;
+        justify-content: space-between;
+        .a_photo{
+          width: 1.3rem;
+          height: 1.2rem;
+          img{
+            width: 1.2rem;
+            height: 1.2rem;
+            border-radius: 0.6rem;
+          }
+          .a_pimg{
+            padding-top: 0.1rem;
+            position: absolute;
+            margin-top: -0.3rem;
+            margin-left: -0.02rem;
+            color: white;
+            font-size: 0.18rem;
+            text-align: center;
+            width: 1.3rem;
+            height: 0.33rem;
+            background: url("../../../assets/imgs/advice2.png");
+            background-size: 1.3rem 0.43rem;
+          }
+        }
+        .a_pinfo{
+          margin-left: 0.2rem;
+          margin-top: 0.5rem;
+          color: #5B5B5B;
+          font-size: 0.3rem;
+          font-weight: bold;
+          width: 2rem;
+          height: 0.8rem;
+          .a_prank{
+            color: #777777;
+            font-weight: normal;
+          }
+        }
+        .a_ptime{
+          margin-top: 0.5rem;
+          color: #777777;
+          font-size: 0.28rem;
+          .a_gt{
+            float: right;
+            margin-top: 0.3rem;
+            img{
+              width: 0.15rem;
+              height: 0.27rem;
+            }
+          }
+
+        }
+      }
+      .p_content{
+        margin: 0.2rem auto;
+        width: 6.4rem;
+        height: 0.7rem;
+        color: #969696;
+        font-size: 0.28rem;
+      }
+      .advicebtn1{
+        width: 3rem;
+        height: 0.6rem;
+         position: absolute;
+         bottom: 0.4rem;
+         left: 0.4rem;
+         img{
+           width: 3rem;
+           height: 0.6rem;
+         }
+       }
+    .advicebtn2{
+      width: 3rem;
+      height: 0.6rem;
+      position: absolute;
+      bottom: 0.4rem;
+      left: 4rem;
+      img{
+        width: 3rem;
+        height: 0.6rem;
+      }
+    }
+  }
+
+</style>

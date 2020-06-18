@@ -1,0 +1,7 @@
+import store from '../../vuex/store'
+
+import {getData} from '../utils/requestFunc'
+/* 获取非会员官网首页 */
+export function getHomePageData(){
+    return getData('/hjjk/index/list',{userid:store.state.userId})
+}

@@ -1,0 +1,75 @@
+*{
+  margin: 0;
+  padding: 0;
+  font-weight: 400;
+}
+html,body{
+  color: #323232;
+  font-size: 32px;
+  height: 100%;
+  font-family: '微软雅黑';
+}
+#app{
+  height: 100%;
+  font-size:32px;
+  background-color: #f4f4f4;
+}
+.text_ellipsis{
+  overflow: hidden;
+  text-overflow:ellipsis;
+  white-space: nowrap;
+}
+input,textarea{
+  border:none;
+  outline: none;
+}
+img{
+  display: block;
+}
+li{
+  list-style: none;
+}
+.ali_center{
+  text-align: center;
+}
+.ali_left{
+  text-align: left;
+}
+.ali_right{
+  text-align: right;
+}
+textarea{outline:none;resize:none;}
+
+
+button,input{
+  border: none;
+}
+input::-webkit-input-placeholder {
+
+  color: #ACACAC;
+
+}
+
+
+
+input::-moz-placeholder {
+
+  color: #ACACAC;
+
+}
+
+
+
+input:-ms-input-placeholder {
+
+  color: #ACACAC;
+
+}
+
+
+input::placeholder {
+
+  color: #ACACAC;
+
+}
+

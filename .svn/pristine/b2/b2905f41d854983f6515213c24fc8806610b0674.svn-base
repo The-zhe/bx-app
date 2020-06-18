@@ -1,0 +1,33 @@
+<template>
+  <div class="inspectionList_container">
+      inspectionList
+  </div>
+</template>
+
+<script>
+  export default {
+    components: {},
+    name: 'inspectionList',
+    data(){
+        return{
+        }
+    },
+    created(){
+
+    },
+    computed:{
+    },
+    watch:{
+
+    },
+    mounted(){
+    },
+    methods:{
+
+    }
+}
+</script>
+
+<style lang="less" scope>
+
+ </style>

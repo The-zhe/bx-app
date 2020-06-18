@@ -1,0 +1,89 @@
+/*
+ * @Author: zzh 
+ * @Date: 2019-12-26 14:32:28 
+ * @Last Modified by: zzh
+ * @Last Modified time: 2020-01-13 14:25:33
+ */
+
+<template>
+  <div class="header_container">
+      <div class="content">
+          <div class="backTo" @click="backToPrevPage">
+              <img :src="backToImg"/>
+          </div>
+          <div class="title">
+              {{$store.state.headerTitle}}
+          </div>
+          <div class="icon">
+              <img class="menu" @click="showSearch" v-if="$route.meta.hasSearch" :src="searchImg"/>
+              <img class="search" @click="showMenu" v-else :src="menuImg"/>
+          </div>
+      </div>
+  </div>
+</template>
+
+<script>
+export default {
+    name:'headerBar',
+    data(){
+        return{
+            backToImg:require('../assets/imgs/return_white.png'),
+            menuImg:require('../assets/imgs/spinner_white.png'),
+            searchImg:require('../assets/imgs/screen.png')
+        }
+    },
+    methods:{
+        backToPrevPage(){
+            if(sessionStorage['routerFlag']>0){
+                this.$router.go(-1)
+                sessionStorage['routerFlag']--
+                
+            }else{
+                this.$bridge.callHandler("back", "", res => {});
+            }
+        },
+        showMenu(){
+            this.$router.push({name:'myArchives'})
+        },
+        showSearch(){
+            this.$emit('showSearchEvent')
+        }
+    }
+}
+</script>
+
+<style lang="less" scope>
+.header_container{
+    height: 148px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 60px;
+    background-color: #008B84;
+    .content{
+        height: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        
+        .backTo{
+            margin-left: 18px;
+        }
+        .title{
+            font-size: 36px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .icon{
+            margin-right: 22px;
+            .menu{
+                width: 46px;
+                height: 32px;
+            }
+            .search{
+                width: 46px;
+                height: 41px;
+            }
+        }  
+    }
+}
+</style>

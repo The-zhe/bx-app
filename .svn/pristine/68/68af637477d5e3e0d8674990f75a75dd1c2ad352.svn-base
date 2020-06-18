@@ -1,0 +1,309 @@
+// 2020/1/8 created by xtt
+<template>
+    <div class="symptomsFeel">
+     <div class="s_pic">
+      <div class="s_pic_top">
+        <div class="s_pic_top_symptom">胸痛
+          <div class="s_pic_top_symptom_triangle"></div>
+        </div>
+        <div class="s_pic_top_line"></div>
+        <div class="s_pic_top_time">一周
+          <div class="s_pic_top_symptom_triangle"></div>
+        </div>
+      </div>
+       <div class="s_pic_line">
+         <canvas id="myChart"></canvas>
+       </div>
+       <div class="s_pic_advice">
+         管家建议：
+         <div class="s_pic_advice_text">您目前的心率测量正常，请继续保持当前正常的生活 方式，并定时测量心率。祝您好心情！建议多运动，多吃 蔬菜水果！</div>
+       </div>
+     </div>
+      <div class="s_symptoms">
+        <div class="s_symptoms_top">
+          <div class="s_pic_top_symptom">胸痛
+            <div class="s_pic_top_symptom_triangle"></div>
+          </div>
+          <div class="s_pic_top_line"></div>
+          <div class="s_pic_top_time">加重
+            <div class="s_pic_top_symptom_triangle"></div>
+          </div>
+        </div>
+        <div class="s_symptoms_content">填写更多症状：
+        <div class="s_symptoms_content_text">
+          <textarea></textarea>
+        </div>
+        </div>
+        <div class="s_symptoms_btn">上传今日感受</div>
+      </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "symptomsFeel",
+      data(){
+          return{
+            data:[{
+              day: '周一',
+              value: 300
+            }, {
+              day: '周二',
+              value: 400
+            }, {
+              day: '周三',
+              value: 350
+            }, {
+              day: '周四',
+              value: 500
+            }, {
+              day: '周五',
+              value: 490
+            }, {
+              day: '周六',
+              value: 600
+            }, {
+              day: '周日',
+              value: 900
+            }]
+          }
+      },
+      methods:{
+        drawChart(){
+          // Step 1: 创建 Chart 对象
+          const chart = new this.$F2.Chart({
+            id: 'myChart',
+            pixelRatio: window.devicePixelRatio // 指定分辨率
+          });
+
+          // Step 2: 载入数据源
+          chart.source(this.data, {
+            value: {
+              tickCount: 5,
+              min: 0
+            },
+            day: {
+              range: [ 0, 1 ]
+            }
+          });
+
+          // Step 3：创建图形语法，绘制柱状图，由 genre 和 sold 两个属性决定图形位置，genre 映射至 x 轴，sold 映射至 y 轴
+          /*chart.interval().position('genre*sold').color('genre');*/
+          chart.tooltip({
+            // showCrosshairs: true,
+            // showItemMarker: false,
+            // onShow: function onShow(ev) {
+            //   const items = ev.items;
+            //   items[0].name = null;
+            //   items[0].value = '$ ' + items[0].value;
+            //
+            showCrosshairs: true,
+            alwaysShow: true,
+            onShow: function onShow(ev) {
+              const items = ev.items;
+
+              items[0].name = items[0].title;
+            }
+          });
+          chart.axis('day', {
+            label: function label(text, index, total) {
+              const textCfg = {};
+              if (index === 0) {
+                textCfg.textAlign = 'left';
+              } else if (index === total - 1) {
+                textCfg.textAlign = 'right';
+              }
+              return textCfg;
+            }
+          });
+          chart.axis('value', {
+            position:'right'
+          });
+/*          chart.line().position('day*value').style({
+            stroke:'#3EB4A1',
+          });*/
+          chart.line().position('day*value').color('#3EB4A1');
+          chart.point().position('day*value').style({
+            fill:'#3EB4A1',
+            stroke: '#3EB4A1',
+            lineWidth: 1
+          });
+         for (let i = 0;i<1 ; i++){
+           chart.guide().point({
+             position: [ '周五', 490 ],
+             style: {
+               stroke: 'red',
+             }
+           });
+           /*chart.guide().text({
+             position: [ '周五', 490 ],
+             content: '490',
+             style: {
+               textAlign: 'left',
+               lineHeight: 16,
+               fontSize: 10
+             },
+             offsetX: 10
+           });*/
+           chart.guide().tag({
+             position: [ '周五', 490 ],
+             content: '异常',
+             offsetY: -5,
+             background: {
+               padding: [ 4, 6 ], // tag 内边距，使用同 css 盒模型的 padding
+               radius: 2, // tag 圆角
+               fill: '#3EB4A1', // tag 背景色
+             }, // tag 背景样式
+             pointStyle: {
+               fill: 'white', // 填充颜色
+               r: 5, // 半径
+               lineWidth: 1, // 线的边框
+               stroke: 'red' // 线的描边
+             }, // 点的样式
+           });
+         }
+          // Step 4: 渲染图表
+          chart.render();
+        }
+      },
+      mounted() {
+          this.drawChart();
+
+      }
+
+    }
+</script>
+
+<style scoped lang="less">
+ .symptomsFeel{
+   width: 100%;
+   #myChart{
+     width: 660px;
+     height: 250px;
+   }
+   .s_pic_top_symptom_triangle{
+     margin-top: 15px;
+     margin-right: 50px;
+     height: 0px;
+     width: 0px;
+     z-index: 1;/*这个与后面的空心三角形有关*/
+     border-left: 10px solid transparent;
+     border-right: 10px solid transparent;
+     border-top: 20px solid #3EB4A1;
+   }
+   .s_pic_top_symptom{
+     line-height: 50px;
+     padding-left: 30px;
+     width: 270px;
+     height: 50px;
+     border-radius: 20px;
+     border: 2px solid #3EB4A1;
+     display: flex;
+     justify-content: space-between;
+   }
+   .s_pic_top_line{
+     width:2px;
+     height:53px;
+     background: #E0E0E0;
+   }
+   .s_pic_top_time{
+     line-height: 50px;
+     padding-left: 30px;
+     width: 220px;
+     height: 50px;
+     border-radius: 20px;
+     border: 2px solid #3EB4A1;
+     display: flex;
+     justify-content: space-between;
+   }
+   .s_pic{
+     margin: 20px auto;
+     width: 700px;
+     height: 590px;
+     background: white;
+     border-radius: 14px;
+     box-shadow: 0 0 8px #bebcbc;
+     .s_pic_top{
+       padding-top: 20px;
+       color: #777777;
+       font-size: 30px;
+       margin: 0 auto;
+       width: 660px;
+       height: 80px;
+       border-bottom: 1px solid #E0E0E0;
+       display: flex;
+       justify-content: space-between;
+     }
+     .s_pic_line{
+       width: 660px;
+       height: 270px;
+       border-bottom: 1px solid #E0E0E0;
+       margin: 0 auto;
+     }
+     .s_pic_advice{
+       margin: 20px auto;
+       width: 660px;
+       height: auto;
+       color: #606060;
+       font-size: 28px;
+       .s_pic_advice_text{
+         margin-top: 10px;
+         color: #969696;
+         font-size: 26px;
+         line-height: 45px;
+       }
+     }
+   }
+   .s_symptoms{
+     margin: 20px auto;
+     width: 700px;
+     height: 500px;
+     background: white;
+     border-radius: 14px;
+     box-shadow: 0 0 8px #bebcbc;
+     .s_symptoms_top{
+       padding-top: 20px;
+       color: #777777;
+       font-size: 30px;
+       margin: 0 auto;
+       width: 660px;
+       height: 80px;
+       border-bottom: 1px solid #E0E0E0;
+       display: flex;
+       justify-content: space-between;
+     }
+     .s_symptoms_content{
+       margin: 20px auto 0 auto;
+       width: 660px;
+       height: 290px;
+       font-size: 28px;
+       color: #606060;
+       .s_symptoms_content_text{
+         margin-top: 20px;
+         padding: 10px;
+         width: 640px;
+         height:200px;
+         border: 1px solid #E0E0E0;
+         color: #969696;
+         font-size: 26px;
+         textarea{
+           padding-left: 10px;
+           width: 620px;
+           height: 200px;
+         }
+       }
+     }
+     .s_symptoms_btn{
+       margin: 10px auto;
+       width: 300px;
+       height: 60px;
+       background: #3EB4A1;
+       border-radius: 60px;
+       font-size: 30px;
+       color: white;
+       line-height: 60px;
+       text-align: center;
+     }
+   }
+ }
+</style>

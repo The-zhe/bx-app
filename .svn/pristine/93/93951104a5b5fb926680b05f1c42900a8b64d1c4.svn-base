@@ -1,0 +1,128 @@
+/*
+ * @Author: zzh 
+ * @Date: 2019-12-26 14:33:09 
+ * @Last Modified by: zzh
+ * @Last Modified time: 2020-01-13 16:38:46
+ */
+
+<template>
+  <div class="myArchives_container">
+    <div class="banner_container">
+      <img :src="bannerUrl" />
+    </div>
+    <div class="list_container">
+      <div class="item" :key="item.title" @click="JumpToPage(item)" v-for="item in archiveLists">
+        <div class="item_icon">
+          <img :src="item.iconUrl" />
+        </div>
+        <div class="item_text">
+          <div class="item_title">{{item.title}}</div>
+          <div class="item_desc">{{item.desc}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import {Group,Calendar} from 'vux'
+export default {
+  components: {Group,Calendar},
+  name: "myArchives",
+  data() {
+    return {
+      endTime:"",
+      bannerUrl: require("../../assets/imgs/img_dn_home_one.png"),
+      archiveLists: [
+        {
+          title: "私医档案",
+          desc: "由倍熙诊所提供管理服务",
+          componentName:'diseaseCourse',
+          iconUrl: require("../../assets/imgs/icon_dn_home_sydn.png")
+        },
+        {
+          title: "就医记录",
+          desc: "记录您的就医记录 方便医生精准判断",
+          componentName:'medicalRecord',
+          iconUrl: require("../../assets/imgs/icon_dn_home_jyjl.png")
+        },
+        {
+          title: "健康档案",
+          desc: "记录您的细节 科学管理您的健康",
+          iconUrl: require("../../assets/imgs/icon_dn_home_jkda.png")
+        },
+        {
+          title: "体检记录",
+          desc: "记录您的体检记录 诊断更有依据",
+          iconUrl: require("../../assets/imgs/icon_dn_home_tjjl.png")
+        },
+      ]
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {
+    this.getMemberId()
+  },
+  methods: {
+    JumpToPage(item){
+      this.$router_({name:item.componentName})
+    },
+    getMemberId(){
+      this.$bridge.callHandler("getMemberIdTest", "", (res) => {
+        let memberId = res
+        sessionStorage.setItem('memberId',memberId)
+      });
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.myArchives_container {
+  background-color: #f4f4f4;
+  .banner_container {
+    img {
+      object-fit: cover;
+      width: 100%;
+      height: 302px;
+    }
+  }
+  .list_container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .item {
+      margin-top: 24px;
+      border: 1PX solid #d2d2d2;
+      height: 182px;
+      box-sizing: border-box;
+      border-radius: 10px;
+      width: 691px;
+      display: flex;
+      align-items: center;
+      background: #ffffff;
+      .item_icon {
+        margin-left: 22px;
+        img{
+          width: 110px;
+          height: 110px;
+        }
+      }
+      .item_text {
+        margin-left: 26px;
+        .item_title {
+          font-size: 30px;
+          color: #727272;
+          font-weight: 600;
+        }
+        .item_desc {
+          color: #999999;
+          font-size: 28px;
+        }
+      }
+    }
+  }
+}
+</style>

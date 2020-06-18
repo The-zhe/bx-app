@@ -1,0 +1,592 @@
+// 2020/1/13 created by xtt
+<template>
+  <div class="indicatorInfo">
+    <div class="i_top">
+      <div class="i_top_container">
+        <div class="i_top_select" v-show="isDay">日
+          <div class="i_top_select_circle"></div>
+        </div>
+        <div class="i_top_normal" v-show="!isDay" @click="toSelect(0)">日</div>
+        <div class="i_top_select" v-show="isWeek">周
+          <div class="i_top_select_circle"></div>
+        </div>
+        <div class="i_top_normal" v-show="!isWeek" @click="toSelect(1)">周</div>
+        <div class="i_top_select" v-show="isMonth">月
+          <div class="i_top_select_circle"></div>
+        </div>
+        <div class="i_top_normal" v-show="!isMonth" @click="toSelect(2)">月</div>
+        <div class="i_top_select" v-show="isYear">年
+          <div class="i_top_select_circle"></div>
+        </div>
+        <div class="i_top_normal" v-show="!isYear" @click="toSelect(3)">年</div>
+      </div>
+    </div>
+    <div class="i_content">
+      <!-- <div class="swiper-container">
+         <div class="swiper-wrapper">
+           <div class="swiper-slide">
+             <img src="../../../assets/imgs/advicehistory1.png" alt="">
+           </div>
+           <div class="swiper-slide">
+             <img src="../../../assets/imgs/advicehistory3.png" alt="">
+           </div>
+           <div class="swiper-slide">
+             <img src="../../../assets/imgs/advicehistory2.png" alt="">
+           </div>
+         </div>
+       </div>-->
+      <div class="swiper-container">
+        <div class="swiper-wrapper">
+          <div class="swiper-slide">
+            <div class="i_content_num">
+              <div class="i_content_num_day">今天</div>
+              <div class="i_content_num_num">
+                <div class="i_num">82<span>bmp</span>
+                  <div class=" i_num_text">最新</div>
+                </div>
+                <div class="i_num">83<span>bmp</span>
+                  <div class=" i_num_text">平均</div>
+                </div>
+              </div>
+              <div class="i_content_num_num">
+                <div class="i_num">82<span>bmp</span>
+                  <div class=" i_num_text">最大</div>
+                </div>
+                <div class="i_num">83<span>bmp</span>
+                  <div class=" i_num_text">最小</div>
+                </div>
+              </div>
+            </div>
+            <div class="i_line">
+              <canvas id="myChart"></canvas>
+            </div>
+            <div class="i_advice">
+              管理建议：
+              <div class="i_advice_text">您目前的心率测量正常，请继续保持当前正 常的生活方式，并定时测量心率。祝您好心情！ 建议多运动，多吃蔬菜水果！</div>
+            </div>
+          </div>
+          <div class="swiper-slide">
+            <div class="i_content_num">
+              <div class="i_content_num_day">本周</div>
+              <div class="i_content_num_num">
+                <div class="i_num">82<span>bmp</span>
+                  <div class=" i_num_text">最新</div>
+                </div>
+                <div class="i_num">83<span>bmp</span>
+                  <div class=" i_num_text">平均</div>
+                </div>
+              </div>
+              <div class="i_content_num_num">
+                <div class="i_num">82<span>bmp</span>
+                  <div class=" i_num_text">最大</div>
+                </div>
+                <div class="i_num">83<span>bmp</span>
+                  <div class=" i_num_text">最小</div>
+                </div>
+              </div>
+            </div>
+            <div class="i_line">
+              <canvas id="myChart2"></canvas>
+            </div>
+            <div class="i_advice">
+              管理建议：
+              <div class="i_advice_text">您目前的心率测量正常，请继续保持当前正 常的生活方式，并定时测量心率。祝您好心情！ 建议多运动，多吃蔬菜水果！</div>
+            </div>
+          </div>
+          <div class="swiper-slide">本月</div>
+          <div class="swiper-slide">本年</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import Swiper from 'swiper'
+  /*  import 'swiper/dist/css/swiper.min.css'*/
+  export default {
+    name: "indicatorInfo",
+    data() {
+      return {
+        mySwiper2: null,
+        isDay: true,
+        isWeek: false,
+        isMonth: false,
+        isYear: false,
+        data1: [{
+          time: '0时',
+          value: 20
+        }, {
+          time: '1时',
+          value: 30
+        }, {
+          time: '2时',
+          value: 10
+        }, {
+          time: '3时',
+          value: 50
+        }, {
+          time: '4时',
+          value: 60
+        }, {
+          time: '5时',
+          value: 45
+        }, {
+          time: '6时',
+          value: 55
+        }, {
+          time: '7时',
+          value: 35
+        }],
+        data: [{
+          day: '周一',
+          value: 300
+        }, {
+          day: '周二',
+          value: 400
+        }, {
+          day: '周三',
+          value: 350
+        }, {
+          day: '周四',
+          value: 500
+        }, {
+          day: '周五',
+          value: 490
+        }, {
+          day: '周六',
+          value: 600
+        }, {
+          day: '周日',
+          value: 900
+        }]
+      }
+    },
+    methods: {
+      drawChart() {
+        // Step 1: 创建 Chart 对象
+        const chart = new this.$F2.Chart({
+          id: 'myChart',
+          pixelRatio: window.devicePixelRatio // 指定分辨率
+        });
+
+        // Step 2: 载入数据源
+        chart.source(this.data1, {
+          value: {
+            tickCount: 5,
+            min: 0
+          },
+          day: {
+            range: [0, 1]
+          }
+        });
+
+        // Step 3：创建图形语法，绘制柱状图，由 genre 和 sold 两个属性决定图形位置，genre 映射至 x 轴，sold 映射至 y 轴
+        /*chart.interval().position('genre*sold').color('genre');*/
+        chart.tooltip({
+          // showCrosshairs: true,
+          // showItemMarker: false,
+          // onShow: function onShow(ev) {
+          //   const items = ev.items;
+          //   items[0].name = null;
+          //   items[0].value = '$ ' + items[0].value;
+          //
+          showCrosshairs: true,
+          alwaysShow: true,
+          onShow: function onShow(ev) {
+            const items = ev.items;
+
+            items[0].name = items[0].title;
+          }
+        });
+        chart.axis('time', {
+          label: function label(text, index, total) {
+            const textCfg = {};
+            if (index === 0) {
+              textCfg.textAlign = 'left';
+            } else if (index === total - 1) {
+              textCfg.textAlign = 'right';
+            }
+            return textCfg;
+          }
+        });
+        chart.axis('value', {
+          position: 'right'
+        });
+        /*          chart.line().position('day*value').style({
+                    stroke:'#3EB4A1',
+                  });*/
+        chart.line().position('time*value').color('#3EB4A1');
+        chart.point().position('time*value').style({
+          fill: '#3EB4A1',
+          stroke: '#3EB4A1',
+          lineWidth: 1
+        });
+        for (let i = 0; i < 1; i++) {
+          chart.guide().point({
+            position: ['2时', 10],
+            style: {
+              stroke: 'red',
+            }
+          });
+          /*chart.guide().text({
+            position: [ '周五', 490 ],
+            content: '490',
+            style: {
+              textAlign: 'left',
+              lineHeight: 16,
+              fontSize: 10
+            },
+            offsetX: 10
+          });*/
+          chart.guide().tag({
+            position: ['2时', 10],
+            content: '异常',
+            offsetY: -5,
+            background: {
+              padding: [4, 6], // tag 内边距，使用同 css 盒模型的 padding
+              radius: 2, // tag 圆角
+              fill: '#3EB4A1', // tag 背景色
+            }, // tag 背景样式
+            pointStyle: {
+              fill: 'white', // 填充颜色
+              r: 5, // 半径
+              lineWidth: 1, // 线的边框
+              stroke: 'red' // 线的描边
+            }, // 点的样式
+          });
+        }
+        // Step 4: 渲染图表
+        chart.render();
+      },
+      drawChart2() {
+        // Step 1: 创建 Chart 对象
+        const chart = new this.$F2.Chart({
+          id: 'myChart2',
+          pixelRatio: window.devicePixelRatio // 指定分辨率
+        });
+
+        // Step 2: 载入数据源
+        chart.source(this.data, {
+          value: {
+            tickCount: 5,
+            min: 0
+          },
+          day: {
+            range: [0, 1]
+          }
+        });
+
+        // Step 3：创建图形语法，绘制柱状图，由 genre 和 sold 两个属性决定图形位置，genre 映射至 x 轴，sold 映射至 y 轴
+        /*chart.interval().position('genre*sold').color('genre');*/
+        chart.tooltip({
+          // showCrosshairs: true,
+          // showItemMarker: false,
+          // onShow: function onShow(ev) {
+          //   const items = ev.items;
+          //   items[0].name = null;
+          //   items[0].value = '$ ' + items[0].value;
+          //
+          showCrosshairs: true,//是否显示辅助线，点图、路径图、线图、面积图默认展示
+          alwaysShow: true,//当移出触发区域，是否仍显示提示框内容
+          onShow: function onShow(ev) {
+            const items = ev.items;
+
+            items[0].name = items[0].title;
+          }
+        });
+        chart.axis('day', {
+          label: function label(text, index, total) {
+            const textCfg = {};
+            if (index === 0) {
+              textCfg.textAlign = 'left';
+            } else if (index === total - 1) {
+              textCfg.textAlign = 'right';
+            }
+            return textCfg;
+          }
+        });
+        chart.axis('value', {
+          position: 'right'
+        });
+        /*          chart.line().position('day*value').style({
+                    stroke:'#3EB4A1',
+                  });*/
+        chart.line().position('day*value').color('#3EB4A1');
+        chart.point().position('day*value').style({
+          fill: '#3EB4A1',
+          stroke: '#3EB4A1',
+          lineWidth: 1
+        });
+        for (let i = 0; i < 1; i++) {
+          chart.guide().point({
+            position: ['周五', 490],
+            style: {
+              stroke: 'red',
+            }
+          });
+          /*chart.guide().text({
+            position: [ '周五', 490 ],
+            content: '490',
+            style: {
+              textAlign: 'left',
+              lineHeight: 16,
+              fontSize: 10
+            },
+            offsetX: 10
+          });*/
+          chart.guide().tag({
+            position: ['周五', 490],
+            content: '异常',
+            offsetY: -5,
+            background: {
+              padding: [4, 6], // tag 内边距，使用同 css 盒模型的 padding
+              radius: 2, // tag 圆角
+              fill: '#3EB4A1', // tag 背景色
+            }, // tag 背景样式
+            pointStyle: {
+              fill: 'white', // 填充颜色
+              r: 5, // 半径
+              lineWidth: 1, // 线的边框
+              stroke: 'red' // 线的描边
+            }, // 点的样式
+          });
+        }
+        // Step 4: 渲染图表
+        chart.render();
+      },
+      test(val) {
+        console.log(val)
+      },
+      toSelect(type) {
+        this.isDay = false;
+        this.isWeek = false;
+        this.isMonth = false;
+        this.isYear = false;
+        if (type === 0) {
+          this.isDay = true;
+          this.mySwiper2.slideTo(0);
+          this.drawChart()
+        } else if (type === 1) {
+          this.isWeek = true;
+          this.mySwiper2.slideTo(1);
+          this.drawChart2()
+        } else if (type === 2) {
+          this.isMonth = true;
+          this.mySwiper2.slideTo(2);
+        } else if (type === 3) {
+          this.isYear = true;
+          this.mySwiper2.slideTo(3);
+        }
+      },
+      toSlide(type) {
+        this.isDay = false;
+        this.isWeek = false;
+        this.isMonth = false;
+        this.isYear = false;
+        if (type === 0) {
+          this.isDay = true;
+          // this.mySwiper2.slideTo(0);
+          this.drawChart()
+        } else if (type === 1) {
+          this.isWeek = true;
+          //this.mySwiper2.slideTo(1)
+          this.drawChart2()
+        } else if (type === 2) {
+          this.isMonth = true;
+        } else if (type === 3) {
+          this.isYear = true;
+        }
+      }
+    },
+    computed: {},
+    watch: {},
+    mounted() {
+      window.test = this.toSlide;
+      this.drawChart();
+      //this.drawChart2();
+      /*let mySwiper = new Swiper('.swiper-container', {
+        autoplay:true,
+        loop:true
+      })*/
+      /* let swiper = new Swiper('.swiper-container', {
+         slidesPerView: 3,
+         spaceBetween: 30,
+         centeredSlides: true,
+         loop: true,
+         pagination: {
+           el: '.swiper-pagination',
+           clickable: true,
+         },
+       });*/
+      this.mySwiper2 = new Swiper('.swiper-container', {
+        autoplay: 2000,//自动滑动
+        speed: 500,//自动滑动开始到结束的时间（单位ms）
+
+        slidesPerView: 'auto',//设置slider容器能够同时显示的slides数量(carousel模式)。另外，支持'auto'值，会根据容器container的宽度调整slides数目。
+        effect: 'coverflow',//可以实现3D效果的轮播,
+        pagination: '.swiper-pagination',//分页器
+        centeredSlides: true,//设定为true时，active slide会居中，而不是默认状态下的居左。
+        coverflowEffect: {
+          rotate: 0,//slide做3d旋转时Y轴的旋转角度。默认50。
+          stretch: 100,//每个slide之间的拉伸值，越大slide靠得越紧。 默认0。
+          depth: 150,//slide的位置深度。值越大z轴距离越远，看起来越小。 默认100。
+          modifier: 1,//depth和rotate和stretch的倍率，相当于depth*modifier、rotate*modifier、stretch*modifier，值越大这三个参数的效果越明显。默认1。
+          slideShadows: false,//开启slide阴影。默认 true。
+        },
+        on: {
+          slideChange: function () {
+            window.test(this.activeIndex)
+            console.log(this.activeIndex);
+          },
+        }
+      });
+    },
+  }
+</script>
+
+<style scoped lang="less">
+  .indicatorInfo {
+    width: 100%;
+    #myChart {
+      width: 5.7rem;
+      height: 4.3rem;
+    }
+
+    #myChart2 {
+      width: 5.7rem;
+      height: 4.3rem;
+    }
+
+    .i_top {
+      height: 2.23rem;
+      background: url("../../../assets/imgs/img_gldt_bg_details.png");
+      background-size: 100% 2.23rem;
+
+      .i_top_container {
+        width: 5rem;
+        margin: 0 auto;
+        padding-top: 0.2rem;
+        display: flex;
+        justify-content: space-between;
+      }
+
+      .i_top_select {
+        font-size: 0.36rem;
+        color: #f4f4f4;
+        font-weight: bold;
+
+        .i_top_select_circle {
+          margin: 0 auto;
+          width: 0.09rem;
+          height: 0.09rem;
+          border-radius: 0.09rem;
+          background: #f4f4f4;
+        }
+      }
+
+      .i_top_normal {
+        margin-top: 0.1rem;
+        font-size: 0.28rem;
+        color: #F4F4F4;
+      }
+    }
+
+    .i_content {
+      margin-left: auto;
+      margin-right: auto;
+      margin-top: -1rem;
+      width: 100%;
+      height: 10.5rem;
+    }
+
+    .swiper-slide {
+      background: white;
+      border-radius: 0.2rem;
+    }
+
+    .i_content_num {
+      margin: 0 auto;
+      width: 4.5rem;
+      height: 3rem;
+
+      .i_content_num_day {
+        text-align: center;
+        margin: 0.3rem auto;
+        font-size: 0.3rem;
+        color: #606060;
+        font-weight: bold;
+      }
+
+      .i_content_num_num {
+        margin: 0.3rem auto;
+        width: 3.8rem;
+        height: 1rem;
+        display: flex;
+        justify-content: space-between;
+
+        .i_num {
+          font-size: 0.42rem;
+          color: #606060;
+          font-weight: bold;
+
+          span {
+            font-size: 0.28rem;
+            font-weight: normal;
+          }
+        }
+
+        .i_num_text {
+          color: #777777;
+          font-size: 0.28rem;
+        }
+      }
+    }
+
+    .i_line {
+      margin: 0 auto;
+      width: 5.7rem;
+      height: 4.3rem;
+    }
+
+    .i_advice {
+      margin: 0.2rem auto;
+      width: 5.6rem;
+      height: 2rem;
+      font-size: 0.28rem;
+      color: #606060;
+
+      .i_advice_text {
+        margin-top: 0.1rem;
+        font-size: 0.26rem;
+        color: #969696;
+        line-height: 0.4rem;
+      }
+    }
+
+    .swiper-container {
+      width: 6rem;
+      height: 10rem;
+      margin: 0 auto;
+      position: relative;
+    }
+
+    .swiper-container img {
+      display: block;
+      width: 251px;
+      height: 441px;
+      margin: 0 auto;
+    }
+
+    .swiper-container-horizontal > .swiper-pagination-bullets, .swiper-pagination-custom, .swiper-pagination-fraction {
+      bottom: 0;
+      left: 0;
+      width: 100%;
+    }
+
+    .swiper-pagination-bullet-active {
+      background-color: #ffd200;
+    }
+
+  }
+</style>

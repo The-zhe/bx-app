@@ -1,0 +1,244 @@
+// 2020/1/9 created by xtt
+<template>
+    <div class="pharmacyHistory">
+      <div class="a_empty" @click="changeshow"></div>
+      <div class="p_history">
+        <div class="p_history_top">
+          <div class="p_history_top_time">2019/09/07-2020/01/10</div>
+          <div class="a_gt"><img src="../../../assets/imgs/pharmacy3.png"></div>
+        </div>
+        <div class="p_content">
+          <div class="p_content_div">药品名称： 头孢丙烯分散片</div>
+          <div class="p_content_div">药品规格： 0.25g*10s</div>
+          <div class="p_content_div1">用&emsp;&emsp;法：  一日二次，0.5g，口服</div>
+        </div>
+      </div>
+      <div class="a_empty"></div>
+      <div class="p_history"></div>
+      <van-popup
+        v-model="show"
+        position="top"
+      >
+        <!-- :style="{ height: '50%' }"-->
+        <div class="s_title">请选择筛选条件</div>
+        <div class="s_solid"></div>
+        <div class="s_timetitle">时间区间</div>
+        <div class="s_timeselect">
+          <div class="s_input" >开始时间</div>
+          <div>-</div>
+          <div class="s_input">结束时间</div>
+        </div>
+        <div class="s_smallsolid"></div>
+        <div class="s_timetitle">报告类型</div>
+        <div class="s_adviceselect">
+          <div :class="adviceindex===1?'s_selectdiv':'s_div'" @click="toselect">用药中
+            <div v-if="exitshow" class="exitshow" @click.stop="toexit"><img src="../../../assets/imgs/advicehistory3.png"/></div>
+          </div>
+          <div class="s_div">已停药</div>
+        </div>
+        <div class="s_smallsolid"></div>
+        <div class="s-btn1"><img src="../../../assets/imgs/advicehistory2.png"/></div>
+        <div class="s-btn2"><img src="../../../assets/imgs/advicehistory1.png"/></div>
+      </van-popup>
+    </div>
+</template>
+
+<script>
+  import moment from "moment"
+    export default {
+        name: "pharmacyHistory" ,
+      data(){
+        return {
+          timeshow:false,
+          exitshow:false,
+          adviceindex:0,
+          show: false,
+          rtime: moment().format('YYYY-MM-DD HH:mm'),
+        }
+      },
+      methods:{
+        changeshow(){
+          this.show=true;
+        },
+        toselect(){
+          console.log("aaa")
+          this.adviceindex=1;
+          this.exitshow=true;
+        },
+        toexit(){
+          this.adviceindex=0;
+          this.exitshow=false;
+          console.log(this.adviceindex,this.exitshow);
+        },
+      }
+    }
+</script>
+<style lang="less">
+  .pharmacyHistory {
+    .van-popup--top {
+      top: 120px !important;
+      height: 650px !important;
+    }
+  }
+</style>
+<style scoped lang="less">
+  .pharmacyHistory{
+    width: 100%;
+    height: 100%;
+    background: #F4F4F4;
+    .a_empty{
+      width: 100px;
+      height: 20px;
+      background: #f6a540;
+    }
+    .p_history{
+      width: 700px;
+      height: 330px;
+      margin: 0 auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 0 8px #bebcbc;
+      .p_history_top{
+        margin: 0 auto;
+        width: 650px;
+        height: 90px;
+        border-bottom: 1px solid #CDCDCD;
+        display: flex;
+        justify-content: space-between;
+        .p_history_top_time{
+          margin-top: 30px;
+          margin-left: 10px;
+          color: #898989;
+          font-size: 28px;
+          font-weight: bold;
+        }
+        .a_gt{
+          margin-right: -25px;
+          margin-top: 35px;
+          width: 99px;
+          height: 37px;
+          img{
+            width: 99px;
+            height: 37px;
+          }
+        }
+      }
+      .p_content{
+        margin:0 auto;
+        width: 650px;
+        height: 200px;
+        color: #777777;
+        font-size: 28px;
+        .p_content_div{
+          margin-left: 10px;
+          margin-top: 20px;
+          width: 640px;
+          height: 60px;
+          border-bottom: 1px dashed #CDCDCD;
+          overflow: hidden;
+          text-overflow:ellipsis;
+          white-space: nowrap;
+        }
+        .p_content_div1{
+          margin-left: 10px;
+          margin-top: 20px;
+          width: 640px;
+          height: 50px;
+          overflow: hidden;
+          text-overflow:ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+    }
+    .s_title{
+      width: 700px;
+      margin: 30px auto;
+      font-size: 30px;
+      color: #5B5B5B;
+      font-weight: bold;
+    }
+    .s_solid{
+      margin: 30px auto;
+      width: 700px;
+      height: 20px;
+      background: #f4f4f4;
+    }
+    .s_smallsolid{
+      margin: 30px auto;
+      width: 700px;
+      height: 2px;
+      background: #f4f4f4;
+    }
+    .s_timetitle{
+      width: 700px;
+      margin: 30px auto;
+      font-size: 30px;
+      color: #5B5B5B;
+      font-weight: bold;
+    }
+    .s_timeselect{
+      width: 700px;
+      margin: 30px auto;
+      height: 65px;
+      display: flex;
+      justify-content: space-between;
+      .s_input{
+        text-align: center;
+        width: 320px;
+        height: 60px;
+        line-height: 60px;
+        background: #F4F4F4;
+        border-radius: 30px;
+      }
+    }
+    .s_adviceselect{
+      width: 700px;
+      height: 85px;
+      margin: 0 auto;
+      display: flex;
+      justify-content: space-between;
+      .s_div{
+        width: 320px;
+        height: 80px;
+        line-height: 80px;
+        text-align: center;
+        background: #f4f4f4;
+      }
+      .s_selectdiv{
+        width: 320px;
+        height: 80px;
+        line-height: 80px;
+        text-align: center;
+        background: #c4f3eb;
+        .exitshow{
+          width: 60px;
+          height: 60px;
+          margin-left: 260px;
+          margin-top:-60px;
+          img{
+            width: 60px;
+            height: 60px;
+          }
+        }
+      }
+
+    }
+    .s-btn1{
+      position: absolute;
+      right: 170px;
+      img{
+        width: 150px;
+        height: 70px;
+      }
+    }
+    .s-btn2{
+      position: absolute;
+      right: 20px;
+      img{
+        width: 150px;
+        height: 70px;
+      }
+    }
+  }
+</style>

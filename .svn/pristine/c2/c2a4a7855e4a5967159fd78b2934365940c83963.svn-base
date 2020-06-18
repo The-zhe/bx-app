@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="e9d0d44c-f9a8-4fc2-87bf-0fbcdbc1e65e" name="Default Changelist" comment="">
+      <change afterPath="$PROJECT_DIR$/src/assets/images/bg_1@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/images/item_img@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/assets/images/news_1@2x.png" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/components/pages/home.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.postcssrc.js" beforeDir="false" afterPath="$PROJECT_DIR$/.postcssrc.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/build/webpack.base.conf.js" beforeDir="false" afterPath="$PROJECT_DIR$/build/webpack.base.conf.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package-lock.json" beforeDir="false" afterPath="$PROJECT_DIR$/package-lock.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/package.json" beforeDir="false" afterPath="$PROJECT_DIR$/package.json" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/info_common.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/info_common.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/product_common.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/product_common.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/product_list.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/product_list.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/service_list.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/service_list.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/components/pages/specs.vue" beforeDir="false" afterPath="$PROJECT_DIR$/src/components/pages/specs.vue" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/main.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/router/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/src/router/index.js" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/static/common.css" beforeDir="false" afterPath="$PROJECT_DIR$/static/common.css" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/vuex/store.js" beforeDir="false" afterPath="$PROJECT_DIR$/vuex/store.js" afterDir="false" />
+    </list>
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Vue Single File Component" />
+      </list>
+    </option>
+  </component>
+  <component name="ProjectId" id="1Px9PLvIDCDmB0gGWhK4n9HPLsz" />
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/src/assets/images" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+  </component>
+  <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="C:\project\wechat_project\src\assets\images" />
+    </key>
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="SvnConfiguration" cleanupOnStartRun="true">
+    <configuration>C:\Users\Administrator\AppData\Roaming\Subversion</configuration>
+    <supportedVersion>125</supportedVersion>
+  </component>
+  <component name="SvnFileUrlMappingImpl">
+    <option name="myMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="C:\project\wechat_project" />
+          <option name="myCopyRoot" value="C:\project\wechat_project" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+    <option name="myMoreRealMappingRoots">
+      <list>
+        <SvnCopyRootSimple>
+          <option name="myVcsRoot" value="C:\project\wechat_project" />
+          <option name="myCopyRoot" value="C:\project\wechat_project" />
+        </SvnCopyRootSimple>
+      </list>
+    </option>
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="e9d0d44c-f9a8-4fc2-87bf-0fbcdbc1e65e" name="Default Changelist" comment="" />
+      <created>1566804854490</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1566804854490</updated>
+      <workItem from="1566804855675" duration="373000" />
+      <workItem from="1566805281655" duration="6599000" />
+      <workItem from="1566867599198" duration="12039000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+</project>

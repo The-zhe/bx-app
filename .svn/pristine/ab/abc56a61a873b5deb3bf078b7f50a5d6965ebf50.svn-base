@@ -1,0 +1,354 @@
+<template>
+  <div class="sendWay_container">
+    <van-popup v-model="showsendWayPicker" position="bottom">
+      <van-picker
+        show-toolbar
+        :columns="sendWayList"
+        @cancel="showsendWayPicker = false"
+        @confirm="onsendWayConfirm"
+      />
+    </van-popup>
+    <van-popup v-model="showTimeQuantumPicker" position="bottom">
+      <van-tree-select height="55vw" :items="items" :main-active-index.sync="activeIndex" />
+    </van-popup>
+    <div class="header_tip">
+      <div class="icon">
+        <img src="@/assets/imgs/msg_bjjy_tips.png" />
+      </div>
+      <div class="text">
+        医院办理相关业务，需要
+        <span class="card">身份证</span>和
+        <span class="card">医保卡</span>。请尽快寄送证件卡，我们会在收到您的证件后，尽快为您安排相关服务，其中上门取件需要收取取件费。
+      </div>
+    </div>
+    <div class="main_content">
+      <div class="tip" v-if="showTip">
+        <div class="title">温馨提示</div>
+        <div class="tip_text">就诊卡寄送时间较长，可能会影响您的服务预约， 建议另行办理新的临时就诊卡。</div>
+        <div class="card_way">
+          <div class="select conduct_card" @click="changeSelect(0)">
+            <img :src="cardWay==0?selectActiveIcon:selectIcon">
+            <div class="item">补办就诊卡</div>
+            <div class="info">（办卡工本费10元 节省时间）</div>
+          </div>
+          <div class="select send_card" @click="changeSelect(1)">
+            <img :src="cardWay==1?selectActiveIcon:selectIcon">
+            <div class="item">寄送原件</div>
+            <div class="info">（需支付递送费 需时2~3天）</div>
+          </div>
+        </div>
+      </div>
+      <div class="send_way">
+        <div class="choose_send_way" @click="showsendWayPicker= true">
+          <div class="label">选择证件交送方式</div>
+          <div class="input">
+            <div class="value">{{sendWay}}</div>
+            <div class="arrow">
+              <img src="@/assets/imgs/Drop_down_button.png" />
+            </div>
+          </div>
+        </div>
+        <div class="form_container">
+          <div class="form_item" v-if="sendWayIndex==0||sendWayIndex==1">
+            <div class="item_label">{{sendWayIndex==0?'寄':'交'}}送地址：</div>
+            <div class="item_input">{{address}}</div>
+          </div>
+          <div class="form_item receiver" v-if="sendWayIndex==0||sendWayIndex==1">
+            <div class="item_label">收&ensp;件&ensp;人：</div>
+            <div class="item_input">{{receiver}}</div>
+          </div>
+          <div class="form_item" v-if="sendWayIndex==0">
+            <div class="item_label">快递公司：</div>
+            <div class="item_input">
+              <input type="text" placeholder="请选择快递公司(非必填)" v-model="expressCompany" />
+            </div>
+          </div>
+          <div class="form_item" v-if="sendWayIndex==0">
+            <div class="item_label">快递单号：</div>
+            <div class="item_input">
+              <input type="text" placeholder="请输入快递单号(非必填)" v-model="expressNum" />
+            </div>
+          </div>
+          <div class="form_item" v-if="sendWayIndex==1">
+            <div class="item_label">服务点电话：</div>
+            <div class="item_input"></div>
+          </div>
+          <div class="form_item" v-if="sendWayIndex==1">
+            <div class="item_label">交送确认码：</div>
+            <div class="item_input"></div>
+          </div>
+          <div class="form_item contact" @click="SelectAddress" v-if="sendWayIndex==2">
+            <div class="item_label">联系姓名：</div>
+            <div class="item_input">{{pickInfo.pickName}}</div>
+            <div class="arrow">
+              <img src="@/assets/imgs/btn_da_next.png"/>
+            </div>
+          </div>
+          <div class="form_item contact" @click="SelectAddress" v-if="sendWayIndex==2">
+            <div class="item_label">联系电话：</div>
+            <div class="item_input">{{pickInfo.pickPhone}}</div>
+          </div>
+          <div class="form_item contact" @click="SelectAddress" v-if="sendWayIndex==2">
+            <div class="item_label">取件地址：</div>
+            <div class="item_input">{{pickInfo.pickAddress}}</div>
+          </div>
+          <div class="form_item" @click="showTimeQuantumPicker=true" v-if="sendWayIndex==2">
+            <div class="item_label">取件时间：</div>
+            <div class="item_input">{{pickInfo.pickDate}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="service_note">
+        <div class="label">服务说明：</div>
+        <div
+          class="text"
+        >1.请确保订单提交，审核通过后第一时间寄送给我们，并在 订单中心中录入物流信息；若在您的服务完成时间前无法收 到您的证件，则无法为您进行相关业务办理。请谅解。</div>
+        <div class="text" v-if="sendWayIndex==0">2. 如在证件寄送后取消订单，您的证件可至服务点自取或由 我们快递给您，但快递费用需自付。</div>
+      </div>
+    </div>
+    <div @click="confirmSendWay" :style="{position:showTip?'static':'absolute',}" class="submit_button">确认</div>
+  </div>
+</template>
+
+<script>
+export default {
+  components: {},
+  name: "sendWay",
+  data() {
+    return {
+      selectActiveIcon:require('@/assets/imgs/btn_bjjy_msg_pre.png'),
+      selectIcon:require('@/assets/imgs/btn_bjjy_msg_nor.png'),
+      showsendWayPicker: false,
+      showTimeQuantumPicker: false,
+      showTip:false,
+      sendWayList: ["快递寄送", "自行提交", "上门取件"],
+      sendWay: "快递寄送",
+      sendWayIndex: 0,
+      address: "中山西2号恒隆中心11A",
+      receiver: "健康管家 18011484679",
+      expressCompany: "",
+      expressNum: "",
+      servicePhone: "",
+      sureNum: "",
+      activeIndex: 0,
+      cardWay:1,
+      items: [],
+      pickInfo:{
+        pickName:'张朝晖',
+        pickPhone:'15258128268',
+        pickAddress:'浙江省余姚市',
+        pickDate:'2020-1-19'
+      }
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {
+    let formData=JSON.parse(sessionStorage.getItem('formData'))
+    this.showTip=!formData.hasMedicalCard
+    if(sessionStorage.getItem('sendWay')){
+      let data =JSON.parse(sessionStorage.getItem('sendWay'))
+      this.sendWayIndex=data.index;
+      this.sendWay=this.sendWayList[data.index]
+      this.cardWay=data.cardWay
+    }
+  },
+  methods: {
+    onsendWayConfirm(value, index) {
+      (this.sendWay = value), (this.sendWayIndex = index);
+      this.showsendWayPicker = false;
+    },
+    changeSelect(index){
+      this.cardWay=index
+    },
+    confirmSendWay(){
+      let formData={address:this.address,receiver:this.receiver,name:this.sendWay,index:this.sendWayIndex}
+      if(this.sendWayIndex==2){
+        formData=Object.assign(formData,this.pickInfo)
+      }
+      if(this.showTip){
+        formData=Object.assign(formData,{cardWay:this.cardWay})
+      }
+      sessionStorage.setItem('sendWay',JSON.stringify(formData))
+      this.$router.go(-1)
+    },
+    SelectAddress(){
+      this.$router_({name:'addressManage'})
+    }
+  }
+};
+</script> 
+
+<style lang="less" scope>
+.sendWay_container {
+  background-color: #f4f4f4;
+  .header_tip {
+    align-items: flex-start;
+    height: 180px;
+    background-color: #ffffff;
+    display: flex;
+    box-sizing: border-box;
+    padding: 33px 23px 40px 23px;
+    .icon {
+      img {
+        margin-top: 4px;
+        width: 27px;
+        height: 28px;
+      }
+    }
+    .text {
+      margin-left: 12px;
+      font-size: 26px;
+      color: #777777;
+      .card {
+        color: #e4993a;
+        font-weight: 600;
+      }
+    }
+  }
+  .main_content {
+    padding: 50px 25px 30px;
+    .tip{
+      
+      height: 421px;
+      box-sizing: border-box;
+      background-color: #ffffff;
+      width: 640px;
+      margin: 0 auto 35px;
+      padding: 36px 50px 47px;
+      .title{
+        text-align: center;
+        color: #777777;
+        font-size: 30px;
+        padding-bottom: 44px;
+        border-bottom: 1px solid #E3E3E3;
+      }
+      .tip_text{
+        padding: 39px 10px 62px;
+        font-size: 24px;
+        color: #5C5D5D;
+      }
+      .card_way{
+        .select{
+          display: flex;
+                  font-size: 24px;
+        color: #5C5D5D;
+        align-items: center;
+          img{
+            width: 35px;
+            height: 35px;
+          }
+          .item{
+            margin-left: 20px;
+            width: 140px;
+          }
+        }
+        .conduct_card{
+
+        }
+        .send_card{
+          margin-top: 28px;
+        }
+      }
+    }
+    .send_way {
+      height: 482px;
+      box-sizing: border-box;
+      background-color: #ffffff;
+      width: 640px;
+      margin: 0 auto 54px;
+      .choose_send_way {
+        border-bottom: 7px solid #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        .label {
+          font-size: 30px;
+          color: #777777;
+        }
+        .input {
+          margin-left: 6px;
+          display: flex;
+          align-items: center;
+          width: 200px;
+          padding: 0 5px 11px 41px;
+          border-bottom: 1px solid #d9d9d9;
+          .value {
+            color: #e4993a;
+            font-size: 30px;
+          }
+          .arrow {
+            margin-left: auto;
+            img {
+              height: 19px;
+              width: 21px;
+            }
+          }
+        }
+      }
+      .form_container {
+        padding: 20px 25px 0;
+        .form_item {
+          height: 80px;
+          display: flex;
+          align-items: center;
+          .item_label {
+            color: #848484;
+            font-size: 28px;
+          }
+          .item_input {
+            font-size: 26px;
+            color: #5C5D5D;
+            input {
+              font-size: 26px;
+              color: #5c5d5d;
+            }
+          }
+          .arrow{
+            margin-left: auto;
+            img{
+              width: 18px;
+              height: 27px;
+            }
+          }
+        }
+        .receiver {
+          border-bottom: 2px dashed #e3e3e3;
+        }
+        .contact {
+          border-bottom: 2px dashed #e3e3e3;
+        }
+      }
+    }
+    .service_note {
+      border-top: 1px solid rgb(237, 237, 237);
+      padding: 37px 12px 0;
+      font-size: 26px;
+      .label {
+        color: #e4993a;
+        font-weight: 600;
+      }
+      .text {
+        margin-top: 15px;
+        color: #9b9b9b;
+      }
+    }
+  }
+  .submit_button {
+    height: 100px;
+    background-color: #3eb4a1;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    bottom: 0;
+  }
+}
+</style>
+<style>
+@import url("../../assets/less/vantstyle/picker.css");
+@import url("../../assets/less/vantstyle/tree_select.css");
+</style>

@@ -1,0 +1,128 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+import myArchives from '../views/myArchives/myArchives'
+import medicalRecord from '../views/medicalRecord/medicalRecord'
+import outpatientDetails from '../views/outpatientDetails/outpatientDetails'
+import prescriptionDetail from '../views/prescriptionDetail/prescriptionDetail'
+import checklistDetail from '../views/checklistDetail/checklistDetail'
+import inspectionDetail from '../views/inspectionDetail/inspectionDetail'
+import quickAppoint from '../views/quickAppoint/quickAppoint'
+import outpatientRegistrate from '../views/outpatientRegistrate/outpatientRegistrate'
+
+import medicalTeam from '../views/medicalTeam/medicalTeam'
+import doctorInfo from '../views/medicalTeam/doctorInfo'
+import stewardInfo from '../views/medicalTeam/stewardInfo'
+import nurseInfo from "../views/medicalTeam/nurseInfo"
+import consultWeb from "../views/medicalTeam/consultWeb";
+
+Vue.use(Router);
+export default new Router({
+  //mode: 'history',
+  mode: 'history',
+  routes: [
+    {
+      name: 'myArchives',
+      path: '/myArchives',
+      component: myArchives,
+      meta: {
+        title: '我的档案'
+      }
+    },
+    {
+      name: 'medicalRecord',
+      path: '/medicalRecord',
+      component: medicalRecord,
+      meta: {
+        title: '就医记录'
+      }
+    },
+    {
+      name: 'outpatientDetails',
+      path: '/outpatientDetails',
+      component: outpatientDetails,
+      meta: {
+        title: '门诊详情'
+      }
+    },
+    {
+      name: 'prescriptionDetail',
+      path: '/prescriptionDetail',
+      component: prescriptionDetail,
+      meta: {
+        title: '处方详情'
+      }
+    },
+    {
+      name: 'checklistDetail',
+      path: '/checklistDetail',
+      component: checklistDetail,
+      meta: {
+        title: '检查单详情'
+      }
+    },
+    {
+      name: 'inspectionDetail',
+      path: '/inspectionDetail',
+      component: inspectionDetail,
+      meta: {
+        title: '检验单详情'
+      }
+    },
+    {
+      name: 'quickAppoint',
+      path: '/quickAppoint',
+      component: quickAppoint,
+      meta: {
+        title: '一键预约'
+      }
+    },
+    {
+      name: 'outpatientRegistrate',
+      path: '/outpatientRegistrate',
+      component: outpatientRegistrate,
+      meta: {
+        title: '门诊挂号预约'
+      }
+    },
+    {
+      name: 'medicalTeam',
+      path: '/medicalTeam',
+      component: medicalTeam,
+      meta: {
+        title: '我的医护团队'
+      }
+    },
+    {
+      name: 'doctorInfo',
+      path: '/doctorInfo',
+      component: doctorInfo,
+      meta: {
+        title: '医生详情'
+      }
+    },
+    {
+      name: 'stewardInfo',
+      path: '/stewardInfo',
+      component: stewardInfo,
+      meta: {
+        title: '管家详情'
+      }
+    },
+    {
+      name: 'nurseInfo',
+      path: '/nurseInfo',
+      component: nurseInfo,
+      meta: {
+        title: '护士详情'
+      }
+    },
+    {
+      name: 'consultWeb',
+      path: '/consultWeb',
+      component: consultWeb,
+      meta: {
+        title: '咨询'
+      }
+    }
+  ]
+})

@@ -1,0 +1,102 @@
+/*
+ * @Author: zzh 
+ * @Date: 2019-12-26 14:32:37 
+ * @Last Modified by: zzh
+ * @Last Modified time: 2019-12-31 09:18:49
+ */
+
+<template>
+  <div class="prescriptionDetail_container" v-if="prescriptionDetailList.length">
+      <div class="detail_item" v-for="item in prescriptionDetailList">
+          <div class="item_title">{{item.name}}</div>
+          <div class="item_specs">
+                            <div class="title">规&emsp;格：</div>
+              <div class="text">{{item.spec}}</div>
+          </div>
+          <div class="item_dose">
+              <div class="title">开药量：</div>
+              <div class="text">{{`${item.mediNum}${item.unit}`}}</div>
+          </div>
+          <div class="item_usage">
+                            <div class="title">用&emsp;法：</div>
+              <div class="text">{{`${item.yongfa},${item.onePhr}${item.phrUnit},${item.mode}`}}</div>
+          </div>
+      </div>
+  </div>
+</template>
+
+<script>
+import {getPrescriptionListDetail} from '../../api/index'
+  export default {
+    components: {},
+    name: 'prescriptionDetail',
+    data(){
+        return{
+            opcPresId:0,
+            prescriptionDetailList:[]
+        }
+    },
+    created(){
+
+    },
+    computed:{
+
+    },
+    watch:{
+
+    },
+    mounted(){
+        this.opcPresId=this.$route.params.opcPresId
+        this.$nextTick(()=>{
+            this.getPrescriptionListDetailFunc()
+        })
+    },
+    methods:{
+    getPrescriptionListDetailFunc(){
+      getPrescriptionListDetail(1).then((res)=>{
+        this.prescriptionDetailList=res.data.list
+      })
+    }
+    }
+}
+</script>
+
+<style lang="less" scope>
+.prescriptionDetail_container{
+    font-size: 28px;
+    color: #777777;
+    .detail_item{
+        background-color: #fff;
+        border-bottom: 20px solid #f4f4f4;
+        padding: 0 25px;
+        .item_title{
+            height: 85px;
+            line-height: 85px;
+            font-weight: 600;
+            box-sizing: border-box;
+            border-bottom: 2px solid #dadada;
+            padding-left: 18px;
+        }
+        .item_dose{
+            padding-left: 18px;
+            display: flex;
+            height: 86px;
+            line-height: 86px;
+            border-bottom: 2px dashed #dadada;
+        }
+        .item_specs{
+            display: flex;
+            padding-left: 18px;
+            height: 83px;
+            line-height: 83px;
+            border-bottom: 2px dashed #dadada;
+        }
+        .item_usage{
+            display: flex;
+            padding-left: 18px;
+            height: 88px;
+            line-height: 88px
+        }
+    }
+}
+ </style>

@@ -1,0 +1,212 @@
+<template>
+    <div class="experience_container">
+        <div class="top">
+            身份认证
+        </div>
+        <div class="title">身份证上传</div>
+        <div class="desc">请拍摄并上传您的身份证照片</div>
+        <div class="photo_container">
+            <input ref="fileUpload" accept="image/*" @change="fileChange" type="file" class="hidden" multiple="multiple"/>
+            <img class="book" :src="hasUpload?idCardRlImgUrl:cardIcon"/>
+            <div class="photo_tip">证件仅用于本次认证，倍熙私医将严格保密</div>
+            <div class="bottom">
+                <img class="camera" :src="cameraIcon" />
+                <div class="text">拍照识别身份证信息</div>
+            </div>
+        </div>
+            <div class="button_container">
+                <img :src="prevIcon" v-if="!withoutPhone" class="prevIcon" @click="prevClick" />
+                <img :src="withoutPhone?submitImg:nextIcon" :style="{'margin-left':withoutPhone?'2.23rem':'0.38rem'}" class="nextIcon" @click="nextClick" />
+            </div>
+    </div>
+</template>
+
+<script>
+import {doctorAdd} from '../../../api/apiz'
+import {getuploader} from '../../../api/index' 
+import {Dialog} from 'vant'
+export default {
+name:"statusAttestation",
+data(){
+    return{
+        barIcon:require('@/assets/imgs/xfill4_1.png'),
+        pageIcon:require('@/assets/imgs/xfill1.png'),
+        submitImg:require('@/assets/imgs/x_tj2.png'),
+        prevIcon:require('@/assets/imgs/x_syb.png'),
+        nextIcon:require('@/assets/imgs/x_xyb2.png'),
+        cardIcon:require('@/assets/imgs/img_yszc_upload_id.png'),
+        cameraIcon:require('@/assets/imgs/icon_yszc_photo.png'),
+        idCardRlImgUrl:"",
+        hasUpload:false,
+        grant_type:'client_credentials',
+        client_id:'G2GT8r1yPuvwpQR9OMhufVA4',
+        client_secret:'PWlg7NsVCUpGGGUOHXRIYqWGrTbDrBgW',
+        withoutPhone:false
+    }
+},
+mounted(){
+    this.withoutPhone = Boolean(Number(sessionStorage.getItem('withoutPhone')))
+    if(sessionStorage.getItem('idCardRlImgUrl')){
+        let imgUrl = JSON.parse(sessionStorage.getItem('idCardRlImgUrl')).idCardRlImgUrl
+        if(imgUrl!=''){
+            this.idCardRlImgUrl=imgUrl
+            this.hasUpload=true
+        }
+    }
+/*     let url = `https://aip.baidubce.com/oauth/2.0/token?grant_type=${this.grant_type}&client_id=${this.client_id}&client_secret=${this.client_secret}&`
+    axios.post(url).then(res=>{
+        console.log(res)
+    }) */
+},
+methods:{
+    fileChange(e){
+        let file = e.target.files[0]
+        let formData = new FormData()
+        formData.append('file',file)
+        getuploader(formData).then((res)=>{
+            this.idCardRlImgUrl=res.data.data
+            this.hasUpload=true
+        })
+    },
+    doctorAddFun(data){
+        doctorAdd(data).then(res=>{
+            if(res.data.code==0){
+                Dialog.alert({
+                    title: '提交成功',
+                    message: '提交成功，我们会尽快为您审核，感谢您的支持！',
+                    confirmButtonColor:'#3FA998'
+                }).then(() => {
+                    sessionStorage.setItem('hasAuth','1')
+                    this.deleteSessionStorage()
+                    this.$router.replace({name:'doctorHomepage'})
+                });
+            }
+        })
+    },
+    deleteSessionStorage(){
+        sessionStorage.removeItem('baseData')
+        sessionStorage.removeItem('certImgUrl')
+        sessionStorage.removeItem('experience')
+        sessionStorage.removeItem('idCardRlImgUrl')
+        sessionStorage.removeItem('departmentInfo')
+        sessionStorage.removeItem('withoutPhone')
+    },
+    prevClick(){
+        this.$router.go(-1) 
+        sessionStorage.setItem('idCardRlImgUrl',JSON.stringify({idCardRlImgUrl:this.idCardRlImgUrl}))
+    },
+    nextClick(){
+        if(this.withoutPhone){
+            let baseData = JSON.parse(sessionStorage.getItem('baseData'))
+            let experience = JSON.parse(sessionStorage.getItem('experience'))
+            let certImgUrl = JSON.parse(sessionStorage.getItem('certImgUrl'))
+            let selectedList = JSON.parse(sessionStorage.getItem('hjjkServiceVos')).selectedList
+            this.doctorAddFun(Object.assign(baseData,experience,certImgUrl,{idCardRlImgUrl:this.idCardRlImgUrl,hjjkServiceVos:selectedList,userId:Number(localStorage.getItem('doctorId'))}))
+        }else{
+            sessionStorage.setItem('idCardRlImgUrl',JSON.stringify({idCardRlImgUrl:this.idCardRlImgUrl}))
+            this.$router_({name:'phoneCertification'})
+        }
+    },
+},
+
+
+};
+</script>
+
+<style scoped lang="less">
+.experience_container{
+    padding-bottom: 1rem;
+    .top{
+        height: 0.88rem;
+        background: url('../../../assets/imgs/x_filltop.png') no-repeat;
+        background-size: 100% 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.32rem;
+        color: #ffffff;
+        font-weight: bold;
+    }
+    .title{
+        color: #767777;
+        font-size: 0.3rem;
+        font-weight: bold;
+        margin: 0.53rem 0 0.25rem 0.39rem;
+    }
+    .desc{
+        font-size: 0.3rem;
+        color: #999999;
+        margin-left: 0.4rem;
+    }
+    .photo_container{
+        position: relative;
+        margin: 0.33rem auto 0 ;
+        box-sizing: border-box;
+        display:flex;
+        flex-direction: column;
+        align-items: center;
+        width: 7rem;
+        height: 4.12rem;
+        padding-top: 0.56rem;
+        box-shadow: 0 0 1rem rgb(236, 230, 230);
+        .book{
+            width: 2.51rem;
+            height: 1.55rem;
+        }
+        .hidden{
+            opacity: 0;
+            top: 0;
+            position: absolute;
+            width: 100%;
+            height: 100%;
+        }
+        .photo_tip{
+            width: 100%;
+            text-align: center;
+            margin-top: 0.43rem;
+            padding-bottom: 0.26rem;
+            border-bottom: 0.01rem solid #F6F4F5;
+            color: #F4793B;
+            font-size: 0.26rem;
+        }
+        .bottom{
+            height: 1.04rem;
+            display: flex;
+            align-items: center;
+            .camera{
+                width:0.51rem;
+                height:0.45rem;
+            }
+            .text{
+                margin-left: 0.3rem;
+                color: #56B2AD;
+                font-size: 0.3rem;
+            }
+        }
+    }       
+    .submitImg{
+        width: 5.11rem;
+        height: 0.85rem;
+        margin: 0.56rem auto 0;
+    }
+            .button_container{
+                position: fixed;
+                bottom: 1.42rem;
+                display: flex;
+                img{
+                    width: 3.09rem;
+                    height:0.7rem;
+                }
+                .prevIcon{
+                    margin-left: 0.46rem;
+                }
+                .nextIcon{
+                }
+            }
+}
+</style>
+<style>
+@import url("../../../assets/less/vantstyle/picker.css");
+@import url("../../../assets/less/vantstyle/button.css");
+@import url("../../../assets/less/vantstyle/dialog.css");
+</style>

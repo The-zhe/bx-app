@@ -1,0 +1,278 @@
+<template>
+  <div class="CertificationInstruction_container">
+    <div class="top">
+      <img src="../../../../assets/imgs/img_grzx_rzxz_bbg.png"/>
+    </div>
+    <div class="tip">认证需要您上传</div>
+    <div class="content">
+      <div class="c_div">
+        <img src="../../../../assets/imgs/img_grzx_rzxz_cer.png"/>
+        <div class="line"></div>
+        <div class="c_name">
+          <div class="circle"></div>
+          <div class="c_left">医师执业证</div>
+        </div>
+      </div>
+      <div class="c_div">
+        <img src="../../../../assets/imgs/img_grzx_rzxz_id.png"/>
+        <div class="line"></div>
+        <div class="c_name" style="margin-left: 0.86rem">
+          <div class="circle"></div>
+          <div class="c_left">身份证</div>
+        </div>
+      </div>
+    </div>
+    <div class="phonetip">
+      <div class="p_line"></div>
+      证件拍摄要求
+      <div class="p_line"></div>
+    </div>
+    <div class="p_tip">拍摄时请确保身份证 <span style="color: #F48451">边框完整，字体清晰，亮度均匀</span></div>
+    <div class="phonestyle">
+      <div class="p_div">
+        <img class="p_img" src="../../../../assets/imgs/img_grzx_rzxz_one.png">
+        <img class="z_img" src="../../../../assets/imgs/icon_grzx_rzxz_yes.png"/>
+        <div class="z_text">标准样式</div>
+      </div>
+      <div class="p_div">
+        <img class="p_img" src="../../../../assets/imgs/img_grzx_rzxz_two.png">
+        <img class="z_img" src="../../../../assets/imgs/icon_grzx_rzxz_no.png"/>
+        <div class="z_text">拍摄不完整</div>
+      </div>
+      <div class="p_div">
+        <img class="p_img" src="../../../../assets/imgs/img_grzx_rzxz_three.png">
+        <img class="z_img" src="../../../../assets/imgs/icon_grzx_rzxz_no.png"/>
+        <div class="z_text">拍摄模糊</div>
+      </div>
+      <div class="p_div">
+        <img class="p_img" src="../../../../assets/imgs/img_grzx_rzxz_four.png">
+        <img class="z_img" src="../../../../assets/imgs/icon_grzx_rzxz_no.png"/>
+        <div class="z_text">闪光遮挡</div>
+      </div>
+    </div>
+    <div class="fixbtn" @click="jumpToBaseData" v-show="btnshow">
+      开始认证
+    </div>
+    <div class="fixbtn2" v-show="!btnshow">
+      <!-- <div class="btn back" @click="toback">跳过</div> -->
+      <div class="btn next" @click="jumpToBaseData">开始认证</div>
+    </div>
+  </div>
+</template>
+
+<script>
+  export default {
+    name: "CertificationInstruction",
+    data() {
+      return {
+        btnshow: false,
+      }
+    },
+    mounted(){
+      this.getNativeData();
+      if(Boolean(Number(sessionStorage.getItem('InApp')))){
+        this.btnshow=true;
+      }
+    },
+    methods: {
+      getNativeData(){
+        this.$bridge.callHandler("getData", "", (res) => {
+          let datalist = JSON.parse(res);
+          localStorage.setItem('certImgUrl', JSON.stringify({certImgUrl: datalist.certImgUrl, certNo: datalist.certNo}));
+          localStorage.setItem('idCardRlImgUrl',JSON.stringify({idCardRlImgUrl:datalist.idCardRlImgUrl,idCardId:datalist.card}));
+          localStorage.setItem('idotherCardRlImgUrl',JSON.stringify({idCardRlImgUrl:datalist.idCardGhImgUrl}))
+        });
+      },
+      jumpToBaseData() {
+        sessionStorage.setItem('withoutPhone', '1');
+        +
+          this.$router_({name: 'uploadCertificate'})
+      },
+      toback() {
+        this.$router_({name: 'doctorserve'});
+      }
+    },
+
+
+  };
+</script>
+
+<style scoped lang="less">
+  .CertificationInstruction_container {
+    font-size: 0.3rem;
+    color: #777777;
+    padding-bottom: 0.2rem;
+
+    .fixbtn2 {
+      width: 6.5rem;
+      position: fixed;
+      bottom: 0;
+      padding-left: 0.5rem;
+      height: 1.2rem;
+      display: flex;
+      align-items: center;
+      // justify-content: space-between;
+      justify-content: center;
+
+      .btn {
+        font-size: 0.32rem;
+        width: 5.1rem;
+        height: 0.7rem;
+        line-height: 0.7rem;
+        text-align: center;
+      }
+
+      .back {
+        color: #00A99D;
+        background: url("../../../../assets/imgs/bg_grzx_brn_nor.png");
+        background-size: 3.1rem 0.7rem;
+      }
+
+      .next {
+        color: white;
+        background: url("../../../../assets/imgs/btn_grzx_rzxz_cer.png");
+        background-size: 5.1rem 0.7rem;
+      }
+    }
+
+    .fixbtn {
+      line-height: 0.7rem;
+      text-align: center;
+      font-size: 0.32rem;
+      color: white;
+      position: fixed;
+      bottom: 0.24rem;
+      margin-left: 0.76rem;
+      width: 6rem;
+      height: 0.7rem;
+      background: url("../../../../assets/imgs/longbtnback.png");
+      background-size: 6rem 0.7rem;
+    }
+
+    .top {
+      padding-top: 0.4rem;
+      width: 100%;
+      height: 1.2rem;
+      background: url("../../../../assets/imgs/img_grzx_rzxz_bg.png");
+      background-size: 100% 1.6rem;
+
+      img {
+        margin: 0 auto;
+        width: 6.78rem;
+        height: 0.9rem;
+      }
+    }
+
+    .tip {
+      text-align: center;
+      margin: 0.8rem auto;
+      width: 2.5rem;
+      height: 0.32rem;
+      font-size: 0.32rem;
+      font-weight: bold;
+    }
+
+    .content {
+      margin: 0 auto;
+      width: 6.7rem;
+      height: 3.6rem;
+      display: flex;
+      justify-content: space-between;
+
+      .c_div {
+        width: 3.02rem;
+        height: 3.52rem;
+        border-radius: 0.08rem;
+        border: 0.02rem solid #EFECF0;
+
+        img {
+          margin: 0.6rem auto;
+          width: 2.25rem;
+          height: 1.48rem;
+        }
+
+        .line {
+          width: 3.02rem;
+          height: 0.02rem;
+          background: #EFECF0;
+        }
+
+        .c_name {
+          margin-left: 0.56rem;
+          width: 2rem;
+          height: 0.5rem;
+          font-weight: bold;
+          display: flex;
+
+          .circle {
+            margin-top: 0.32rem;
+            width: 0.16rem;
+            height: 0.16rem;
+            border-radius: 0.08rem;
+            background: #5CB0B2;
+          }
+
+          .c_left {
+            margin-top: 0.2rem;
+            margin-left: 0.25rem;
+          }
+        }
+      }
+    }
+
+    .phonetip {
+      margin: 1.2rem auto 0.6rem;
+      width: 6.44rem;
+      height: 0.42rem;
+      display: flex;
+      justify-content: space-between;
+
+      .p_line {
+        margin-top: 0.2rem;
+        width: 2rem;
+        height: 0.02rem;
+        background: #EFECF0;
+      }
+    }
+
+    .p_tip {
+      margin-left: 0.3rem;
+      font-size: 0.26rem;
+      color: #8E8E8E;
+    }
+
+    .phonestyle {
+      margin: 0 auto;
+      width: 6.9rem;
+      height: 1.6rem;
+      display: flex;
+      justify-content: space-between;
+
+      .p_div {
+        margin-top: 0.45rem;
+        font-size: 0.26rem;
+        color: #8E8E8E;
+        width: 1.5rem;
+        height: 1.5rem;
+      }
+
+      .p_img {
+        width: 1.5rem;
+        height: 0.9rem;
+      }
+
+      .z_img {
+        margin-top: -0.16rem;
+        margin-left: 0.6rem;
+        width: 0.33rem;
+        height: 0.33rem;
+      }
+
+      .z_text {
+        margin-top: 0.1rem;
+        width: 1.5rem;
+        text-align: center;
+      }
+    }
+  }
+</style>

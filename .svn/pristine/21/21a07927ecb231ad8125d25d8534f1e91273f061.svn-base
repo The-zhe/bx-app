@@ -1,0 +1,546 @@
+
+/*
+ * @Author: zzh
+ * @Date: 2019-12-26 14:32:28
+ * @Last Modified by: zzh
+ * @Last Modified time: 2020-01-19 15:37:46
+ */
+
+<template>
+<div class="heade_wxhome" v-if="$route.meta.wxhome">
+  <div class="overlay" @click="overlayHide" v-show="overlayShow">
+
+  </div>
+    <div class="content">
+      <div class="homeimg" >
+        <img :src="homeimg"/>
+      </div>
+      <div class="title">
+        {{$store.state.headerTitle}}
+      </div>
+      <div class="icon">
+        <img class="menu" @click.stop="wxshowMenu" :src="menuImgwx"/>
+        <div class="r_round" v-show="unreadnunm!=0">{{unreadnunm}}</div>
+        <div class="r_round" v-show="msgNum!=0">{{msgNum}}</div>
+      </div>
+      <div class="navMenu"  :class="{'menuShow':navShow}">
+        <div class="nav_item" :class="{'activeMenu':index==activeMenuIndex}" @click.stop="wxToPage(index,item)" v-for="(item,index) in wxmenuList">
+          <div class="nav_icon">
+            <img :src="item.icon"/>
+          </div>
+          <div class="nav_title">{{item.title}}</div>
+<!--           <div class="r_roundmessage" v-show="index===3&&unreadnunm!=0">{{unreadnunm}}</div>
+          <div class="r_roundmessage" v-show="index===1&&doctorunreadnum!=0">{{doctorunreadnum}}</div> -->
+          <div class="r_roundmessage" v-show="item.listIndex===2&&consultNum!=0">{{consultNum}}</div>
+          <div class="r_roundmessage" v-show="item.listIndex===3&&msgNum!=0">{{msgNum}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div v-else-if="!($route.meta.noHeader)&&(headerShow)" class="header_container" :style="{background:$route.meta.gradualHeader?'url('+gradualBackground+') no-repeat':$route.meta.headerColor?$route.meta.headerColor:'#008B84','backgroundRepeat':'no-repeat','backgroundSize':'100% 100%'}">
+      <div class="content">
+          <div class="backTo" v-if="!($route.meta.noBack&&flagNum==0)" @click="backToPrevPage">
+              <img :src="$route.meta.titleColor?backToImg:backToImg"/>
+          </div>
+          <div class="title" :style="{color:$route.meta.titleColor?$route.meta.titleColor:'#ffffff'}">
+              {{$store.state.headerTitle}}
+          </div>
+          <div class="icon" v-if="!$route.meta.noIcon">
+              <img class="search" @click="showSearch" v-if="$route.meta.hasSearch" :src="searchImg"/>
+              <img class="menu" @click.stop="showMenu" v-else :src="menuImg"/>
+          </div>
+          <div class="navMenu" v-if="navShow">
+              <div class="nav_item" @click.stop="JumpToPage(index)" v-for="(item,index) in menuList">
+                  <div class="nav_title">{{item.title}}</div>
+              </div>
+          </div>
+      </div>
+  </div>
+</template>
+
+<script>
+import {getHomeState} from "../api";
+import {getNotReadNumber} from '../api/apiz'
+export default {
+    name:'headerBar',
+    data(){
+        return{
+          menuImgwx:require('../assets/imgs/wx1_1.png'),
+          homeimg:require('../assets/imgs/wx1.png'),
+          backToImg:require('../assets/imgs/return_white.png'),
+          menuImg:require('../assets/imgs/spinner_white.png'),
+          searchImg:require('../assets/imgs/screen.png'),
+          gradualBackground:require('../assets/imgs/x_filltop.png'),
+            menuList:[
+                {
+                    title:"首页",
+                    icon:require('@/assets/imgs/icon_nav_home.png')
+                },
+                {
+                    title:"我的档案",
+                    icon:require('@/assets/imgs/icon_nav_wdda.png')
+                },
+                {
+                    title:"服务预约",
+                    icon:require('@/assets/imgs/icon_nav_fwyy.png')
+                },
+                {
+                    title:"健康咨询",
+                    icon:require('@/assets/imgs/icon_nav_jkzx.png')
+                },
+                {
+                    title:"商城",
+                    icon:require('@/assets/imgs/icon_nav_sc.png')
+                },
+                {
+                    title:"会员活动",
+                    icon:require('@/assets/imgs/icon_nav_hyhd.png')
+                },
+                {
+                    title:"倍熙私医",
+                    icon:require('@/assets/imgs/icon_nav_bxsy.png')
+                },
+                {
+                    title:"个人中心",
+                    icon:require('@/assets/imgs/icon_nav_wdda(1).png')
+                },
+            ],
+          wxAllmenuList:[
+            {
+              title:"首页",
+              userPath:'/',
+              doctorPath:'/doctorHomepage',
+              listIndex:0
+            },{
+              title:"会员登录",
+              userPath:'/userlogin',
+              doctorPath:'/userlogin',
+              listIndex:1
+            },
+            {
+              title:"医生登录",
+              userPath:'/userlogin',
+              doctorPath:'/userlogin',   //doctorLogin
+              listIndex:1
+            },
+            {
+              title:"我的咨询",
+              userPath:'/userConsult',
+              doctorPath:'/',
+              listIndex:2
+            },
+            {
+              title:"我的消息",
+              userPath:'/myMessage',
+              doctorPath:'/myMessage',
+              listIndex:3
+            },
+            {
+              title:'个人中心',
+              userPath:'/wxpersonalcenter',
+              doctorPath:'/wxpersonalcenter',
+              listIndex:4
+            },
+            {
+              title:'关于倍熙',
+              userPath:'/aboutinfo',
+              doctorPath:'/aboutinfo',
+              listIndex:5
+            }
+          ],
+          doctorMenulist:[
+            {
+              title:"首页",
+              userPath:'/',
+              doctorPath:'/doctorHomepage',
+              listIndex:0
+            },
+            {
+              title:"倍熙微站",
+              userPath:'/',
+              doctorPath:'/doctorWork',
+              listIndex:1
+            },
+            {
+              title:"我的工作站",
+              userPath:'/',
+              doctorPath:'/doctorWork',
+              listIndex:2
+            },
+            {
+              title:"服务记录",
+              userPath:'/',
+              doctorPath:'/doctorWork',
+              listIndex:3
+            },
+            {
+              title:"会员管理",
+              userPath:'/',
+              doctorPath:'/doctorWork',
+              listIndex:4
+            },
+            {
+              title:"我的团队",
+              userPath:'/',
+              doctorPath:'/doctorWork',
+              listIndex:5
+            },
+            {
+              title:"科普宣教",
+              userPath:'/',
+              doctorPath:'/doctorWork',
+              listIndex:6
+            },
+            {
+              title:"个人中心",
+              userPath:'/personalInfo',
+              doctorPath:'/personalInfo',
+              listIndex:7
+            },
+          ],
+            navShow:false,
+            flagNum:0,
+            headerShow:false,
+            overlayShow:false,
+            unreadnunm:0,  //首页未读数
+            doctorunreadnum:Number(sessionStorage.getItem('doctorunreadnum')),  //医生主页未读数
+            menuHeight:0,
+            activeMenuIndex:null,
+            hasLogin:false,
+            isDoctor:false,
+            msgNum:0,
+            consultNum:0,
+        }
+    },
+    computed:{
+      wxmenuList(){
+        let menu = this.wxAllmenuList
+        return [menu[0],...(this.hasLogin?[]:[menu[1]]),...(this.hasLogin?[]:[menu[2]]),...(this.isDoctor?[]:[menu[3]]),...menu.slice(4,7)]
+      }
+    },
+    methods:{
+      menuHeightInit(){
+        let windowHeight = window.innerHeight;
+        this.menuHeight=windowHeight/100-0.88
+      },
+      getNotReadNumberFun(){
+        if(this.hasLogin){
+          getNotReadNumber().then(res=>{
+            console.log(res.data.data.msgNum)
+            this.msgNum=res.data.data.msgNum
+            this.consultNum=res.data.data.consultNum
+          })
+        }
+
+      },
+        backToPrevPage(){
+            if(sessionStorage['routerFlag']>0){
+                this.$router.go(-1)
+                sessionStorage['routerFlag']--
+            }else{
+                this.$bridge.callHandler("back", "", res => {});
+            }
+        },
+        wxshowMenu(){
+          this.overlayShow=!this.overlayShow
+          this.navShow=!this.navShow
+/*           if(this.$route.meta.noConsult){
+            let doctorId=sessionStorage.getItem('doctorId')
+            if(doctorId){
+              this.navShow=!this.navShow
+            }else{
+              this.$router_({name:'doctorLogin'})
+            }
+          }else{
+            let userId=sessionStorage.getItem('userId');
+            if(userId){
+              this.navShow=!this.navShow
+            }else {
+              this.$router_({ path:'/userlogin' });
+            }
+          } */
+
+        },
+        overlayHide(){
+          this.overlayShow=false;
+          this.showMenu=false
+        },
+        showMenu(){
+            this.navShow=!this.navShow
+        },
+        showSearch(){
+            this.$emit('showSearchEvent')
+        },
+        JumpToPage(index){
+            this.$bridge.callHandler('gotoSpinner',index,res=>{})
+            this.navShow=false
+        },
+        wxToPage(index,item){
+          this.activeMenuIndex=index
+          this.$nextTick(()=>{
+            setTimeout(()=>{
+              if(index===1){
+                let msg=0;
+                this.$bridge.callHandler("toLogin", msg, (res) => {
+                });
+                this.$router_({path:item.userPath,query:{roletype:'0'}})  //医生 1  用户 0
+              }else if(index===2){
+                let msg=1;
+                this.$bridge.callHandler("toLogin", msg, (res) => {
+                });
+                this.$router_({path:item.userPath,query:{roletype:'1'}})  //医生 1  用户 0
+              }else{
+                this.$router_({path:item.userPath})
+              }
+                 /* let isDoctor = Boolean(Number(localStorage['isDoctor']))
+                  if(isDoctor){
+                    this.$router_({path:item.doctorPath})
+                  }else{
+                    this.$router_({path:item.userPath})
+                  }*/
+                  this.navShow=false
+                  this.overlayShow=false
+                  this.activeMenuIndex=null
+            },200);
+          })
+
+    /*       if(index===0){
+            this.$router_({ path:'/' });
+          }*/
+
+     /*     if(index===3){
+            this.$router_({path:'/wxpersonalcenter'});
+          } */
+          console.log(index);
+        },
+        judgeInApp(){
+          this.$bridge.callHandler("isAndroid", "", res => {
+            if(res){
+              this.headerShow=true
+              sessionStorage.setItem('inApp',"1")
+            }else{
+              sessionStorage.setItem('inApp',"0")
+            }
+          })
+        },
+    },
+    created(){
+    window.addEventListener('setItem', ()=> {
+      this.unreadnunm = sessionStorage.getItem('wxunread');
+    })
+  },
+    watch:{
+        $route(newVal,oldVal){
+            this.flagNum=Number(sessionStorage['routerFlag'])
+            this.hasLogin = Boolean(localStorage['userId']||localStorage['doctorId'])
+            this.isDoctor = Boolean(Number(localStorage['isDoctor']))
+            this.$nextTick(()=>{
+              this.getNotReadNumberFun()
+            })
+        }
+    },
+    mounted(){
+        this.hasLogin = Boolean(localStorage['userId']||localStorage['doctorId'])
+        this.isDoctor = Boolean(Number(localStorage['isDoctor']))
+        this.menuHeightInit()
+        this.judgeInApp()
+        this.$nextTick(()=>{
+          this.getNotReadNumberFun()
+        })
+        document.body.addEventListener('click',()=>{
+            this.navShow=false
+            this.overlayShow=false
+        })
+    }
+}
+</script>
+
+<style lang="less" scope>
+  .heade_wxhome{
+    position: fixed;
+    top:0;
+    background-color: #ffffff;
+    z-index: 20000;
+    /*height: 1.48rem;*/
+    height: 0.88rem;
+    width: 100%;
+    box-sizing: border-box;
+    //padding-top: 0.6rem;
+    // background-color: #F2F2F4;
+    .r_round{
+      right: -0.05rem;
+      top: -0.05rem;
+      position: absolute;
+      width: 0.3rem;
+      height: 0.3rem;
+      border-radius: 50%;
+      background-color: #F77D05;
+      color: #FFFFFF;
+      font-size: 0.24rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .r_roundmessage{
+      margin-left: -0.10rem;
+      margin-top: -0.24rem;
+      width: 0.3rem;
+      height: 0.3rem;
+      border-radius: 50%;
+      background-color: #F77D05;
+      color: #FFFFFF;
+      font-size: 0.24rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .content{
+      position: relative;
+      height: 0.88rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      .homeimg{
+        position: absolute;
+        left: 0.19rem;
+        height: 0.72rem;
+       // height: 0.92rem;
+        img{
+          width: 0.92rem;
+          height: 0.67rem;
+        }
+      }
+      .title{
+        font-size: 0.36rem;
+        color: #606060;
+      }
+      .icon{
+        position: absolute;
+        right: 0.21rem;
+        height: 0.28rem;
+        .menu{
+          width: 0.46rem;
+          height: 0.32rem;
+        }
+        .search{
+          width: 0.46rem;
+          height: 0.41rem;
+        }
+      }
+      .navMenu{
+        width: 4.26rem;
+        background-color: #454246;
+        z-index: 201;
+        position: fixed;
+        top: 0.88rem;
+        bottom: 0;
+        opacity: 1;
+        right: -4.26rem;
+        transition: all .4s;
+        .nav_item{
+          display: flex;
+          height: 0.90rem;
+          align-items: center;
+          border-bottom: 0.02rem solid #8D8B8E;
+/*           .nav_icon{
+            margin-left: 0.3rem;
+            width: 0.38rem;
+            display: flex;
+            justify-content: center;
+            img{
+              height: 0.33rem;
+            }
+          } */
+          .nav_title{
+            margin-left: 0.45rem;
+            font-size: 0.3rem;
+            color: #ffffff;
+          }
+        }
+        .activeMenu{
+          background: url('../assets/imgs/btn_sy_menu_pre.png') no-repeat;
+          background-size: 100% 100%;
+        }
+      }
+    .menuShow{
+      right: 0;
+      transition: all .4s;
+    }
+    }
+    .overlay{
+      position: fixed;
+      z-index: 200;
+      top: 0.88rem;
+      bottom: 0;
+      width: 100%;
+    }
+  }
+.header_container{
+    background-size: 100% 100%;
+    height: 0.88rem;
+    width: 100%;
+    box-sizing: border-box;
+   // padding-top: 0.6rem;
+    .content{
+        position: relative;
+        height: 0.88rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .backTo{
+            position: absolute;
+            left: 0.19rem;
+            height: 0.29rem;
+        }
+        .title{
+            font-size: 0.36rem;
+            //color: #ffffff;
+            font-weight: bold;
+        }
+        .icon{
+            position: absolute;
+            right: 0.21rem;
+            height: 0.28rem;
+            .menu{
+                width: 0.46rem;
+                height: 0.32rem;
+            }
+            .search{
+                width: 0.46rem;
+                height: 0.41rem;
+            }
+        }
+        .navMenu{
+            z-index: 10000;
+            padding: 0.23rem 0.3rem 0.11rem 0.31rem;
+            box-sizing: border-box;
+            width: 3.01rem;
+            height: 6.55rem;
+            background: url('../assets/imgs/bg_nav.png') no-repeat;
+            background-size: 100% 100%;
+            position: absolute;
+            bottom: -6.3rem;
+            right: 0.13rem;
+            .nav_item{
+                display: flex;
+                height: 0.76rem;
+                align-items: center;
+                .nav_icon{
+                    img{
+                        height: 0.37rem;
+                    }
+                }
+                .nav_title{
+                    margin-left: 0.34rem;
+                    font-size: 0.3rem;
+                    color: #ffffff;
+                }
+                &:not(:last-child){
+                    border-bottom: 0.02rem solid #535353;
+                }
+            }
+        }
+    }
+}
+
+</style>

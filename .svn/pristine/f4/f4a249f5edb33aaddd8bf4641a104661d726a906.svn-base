@@ -1,0 +1,248 @@
+<template>
+  <div class="pathoGraphy_container">
+    <van-dialog v-model="showDialog" :showConfirmButton="false" :close-on-click-overlay="true">
+      <div class="upload_container">
+        <div class="title">上传记录</div>
+        <div class="label">病情描述：</div>
+        <div class="input">
+          <textarea v-model="feelText" rows="4" cols="20" autofocus></textarea>
+        </div>
+        <div @click="uploadDiseaseFun" class="upload_button">上传</div>
+      </div>
+    </van-dialog>
+    <div class="recordList_container">
+      <div class="item" :key="item.date" v-for="item in listData">
+        <div class="item_top">
+          <div class="item_header">
+            <div class="item_label">病情描述：</div>
+
+            <div class="item_date">{{item.symptomTime}}</div>
+            <div class="arrow">
+              <img src="@/assets/imgs/btn_da_next.png" />
+            </div>
+          </div>
+          <div class="item_desc">{{item.symptom}}</div>
+        </div>
+        <div class="item_bottom">
+          <div class="doctor_advice" v-if="item.advice">
+            <div class="top">
+              <div class="label">医生建议：</div>
+              <div class="advice_time">{{item.adviceTime}}</div>
+            </div>
+            <div class="doctorInfo">
+              <div class="img">
+                <img :src="item.doctorImg" />
+                <div class="tag">{{item.catCd=='0'?'私人医生':item.catCd=='1'?'私人护士':'私人管家'}}</div>
+              </div>
+              <div class="text">
+                <div class="name">{{item.doctorName}}</div>
+                <div class="rank">{{item.position}}</div>
+              </div>
+            </div>
+            <div class="advice">{{item.advice}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="upload_record" @click="showDialog=true">
+      <img src="@/assets/imgs/btn_syda_upload.png" />
+    </div>
+  </div>
+</template>
+
+<script>
+import {uploadDisease} from '@/api/index'
+export default {
+  components: {},
+  name: "pathoGraphy",
+  props: ["listData"],
+  data() {
+    return {
+      showDialog:false,
+      feelText:"",
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {},
+  methods: {
+    uploadDiseaseFun(){
+      uploadDisease({feelText:this.feelText}).then((res)=>{
+        this.showDialog=false
+        this.$emit('uploadSuccess')
+      })
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.pathoGraphy_container {
+  font-weight:400;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  .upload_container{
+    height: 751px;
+    width: 600px;
+    box-sizing: border-box;
+    padding: 62px 55px 32px;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    .title{
+      font-size: 36px;
+      color: #7c7c7c;
+      font-weight: 600;
+    }
+    .label{
+      align-self: flex-start;
+      margin-top: 52px;
+      font-size: 30px;
+      color: #777777;
+    }
+    .input{
+      margin-top: 30px;
+      width: 490px;
+      height: 375px;
+      box-sizing: border-box;
+      border: 1px solid #EAEBEC;
+      padding: 20px 15px;
+      textarea{
+        width: 460px;
+        height: 335px;
+      }
+    }
+    .upload_button{
+      margin-top: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 490px;
+      height: 72px;
+      color: #fff;
+      background-color: #3EB4A1;
+      border-radius: 16px;
+    }
+  }
+  .recordList_container {
+    .item {
+      margin-bottom: 42px;
+      border-radius: 10px;
+      box-shadow: 0 0 5px #a9a9a9;
+      padding: 0 20px;
+      box-sizing: border-box;
+      width: 700px;
+      background-color: #fff;
+      font-size: 28px;
+      font-weight: 400;
+      .item_top {
+        .item_header {
+          color: #777777;
+          height: 79px;
+          align-items: center;
+          display: flex;
+          justify-content: flex-end;
+          .item_label {
+            margin-right: auto;
+            font-weight: 600;
+          }
+          .item_date {
+            font-size: 30px;
+            margin-right: 18px;
+          }
+          .arrow {
+            img {
+              height: 27px;
+              width: 15px;
+            }
+          }
+        }
+        .item_desc {
+          padding-bottom: 20px;
+          font-size: 28px;
+          color: #999999;
+          border-bottom: 1px solid #f0f1f2;
+        }
+      }
+      .item_bottom {
+        .doctor_advice {
+          padding: 19px 0 40px;
+          .top {
+            display: flex;
+            color: #777777;
+            .label {
+              font-size: 28px;
+              font-weight: 600;
+            }
+            .advice_time {
+              margin-right: 33px;
+              margin-left: auto;
+              font-size: 30px;
+            }
+          }
+          .doctorInfo {
+            margin-top: 18px;
+            align-items: center;
+            display: flex;
+            .img {
+              position: relative;
+              img {
+                width: 122px;
+                height: 122px;
+              }
+              .tag {
+                color: #fff;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 20px;
+                position: absolute;
+                bottom: -10px;
+                width: 131px;
+                height: 44px;
+                background: url("../../../../../assets/imgs/advice2.png") no-repeat;
+                background-size: 100% 100%;
+              }
+            }
+            .text {
+              margin-left: 30px;
+              font-size: 30px;
+              .name {
+                color: #5b5b5b;
+                font-weight: 600;
+              }
+              .rank {
+                color: #777777;
+                font-weight: 400;
+              }
+            }
+          }
+          .advice {
+            font-size: 28px;
+            font-weight: 400;
+            color: #999999;
+            margin-top: 22px;
+          }
+        }
+      }
+      &:not(:last-child) {
+        margin-bottom: 25px;
+      }
+    }
+  }
+  .upload_record {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    img {
+      width: 301px;
+      height: 61px;
+    }
+  }
+}
+</style>
+<style>
+@import url('../../../../../assets/less/vantstyle/dialog.css');
+</style>

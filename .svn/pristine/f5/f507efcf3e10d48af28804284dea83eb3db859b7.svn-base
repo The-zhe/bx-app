@@ -1,0 +1,469 @@
+<template>
+    <div class="baseData_container">
+        <van-popup v-model="showRankPicker" position="bottom">
+            <van-picker
+                show-toolbar
+                :columns="Rankcolumns"  
+                @cancel="showRankPicker = false"
+                @confirm="onRankConfirm"
+            />
+        </van-popup>
+        <van-popup v-model="showDatePicker"  position="bottom">
+        <van-datetime-picker
+            v-model="date"
+            type="year-month"
+            :min-date="minDate"
+            :max-date="maxDate"
+            @cancel="showDatePicker=false"
+            @confirm="onDateConfirm"
+            :formatter="formatter"
+        />
+        </van-popup>
+        <div class="top">
+            填写基本资料
+        </div>
+        <div class="form_container">
+            <div class="form_item name">
+                <div class="label">*姓名</div>
+                <div class="input">
+                    <input type="text" v-model.trim="name" placeholder="请输入您的姓名"/>
+                    <div class="error_tip" v-if="nameError">信息未填写</div>
+                </div>
+            </div>
+            <div class="form_item sex">
+                <div class="label">*性别</div>
+                <div class="select">
+                    <div class="select_item male" @click="changeSex(1)">
+                        <img :src="sex==1?selectedIcon:selectIcon"/>男
+                    </div>
+                    <div class="select_item female" @click="changeSex(0)">
+                        <img :src="sex==0?selectedIcon:selectIcon"/>女
+                    </div>
+                </div>
+            </div>
+            <div class="form_item birthday" @click="showDatePicker=true">
+                <div class="label">*出生年月</div>
+                <div class="input" :class="{'empty':birthday==''}">
+                    {{birthday==''?'请选择出生年月':birthday}}
+                    <img class="dateIcon" :src="dateIcon"/>
+                    <div class="error_tip" v-if="birthdayError">信息未选择</div>
+                </div>
+            </div>
+            <div class="form_item hospital">
+                <div class="label">*医院</div>
+                <div class="input">
+                    <input type="text" @focus="hospitalFocus" @input="hospitalChange"  v-model.trim="hospital" placeholder="请输入您的医院"/>
+                    <div class="error_tip" v-if="hospitalError">信息未填写</div>
+                    <div class="hospital_list" v-if="listShow">
+                        <div class="list">
+                            <div class="item" @click="selectHospitalItem(item)" v-for="item in hospitalItemList" >{{item.name}}</div>
+                        </div>
+                        <div class="cancel" @click="cancelList">
+                            关闭
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="form_item department" @click="selectDepartment">
+                <div class="label">*科室</div>
+                <div class="input" :class="{'empty':department==''}">
+                    {{department==''?'请选择您的科室':`${department}-${secondDepNm}`}}
+                    <img class="arrowIcon" :src="arrowIcon"/>
+                    <div class="error_tip" v-if="departmentError">信息未选择</div>
+                </div>
+            </div>
+            <div class="form_item rank" @click="showRankPicker=true">
+                <div class="label">*职称</div>
+                <div class="input" :class="{'empty':rank==''}">
+                    {{rank==''?'请选择职称':rank}}
+                    <img class="arrowIcon" :src="arrowIcon"/>
+                    <div class="error_tip" v-if="rankError">信息未选择</div>
+                </div>
+            </div>
+
+            <div class="button_container">
+                <img v-if="withoutPhone" class="prevIcon" :src="prevIcon" @click="prevClick" />
+                <img  class="nextIcon" :style="{'margin-left':withoutPhone?'0.38rem':'2.23rem'}" :src="nextIcon" @click="nextClick" />
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import {getRankItemList,getCertifiHospitalList} from '../../../api/apiz'
+export default {
+name:"baseData",
+data(){
+    return{
+        selectedIcon:require('@/assets/imgs/btn_syfw_choose_pre.png'),
+        selectIcon:require('@/assets/imgs/btn_syfw_choose_nor.png'),
+        dateIcon:require('@/assets/imgs/xfill1_date.png'),
+        arrowIcon:require('@/assets/imgs/xfill1_address.png'),
+        prevIcon:require('@/assets/imgs/x_fh.png'),
+        nextIcon:require('@/assets/imgs/x_xyb2.png'),
+        rankItemList:[],
+        departmentItemList:[],
+        hospitalItemList:[],
+        minDate:new Date(1920,0,1),
+        maxDate:new Date(2000,0,1),
+        date:new Date(1990,0,1),
+        showDatePicker:false,
+        showRankPicker:false,
+        /* showDepartmentPicker:false, */
+        listShow:false,
+        nameError:false,
+        birthdayError:false,
+        hospitalError:false,
+        departmentError:false,
+        rankError:false,
+        name:'',
+        sex:1,
+        birthday:'',
+        hospital:'',
+        hospitalId:'',
+        department:'',
+        departmentId:'',
+        secondDepNm:'',
+        secondDepId:'',
+        rank:'',
+        rankCd:'',
+        withoutPhone:false
+    }
+},
+mounted(){
+    this.withoutPhone = Boolean(Number(sessionStorage.getItem('withoutPhone')))
+    this.getRankItemListFun()
+    /* this.getCertifiDepartmentListFun() */
+    if(sessionStorage.getItem('baseData')){
+        let baseData = JSON.parse(sessionStorage.getItem('baseData'))
+        this.name=baseData.name
+        this.sex=baseData.sex
+        this.birthday=baseData.birthday
+        this.hospitalId=baseData.hospitalId
+        this.hospital=baseData.hospitalName
+        this.department=baseData.departmentName
+        this.departmentId=baseData.departmentId
+        this.secondDepNm=baseData.secondDepNm
+        this.secondDepId=baseData.secondDepId
+        this.rank=baseData.titleNm
+        this.rankCd=baseData.titleCd
+        
+    }
+    if(sessionStorage.getItem('departmentInfo')){
+        let departmentInfo = JSON.parse(sessionStorage.getItem('departmentInfo'))
+        this.department=departmentInfo.departmentName
+        this.departmentId=departmentInfo.departmentId
+        this.secondDepNm=departmentInfo.secondDepNm
+        this.secondDepId=departmentInfo.secondDepId
+    }
+},
+computed:{
+    Rankcolumns(){
+        if(this.rankItemList.length){
+            let array=[]
+            this.rankItemList.forEach(item=>{
+                array.push(item.nm)
+            })
+            return array
+        }else{
+            return []
+        }
+    },
+
+/*     Departmentcolumns(){
+        if(this.departmentItemList.length){
+            let array=[]
+            this.departmentItemList.forEach(item=>{
+                array.push(item.name)
+            })
+            return array
+        }else{
+            return []
+        }
+    } */
+},
+methods:{
+    changeSex(index){
+        this.sex=index
+    },
+    formatter(type, val) {
+      if (type === 'year') {
+        return `${val}年`;
+      } else if (type === 'month') {
+        return `${val}月`
+      }
+      return val;
+    },
+    hospitalFocus(e){
+        setTimeout(function(){
+                e.target.scrollIntoView(true);
+        },200);    
+    },
+    prevClick(){
+        if(Boolean(Number(sessionStorage.getItem('withPhone')))){
+            this.$router.replace({name:'wxhome'})
+        }else{
+            sessionStorage.setItem('baseData',JSON.stringify({
+                name:this.name,
+                sex:this.sex,
+                birthday:this.birthday,
+                hospitalId:this.hospitalId,
+                hospitalName:this.hospital,
+                departmentName:this.department,
+                departmentId:this.departmentId,
+                secondDepNm:this.secondDepNm,
+                secondDepId:this.secondDepId,
+                titleNm:this.rank,
+                titleCd:this.rankCd,
+            }))
+            this.$router.push({name:'CertificationInstruction'})
+        }
+    },
+    nextClick(){
+        this.nameError=this.name===''
+        this.birthdayError=this.birthday===''
+        this.hospitalError=this.hospital===''
+        this.departmentError=this.department===''
+        this.rankError=this.rank===''
+        this.$nextTick(()=>{
+            if(!(this.nameError||this.birthdayError||this.hospitalError||this.departmentError||this.rankError)){
+                sessionStorage.setItem('baseData',JSON.stringify({
+                    name:this.name,
+                    sex:this.sex,
+                    birthday:this.birthday,
+                    hospitalId:this.hospitalId,
+                    hospitalName:this.hospital,
+                    departmentName:this.department,
+                    departmentId:this.departmentId,
+                    secondDepNm:this.secondDepNm,
+                    secondDepId:this.secondDepId,
+                    titleNm:this.rank,
+                    titleCd:this.rankCd,
+                }))
+                this.$router_({name:'experience'})
+            }
+        })
+    },
+    onDateConfirm(val){
+      let year = val.getFullYear()
+      let month = val.getMonth()>9?val.getMonth()+1:'0'+(val.getMonth()+1)
+      this.birthday=`${year}-${month}`
+      this.showDatePicker=false
+    },
+    onRankConfirm(val){
+        this.rank=val
+        this.rankCd=this.rankItemList.find(item=>{
+            return item.nm==val
+        }).cd
+        this.showRankPicker=false
+    },
+    selectDepartment(){
+            this.$router_({name:'selectDepartment'})
+                sessionStorage.setItem('baseData',JSON.stringify({
+                name:this.name,
+                sex:this.sex,
+                birthday:this.birthday,
+                hospitalId:this.hospitalId,
+                hospitalName:this.hospital,
+                departmentName:this.department,
+                departmentId:this.departmentId,
+                titleNm:this.rank,
+                titleCd:this.rankCd,
+            }))        
+    },
+/*     onDepartmentConfirm(val){
+        this.department=val
+        this.departmentId=this.departmentItemList.find(item=>{
+            return item.name==val
+        }).id
+        this.showDepartmentPicker=false        
+    }, */
+    hospitalChange(){
+      if(this.hospital.trim()!==''){
+          this.getCertifiHospitalListFun(this.hospital)
+      }else{
+          this.listShow=false
+          this.hospitalItemList=[]
+      }
+    },
+    selectHospitalItem(item){
+        this.hospital=item.name
+        this.hospitalId=item.id
+        this.listShow=false
+    },
+    cancelList(){
+        this.listShow=false
+    },
+    getRankItemListFun(){
+        getRankItemList().then((res)=>{
+            this.rankItemList=res.data.data.list
+        })
+    },
+    getCertifiDepartmentListFun(){  
+        getCertifiDepartmentList().then(res=>{
+            this.departmentItemList=res.data.list
+        })
+    },
+    getCertifiHospitalListFun(name){
+        getCertifiHospitalList(name).then((res)=>{
+            if(res.data.list.length>0){
+                this.hospitalItemList=res.data.list
+                this.listShow=true
+            }else{
+                this.listShow=false
+            }
+            
+        })
+    },
+},
+
+
+};
+</script>
+
+<style scoped lang="less">
+.baseData_container{
+    padding-bottom: 1rem;
+    .top{
+        height: 0.88rem;
+        background: url('../../../assets/imgs/x_filltop.png') no-repeat;
+        background-size: 100% 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.32rem;
+        color: #ffffff;
+        font-weight: bold;
+    }
+    .form_container{
+        .form_item{
+            height: 1.36rem;
+            box-sizing: border-box;
+            padding: 0 0.38rem 0 0.38rem;
+            display: flex;
+            align-items: center;
+            border-bottom: 0.01rem solid #FBF8FB;
+            .label{
+                font-size: 0.3rem;
+                color: #767777;
+                font-weight: bold;
+                margin-right: 0.3rem;
+            }
+            .error_tip{
+                font-size: 0.24rem;
+                color: #E60012;
+                position: absolute;
+                bottom: -0.35rem;
+            }
+            .input{
+                flex: 1;
+                font-size: 0.3rem;
+                position: relative;
+                border: 1px solid #AAA8AB;
+                height: 0.56rem;
+                color: #777777;
+                display: flex;
+                align-items: center;
+                padding-left: 0.18rem;
+                border-radius: 0.08rem;
+                input{
+                    font-size: 0.3rem;
+                    flex: 0.98
+                }
+                ::-webkit-input-placeholder {
+                        color: #bcbcbc;
+                        font-size: 0.3rem;
+                    }
+                ::-moz-placeholder {
+                    color: #bcbcbc;
+                    font-size: 0.3rem;
+                    }
+                :-ms-input-placeholder {
+                    color: #bcbcbc;
+                    font-size: 0.3rem;
+                    }
+                .dateIcon{
+                    margin-right: 0.18rem;
+                    margin-left: auto;
+                    width:0.38rem;
+                    height:0.34rem;
+                }
+                .arrowIcon{
+                    margin-right: 0.18rem;
+                    margin-left: auto;
+                    width:0.21rem;
+                    height:0.19rem;
+                }
+                .hospital_list{
+                    border: 1px solid #bebdbf;
+                    z-index: 1000;
+                    background-color: #ffffff;
+                    position: absolute;
+                    top: 0.6rem;
+                    left: 0;
+                    border-radius: 0.12rem;
+                    width: 100%;
+                    font-size: 0.3rem;
+                    .list{
+                        max-height: 3.5rem;
+                        overflow: scroll;
+                        width: 100%;
+                        .item{
+                            width: 100%;
+                            height: 0.7rem;
+                            line-height: 0.7rem;
+                            box-sizing: border-box;
+                            padding-left: 0.15rem;
+                            border-bottom: 1px solid #bebdbf;
+                        }
+                    }
+                    .cancel{
+                        height: 0.6rem;
+                        color: #6AAcf7;
+                        line-height: 0.6rem;
+                        text-align: right;
+                        padding-right: 0.3rem;
+                        box-sizing: border-box;
+                    }
+                }
+            }
+            .select{
+                font-size: 0.3rem;
+                display: flex;
+                .select_item{
+                    color: #717071;
+                    display: flex;
+                    align-items: center;
+                    img{
+                        margin-right: 0.32rem;
+                        width:0.33rem;
+                        height:0.33rem;
+                    }
+                }
+                .female{
+                    margin-left: 1.1rem;
+                }
+            }
+            .empty{
+                color: #bcbcbc; 
+            }
+        }
+            .button_container{
+                
+                position: fixed;
+                bottom: 1.42rem;
+                display: flex;
+                img{
+                    width: 3.09rem;
+                    height:0.7rem;
+                }
+                .prevIcon{
+                    margin-left: 0.46rem;
+                }
+                .nextIcon{
+
+                }
+            }
+    }
+}
+</style>

@@ -1,0 +1,283 @@
+<!--xtt-->
+<template>
+  <div class="doctorInfo">
+    <div class="introtop">
+      <div class="introblock">
+        <div class="photo"><img src="../../assets/imgs/doctor_x.png"></div>
+        <div class="name">{{doctorInfo.name}}</div>
+        <div class="rank">{{doctorInfo.workDoctor}}&emsp;{{doctorInfo.level}}</div>
+      </div>
+    </div>
+    <div class="introcontent">
+      <div class="major">
+        <div class="majorwhite">
+          <div class="majorImg">专业擅长</div>
+          <div class="majorone">
+            <div class="majorlabel" v-for="item in majorList"><span>{{item}}</span></div>
+          </div>
+          <div class="majorskills" v-for="item in majorskills">
+            <div>{{item}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="work">
+        <div class="workwhite">
+          <div class="workImg">执业经历</div>
+          <div class="majorone">
+            <div class="majorlabel" v-for="item in workList"><span>{{item}}</span></div>
+          </div>
+          <div class="majorskills" v-for="item in workexperience">
+            <div>{{item}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="address">
+        <div class="addresswhite">
+          <div class="addressImg">执业地点</div>
+          <div class="majorskills" v-for="(item,index) in adrList">
+            <div><span>第{{item.num}}执业点</span>:{{item.name}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import {getMedicalInfo} from '../../api/index'
+  import MedicalBottom from '../../components/medicalBottom'
+
+  export default {
+    name: "doctorInfo",
+    components: {MedicalBottom},
+    data() {
+      return {
+        doctorId: this.$route.query.id,
+        doctorInfo: '',
+        majorList: [], //专业擅长特征
+        majorskills: [],//专业擅长描述
+        workList: [],//执业经历特征
+        workexperience: [],//执业经历描述
+        adrList: [],
+        numList:[
+          {
+            name: '',
+            num: '一'
+          }, {
+            name: '',
+            num: '二'
+          },{
+            name: '',
+            num: '三'
+          },{
+            name:'',
+            num:'四'
+          },{
+            name:'',
+            num:'五'
+          }
+        ]
+      }
+    },
+    methods: {
+      getDoctorInfo() {
+        console.log(this.doctorId);
+        getMedicalInfo(this.doctorId).then(res => {
+          console.log('ddd', res.data.data);
+          this.doctorInfo = res.data.data;
+          this.majorList = this.doctorInfo.skillsLable.split(',');
+          this.majorskills = this.doctorInfo.skills.split(',');
+          this.workList = this.doctorInfo.experienceLable.split(',');
+          this.workexperience = this.doctorInfo.experience.split(',');
+          let adr = this.doctorInfo.address.split(',');
+          if(adr.length) {
+            for (let i = 0; i < adr.length; i++) {
+              this.adrList.push({name: adr[i], num: this.numList[i].num})
+            }
+          }
+          console.log('a111', adr.length);
+          console.log('aaa', this.adrList);
+        })
+      }
+    },
+    mounted() {
+      this.getDoctorInfo();
+    }
+  }
+</script>
+
+<style scoped lang="less">
+  .doctorInfo {
+    width: 750px;
+    height: 100%;
+    background: #F4F4F4;
+
+    .introtop {
+      width: 750px;
+      height: 320px;
+      background: url("../../assets/imgs/introdoctor_x.png");
+      background-size: 750px 320px;
+
+      .introblock {
+        margin-left: auto;
+        margin-right: auto;
+        padding-top: 75px;
+        width: 200px;
+        height: 250px;
+        text-align: center;
+
+        .photo {
+          margin-left: auto;
+          margin-right: auto;
+          width: 138px;
+          height: 138px;
+          border-radius: 69px;
+          background: #ffffff;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+
+          img {
+            width: 132px;
+            height: 132px;
+            border-radius: 66px;
+          }
+        }
+
+        .name {
+          font-size: 30px;
+          color: white;
+          font-weight: bold;
+        }
+
+        .rank {
+          font-size: 28px;
+          color: white;
+        }
+      }
+    }
+
+    .introcontent {
+      width: 750px;
+
+      .major {
+        margin: 20px auto 0 auto;
+        width: 720px;
+        height: auto;
+        box-shadow: 0px 0px 8px #a7a7a7;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #40B2A0;
+
+        .majorwhite {
+          width: 700px;
+          height: auto;
+          float: right;
+          background: white;
+
+          .majorImg {
+            margin-top: 20px;
+            width: 200px;
+            height: 45px;
+            padding-left: 70px;
+            padding-top: 5px;
+            color: #40B2A0;
+            font-size: 30px;
+            font-weight: bold;
+            background: url("../../assets/imgs/intro1_x.png") no-repeat 20px;
+            background-size: 34px 35px;
+          }
+        }
+
+      }
+
+      .majorone {
+        margin: 10px 0;
+        width: 650px;
+        height: 50px;
+        overflow: hidden;
+
+        .majorlabel {
+          font-size: 26px;
+          margin-left: 20px;
+          float: left;
+          width: auto;
+          padding: 4px 15px;
+          height: auto;
+          color: white;
+          border-radius: 25px;
+          background: #40B2A0;
+        }
+      }
+
+      .majorskills {
+        width: 600px;
+        height: 50px;
+        font-size: 28px;
+        color: #777777;
+        margin-left: 20px;
+      }
+
+      .work {
+        margin: 20px auto 0 auto;
+        width: 720px;
+        height: auto;
+        background: #40B2A0;
+        box-shadow: 0px 0px 8px #a7a7a7;
+        border-radius: 20px;
+        overflow: hidden;
+
+        .workwhite {
+          width: 700px;
+          height: auto;
+          float: right;
+          background: white;
+
+          .workImg {
+            margin-top: 20px;
+            width: 200px;
+            height: 45px;
+            padding-left: 70px;
+            padding-top: 5px;
+            color: #40B2A0;
+            font-size: 30px;
+            font-weight: bold;
+            background: url("../../assets/imgs/intro2_x.png") no-repeat 20px;
+            background-size: 31px 39px;
+          }
+        }
+
+      }
+
+      .address {
+        margin: 20px auto 0 auto;
+        width: 720px;
+        height: auto;
+        box-shadow: 0px 0px 8px #a7a7a7;
+        border-radius: 20px;
+        overflow: hidden;
+        background: #40B2A0;
+
+        .addresswhite {
+          width: 700px;
+          height: auto;
+          float: right;
+          background: white;
+
+          .addressImg {
+            margin: 20px 0;
+            width: 200px;
+            height: 45px;
+            padding-left: 70px;
+            padding-top: 5px;
+            color: #40B2A0;
+            font-size: 30px;
+            font-weight: bold;
+            background: url("../../assets/imgs/intro3_x.png") no-repeat 20px;
+            background-size: 31px 33px;
+          }
+        }
+      }
+    }
+  }
+</style>

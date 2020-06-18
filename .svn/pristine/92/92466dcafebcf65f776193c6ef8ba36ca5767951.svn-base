@@ -1,0 +1,705 @@
+<!--xtt-->
+<template>
+  <div class="consultWeb">
+    <div class="consultTop">
+      <div class="left">
+        <div class="consultPeople">
+          <img src="../../assets/imgs/doctor_x.png">
+          <div class="name">{{consultname}}
+            <div class="jibie">{{consultrank}}</div>
+          </div>
+          <div class="select" @click="toSelect"></div>
+        </div>
+        <div v-if="isselect" class="consultPeopleList">
+          <div v-for="item in consultPeopleList" class="onselect" @click="toChange(item)">
+            <img src="../../assets/imgs/doctor_x.png">
+            <div class="name">{{item.name}}
+              <div class="jibie">{{item.level}}</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="right">
+        <div class="dialog"></div>
+        <div class="phone" @click="toDial"></div>
+        <div class="video" @click="toVideo"></div>
+      </div>
+    </div>
+    <div class="consultContent">
+     <div v-for="item in messageItems">
+       <div v-if="item.userType === 1">
+         <div class="consultTime"><div class="line"></div><div>{{item.time}}</div><div class="line"></div></div>
+         <div class="consultText">
+           <div class="yourphoto"><img/></div>
+<!--           <div v-if="item.msgType === 'text'" class="chat_text" style="margin-left: 53px;">{{ item.msg }}</div>-->
+<!--           <div style="position: relative; width:150px;height: 150px;margin: 5px 0px 10px 30px;" v-else-if="item.msgType === 'img'">-->
+<!--             <viewer>-->
+<!--               <img style="position: absolute; z-index: 6; right: -27px;" class="chat_sendImg" :src="item.msg"/>-->
+<!--             </viewer>-->
+<!--           </div>-->
+           <div class="yourdialog">{{item.msg}}</div>
+         </div>
+       </div>
+       <div v-else-if="item.userType === 2">
+        <div class="consultTime"><div class="line"></div><div>{{item.time}}</div><div class="line"></div></div>
+         <div class="consultText">
+           <div class="myphoto"><img/></div>
+           <div class="mydialog">{{item.msg}}</div>
+         </div>
+       </div>
+     </div>
+    </div>
+    <div class="dialogBottom" v-show="iscurrent">当前咨询剩余次数：{{currentNum}}</div>
+    <div class="consultBottom">
+      <div class="bottomvideo"></div>
+      <div class="bottominput"><input v-model="textMsg" placeholder="请输入"/></div>
+      <div class="bottompic" @click="selectpic">
+<!--        <input type="file" accept="image/*" id="imagePicker" value @change="onSendImgMsg()"/>-->
+      </div>
+      <div class="bottomsub" @click="onSendTextMsg"></div>
+    </div>
+    <van-action-sheet
+      v-model="showsheet"
+      :actions="actions"
+      cancel-text="取消"
+      @cancel="onCancel"
+      @select="onselect"
+    />
+  </div>
+</template>
+
+<script>
+  import {getSig,getMedicalTeamData} from "../../api/index"
+  export default {
+    name: "consultWeb",
+    data() {
+      return {
+        userSig:'',
+        iscurrent:true,
+        showsheet:false,
+        actions: [
+          { name: '从手机相册选择' },
+          { name: '拍照' },
+        ],
+        showtime: '',//当前时间
+        textMsg: '',  //文本内容
+        consultname: '华佗',
+        consultrank: '主治医生',
+        phonenum: 1,  //电话次数
+        videonum: 1,  //视频次数
+        consultPeople: this.$route.query.id,  //咨询对象id
+        type: this.$route.query.type,   //咨询对象类型
+        identifier: '4535481258038273',
+        sdkAppId: '1400267551',
+        doctorIdaccept: "", //pad端发起视频 接收的doctorid
+        messageItems: [
+          {
+            tx: '',
+            msg: '生病吃药',
+            name: '啦啦啦',
+            userType: 1,//1对方，2自己
+            time:'2019-12-12 16:23',
+            msgType: "text"
+          },
+          {
+            tx: '',
+            msg: '生病吃药2,多喝水多喝水多喝水呀呀呀呀呀呀',
+            name: '啦啦啦',
+            userType: 1,//1对方，2自己
+            time:'2019-12-12 16:23',
+            msgType: "text"
+          }
+        ],     //咨询对话
+        show: true,
+        isselect: false,      //下拉框是否显示
+        testlist: [{name: '李颖', jibie: '一级营养师'}, {name: '王超', jibie: '一级营养师'}, {name: '陈海燕', jibie: '二级营养师'}],
+        consultPeopleList:[],
+        currentNum:'',  //当前剩余图文次数
+      }
+    },
+    methods: {
+      //105语音
+      getMedicalTeamDataList(){
+        let memberId='4535481258038273';
+        getMedicalTeamData(memberId,80060.106).then(res=>{
+          console.log('medicalconsult',res.data.data);
+          res.data.data.forEach((element)=>{
+            if(element.id===this.consultPeople){
+              this.currentNum=element.time;
+              this.consultname=element.name;
+              this.consultrank=element.workDoctor;
+              if(element.catCd==='2'){
+                this.iscurrent=false;
+              }else {
+                this.iscurrent=true;
+              }
+            }else {
+              this.consultPeopleList.push(element);
+            }
+
+          });
+          console.log('cccc',this.consultPeopleList);
+        });
+      },
+      //下拉选择
+      toSelect() {
+        this.isselect = !this.isselect;
+        console.log('111', this.consultPeople, this.type);
+      },
+      //切换咨询对象
+      toChange(data) {
+        this.consultname = data.name;
+        this.consultrank = data.level;
+        this.isselect = false;
+      },
+      testtt() {
+        console.log(111);
+        this.$dialog.confirm({
+          // title:'标题呀',
+          message: '弹框内容'
+        }).then(() => {
+          console.log('点击了确认')
+        })
+      },
+      //拨号
+      toDial() {
+        this.$dialog.confirm({
+          title: '电话咨询确认',
+          message: '电话咨询有限时间为30分钟，每次' + '\n' +
+            '拨号消耗一次电话咨询次数，若电' + '\n' +
+            '话未接通，不消耗次数，请稍后再' + '\n' +
+            '拨。' + '\n' +
+            '（手机号码由第三方进行隐私加密,\n' +
+            '防止双方隐私泄露。）\n' +
+            '您剩余次数:' + this.phonenum
+        }).then(() => {
+
+        }).catch(() => {
+          console.log('999');
+        })
+      },
+      //视频
+      toVideo() {
+        this.$dialog.confirm({
+          title: '视频咨询确认',
+          message:
+            '视频咨询有限时间为30分钟，每次' + '\n' +
+            '视频消耗一次视频咨询次数，若视' + '\n' +
+            '频未接通，不消耗次数，请稍后发' + '\n' +
+            '起。' + '\n' +
+            '您剩余次数：' + this.videonum
+
+        }).then(() => {
+          console.log('要跟医生通视频了');
+         this.videoCall(1,'d');
+        }).catch(() => {
+          console.log('999');
+        })
+      },
+      //安卓调js  d医生 n护士  id：1是医生id
+      videoCall(vid,type){
+        document.location = "js://webview?videoCall&id="+vid+"type="+type;
+      },
+      endVideo(vid,type){
+        //vid 医生或者护士id type 医生d还是护士n
+      },
+      //取当前时间
+      getTime() {
+        let timedata = new Date();
+        let timeyear=timedata.getFullYear();
+        let timemonth = timedata.getMonth() + 1;
+        let timeday = timedata.getDate();
+        let timehour = timedata.getHours();
+        let timemin = timedata.getMinutes();
+        let timeseconds = timedata.getSeconds();
+        this.showtime = timeyear+'.'+timemonth + '.' + timeday + ' ' + timehour + ':' + timemin;
+      },
+      //登录im
+      getIMBegin() {
+        let promise = this.tim.login({
+          userID: this.identifier, //登录的会员id
+          userSig: this.userSig
+        });
+        promise.then(imResponse => {
+            console.log("IM登录成功");
+          })
+          .catch(function (imError) {
+            console.warn("login error:", imError); // 登录失败的相关信息
+          });
+      },
+      //
+      getHistoryMessage(){
+        let conversationID='C2C'+this.identifier;
+        let promise = tim.getMessageList({conversationID: 'C2Ctest', count: 15});
+        promise.then(function(imResponse) {
+          const messageList = imResponse.data.messageList; // 消息列表。
+          const isCompleted = imResponse.data.isCompleted; // 表示是否已经拉完所有消息。
+          console.log('history',messageList,isCompleted);
+        });
+      },
+      //登录腾讯im获取秘钥
+      getUserSig(){
+        getSig(this.identifier).then(res=>{
+          this.userSig=res.data.data;
+          this.getIMBegin();
+          this.getHistoryMessage();
+        });
+      },
+      onReadyStateUpdate() {
+      },
+      //收到信息事件
+      onMessageReceived(event) {
+        let presentTime = new Date();
+        presentTime.setMinutes(presentTime.getMinutes() - 1);
+        let presentString = Date.parse(presentTime) / 1000;
+        console.log('presentString', presentString);
+        console.log("onMessage", event);
+        let length = event.data.length;
+        console.log("length", length);
+        let res = event.data[0];
+        let historyTime = res.time;
+        let type = res.elements[0].type;
+        this.count = this.count + 1;
+        let count = this.count;
+        console.log("Messageres", res.from, count);
+        //push 接收到的msg
+        if (presentString < historyTime) {
+          if (this.countall) {
+            console.log("已经接听过了");
+          } else {
+            console.log("没有接听过了");
+            this.doctorIdaccept = res.from;
+            sessionStorage.setItem("doctorIdaccept", res.from);
+            this.addMsg(type, res);
+          }
+        }
+      },
+      //收到信息回调
+      addMsg(type, res) {
+        if (type === TIM.TYPES.MSG_TEXT) {
+          this.messageItems.push({
+            msg: res.elements[0].content.text,
+            name: res.elements[0].content.from,
+            tx: res,
+            userType: 1,
+            msgType: "text"
+          });
+        } else if (type === TIM.TYPES.MSG_IMAGE) {
+          this.messageItems.push({
+            msg: res.elements[0].content.imageInfoArray[0].imageUrl,
+            name: res.elements[0].from,
+            tx: res,
+            userType: 1,
+            msgType: "img"
+          });
+        }
+      },
+      //发送文本消息
+      onSendTextMsg() {
+        this.getTime();
+        let text = this.textMsg;
+        let topeople='4535481258038272';
+        console.log('信息',this.showtime,text);
+        this.textMsg = "";
+            this.messageItems.push({
+              msg:text,
+              name:'我',
+              tx: "",
+              userType: 2,
+              msgType: "text",
+              time:this.showtime,
+            });
+        let message = tim.createTextMessage({
+          to:topeople,  //topeople
+          conversationType: TIM.TYPES.CONV_C2C,
+          payload: {
+            text: text
+          }
+        });
+        // 2. 发送消息
+        let promise = tim.sendMessage(message);
+        promise
+          .then(imResponse => {
+            this.textMsg = "";
+            // 发送成功
+            this.messageItems.push({
+              msg: imResponse.data.message.elements[0].content.text,
+              name: imResponse.data.message.from,
+              tx: "../../../assets/imgs/specialist.png",
+              userType: 2,
+              msgType: "text",
+              time:this.showtime,
+            });
+          })
+          .catch(function(imError) {
+            // 发送失败
+            console.log(imError);
+            //console.warn('sendMessage error:', imError);
+          });
+      },
+      //发送图片消息
+      onSendImgMsg() {
+        this.getTime();
+        let topeople;
+        if (this.isVideoaccept) {
+          topeople = this.doctorIdaccept;
+        } else {
+          topeople = this.doctorId;
+        }
+        let message = tim.createImageMessage({
+          to: topeople,  //topeople
+          conversationType: TIM.TYPES.CONV_C2C,
+          payload: {
+            file: document.getElementById("imagePicker")
+          },
+          onProgress: function (event) {
+            console.log("file uploading:", event);
+          }
+        });
+        // 2. 发送消息
+        let promise = tim.sendMessage(message);
+        promise
+          .then(imResponse => {
+            // 发送成功
+            console.log(imResponse);
+            if (message.type === TIM.TYPES.MSG_IMAGE) {
+              this.messageItems.push({
+                msg:
+                imResponse.data.message.elements[0].content.imageInfoArray[0]
+                  .imageUrl,
+                name: imResponse.data.message.from,
+                tx: imResponse.data,
+                userType: 2,
+                msgType: "img",
+                time: this.showtime,
+              });
+            }
+          })
+          .catch(function (imError) {
+            // 发送失败
+            console.warn("sendMessage error:", imError);
+          });
+      },
+      photo(){
+        console.log('js调安卓');
+        document.location = "js://webview?pic";
+      },
+      photograph(){
+        document.location="js://webview?photograph";
+      },
+      getPhotoUrl(strUrl){
+
+      },
+      selectpic(){
+        this.showsheet=true;
+      },
+      onCancel() {
+        this.showsheet = false;
+      },
+      onselect(item,index){
+        if(index===0){
+          this.photo();
+        }
+        if(index===1){
+          this.photograph();
+        }
+      }
+   },
+    mounted() {
+      this.getMedicalTeamDataList();
+      this.getUserSig();
+      // this.getIMBegin();
+      this.tim.on(TIM.EVENT.SDK_READY, this.onReadyStateUpdate);
+      this.tim.on(TIM.EVENT.MESSAGE_RECEIVED, this.onMessageReceived);
+      window.getPhotoUrl=this.getPhotoUrl
+      window.endVideo=this.endVideo
+    },
+  }
+</script>
+
+<style scoped lang="less">
+  .consultWeb {
+    width: 750px;
+
+    .consultTop {
+      width: 750px;
+      height: 120px;
+      display: flex;
+
+      .left {
+        position: relative;
+        width: 375px;
+
+        .consultPeopleList {
+          width: 375px;
+          height: auto;
+          max-height: 320px;
+          overflow-y: auto;
+          position: absolute;
+          background: white;
+          box-shadow: 5px 5px 10px #b8d4d3;
+          border-radius: 0 0 15px 15px;
+
+          .onselect {
+            width: 375px;
+            display: flex;
+            justify-content: space-around;
+
+            img {
+              margin-top: 15px;
+              width: 90px;
+              height: 90px;
+              border-radius: 45px;
+            }
+
+            .name {
+              margin-top: 10px;
+              color: #595757;
+              font-size: 30px;
+              font-weight: bold;
+
+              .jibie {
+                margin-top: 15px;
+                margin-left: -5px;
+                width: auto;
+                height: 38px;
+                border-radius: 25px;
+                border: 1px solid #F09365;
+                color: #F09365;
+                font-size: 26px;
+                text-align: center;
+              }
+            }
+          }
+
+          .select {
+            margin-top: 50px;
+            width: 22px;
+            height: 19px;
+            background: url("../../assets/imgs/consult1_x.png") no-repeat;
+            background-size: 21px 19px;
+          }
+        }
+      }
+
+      .right {
+        width: 375px;
+        display: flex;
+        justify-content: space-around;
+
+        .dialog {
+          margin-top: 40px;
+          width: 47px;
+          height: 45px;
+          background: url("../../assets/imgs/consult2_x.png");
+          background-size: 47px 45px;
+        }
+
+        .phone {
+          margin-top: 40px;
+          width: 43px;
+          height: 43px;
+          background: url("../../assets/imgs/consult3_x.png");
+          background-size: 43px 43px;
+        }
+
+        .video {
+          margin-top: 40px;
+          width: 39px;
+          height: 49px;
+          background: url("../../assets/imgs/consult4_x.png");
+          background-size: 39px 49px;
+        }
+      }
+
+      .consultPeople {
+        height: 120px;
+        background: white;
+        box-shadow: 5px 5px 10px #b8d4d3;
+        border-radius: 0 0 15px 15px;
+        display: flex;
+        justify-content: space-around;
+
+        img {
+          margin-top: 15px;
+          width: 90px;
+          height: 90px;
+          border-radius: 45px;
+        }
+
+        .name {
+          margin-top: 10px;
+          color: #595757;
+          font-size: 30px;
+          font-weight: bold;
+
+          .jibie {
+            margin-top: 15px;
+            margin-left: -5px;
+            width: 136px;
+            height: 38px;
+            border-radius: 25px;
+            border: 1px solid #F09365;
+            color: #F09365;
+            font-size: 26px;
+            text-align: center;
+          }
+        }
+
+        .select {
+          margin-top: 50px;
+          width: 22px;
+          height: 19px;
+          background: url("../../assets/imgs/consult1_x.png") no-repeat;
+          background-size: 21px 19px;
+        }
+      }
+
+    }
+    .consultContent{
+      width: 750px;
+      height: 900px;
+      overflow-y: auto;
+      .consultTime{
+        margin: 50px auto 0;
+        color: #777777;
+        font-size: 26px;
+        width: 550px;
+        height: 35px;
+        display: flex;
+        justify-content: space-around;
+        .line{
+          margin-top: 15px;
+          width: 150px;
+          height: 2px;
+          background: #999999;
+        }
+      }
+      .consultText{
+        width:700px;
+        .mydialog{
+          max-width: 450px;
+          margin-bottom: 70px;
+          margin-right: 30px;
+          float: right;
+          display: inline-block;
+          padding: 15px 15px;
+          margin-top: 40px;
+          border-radius: 20px;
+          font-size: 28px;
+          color: #777777;
+          background: #f4f4f4;
+        }
+        .myphoto{
+          margin-top: 20px;
+          float: right;
+          width: 100px;
+          height: 100px;
+          border-radius: 50px;
+          background: #f6a540;
+          img{
+            width: 100px;
+            height: 100px;
+            border-radius: 50px;
+          }
+        }
+        .yourphoto{
+          margin-top: 20px;
+          margin-left: 50px;
+          float: left;
+          width: 100px;
+          height: 100px;
+          border-radius: 50px;
+          background: #f6a540;
+          img{
+            width: 100px;
+            height: 100px;
+            border-radius: 50px;
+          }
+        }
+        .yourdialog{
+          margin-left: 30px;
+          max-width: 450px;
+          margin-bottom: 70px;
+          float: left;
+          display: inline-block;
+          padding: 15px 15px;
+          margin-top: 40px;
+          border-radius: 20px;
+          font-size: 28px;
+          color: white;
+          background: #94C5C5;
+        }
+      }
+    }
+    .dialogBottom {
+      left: 50%;
+      margin-left: -150px;
+      text-align: center;
+      width: 300px;
+      height: 20px;
+      color: #999999;
+      font-size: 26px;
+      position: absolute;
+      bottom: 120px;
+    }
+
+    .consultBottom {
+      width: 750px;
+      height: 100px;
+      background: #F4F4F4;
+      position: absolute;
+      bottom: 0;
+      display: flex;
+      justify-content: space-around;
+
+      .bottomvideo {
+        margin-top: 30px;
+        width: 39px;
+        height: 45px;
+        background: url("../../assets/imgs/consult5_x.png");
+        background-size: 39px 45px;
+      }
+
+      .bottominput {
+        margin-top: 25px;
+        width: 515px;
+        height: 50px;
+
+        input {
+          color: #777777;
+          width: 500px;
+          height: 50px;
+          border-radius: 10px;
+          padding-left: 20px;
+        }
+      }
+
+      .bottompic {
+        margin-top: 30px;
+        width: 45px;
+        height: 38px;
+        background: url("../../assets/imgs/consult6_x.png");
+        background-size: 45px 38px;
+
+        #imagePicker {
+          opacity: 0;
+          width: 45px;
+          height: 38px;
+        }
+      }
+
+      .bottomsub {
+        margin-top: 30px;
+        width: 40px;
+        height: 34px;
+        background: url("../../assets/imgs/consult7_x.png");
+        background-size: 40px 34px;
+      }
+    }
+  }
+</style>
+<style>
+  @import url('../../assets/less/vantstyle/dialog.css');
+  @import url('../../assets/less/vantstyle/button.css');
+</style>

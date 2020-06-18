@@ -1,0 +1,143 @@
+// 2020/1/8 created by xtt
+<template>
+ <div>
+   <HeaderTitle :title="title"/>
+   <div class="dynamicBar">
+    <div class="tab-head">
+      <div class="tab-head-item" v-show="!isMs" @click="getManagementType('ms')">
+        <img src="../../assets/imgs/symptom1.png"/>健康状况</div>
+      <div class="tab-head-item" v-show="isMs">
+        <img src="../../assets/imgs/management4.png"/><div class="tab-head-item-select">健康状况</div></div>
+      <div class="tab-head-item" v-show="!isMh" @click="getManagementType('mh')">
+        <img src="../../assets/imgs/health1.png"/>健康指标</div>
+      <div class="tab-head-item" v-show="isMh">
+        <img src="../../assets/imgs/management3.png"/><div class="tab-head-item-select">健康指标</div></div>
+      <div class="tab-head-item" v-show="!isMr" @click="getManagementType('mr')">
+        <img src="../../assets/imgs/report1.png"/>检查报告</div>
+      <div class="tab-head-item" v-show="isMr">
+        <img src="../../assets/imgs/management2.png"/><div class="tab-head-item-select">检查报告</div></div>
+      <div class="tab-head-item" v-show="!isMu" @click="getManagementType('mu')">
+        <img src="../../assets/imgs/usemedical1.png"/>用药动态</div>
+      <div class="tab-head-item" v-show="isMu">
+        <img src="../../assets/imgs/management5.png"/><div class="tab-head-item-select">用药动态</div></div>
+      <div class="tab-head-item" v-show="!isMa" @click="getManagementType('ma')">
+        <img src="../../assets/imgs/advice1.png"/>健康建议</div>
+      <div class="tab-head-item" v-show="isMa">
+        <img src="../../assets/imgs/management1.png"/><div class="tab-head-item-select">健康建议</div></div>
+    </div>
+    <div v-if="isMa">
+    <management-advice></management-advice>
+    </div>
+    <div v-if="isMr">
+    <management-report></management-report>
+    </div>
+    <div v-if="isMu">
+      <pharmacy-info></pharmacy-info>
+    </div>
+    <div v-if="isMh">
+      <health-indicator></health-indicator>
+    </div>
+    <div v-if="isMs">
+      <symptoms-feel></symptoms-feel>
+    </div>
+  </div>
+ </div>
+</template>
+
+<script>
+  import managementAdvice from "./managementAdvice/managementAdvice"
+  import managementReport from "./managementReport/managementReport"
+  import pharmacyInfo from "./pharmacyInfo/pharmacyInfo"
+  import healthIndicator from "./healthIndicator/healthIndica"
+  import symptomsFeel from "./symptomsFeel/symptomsFeel"
+  import HeaderTitle from '../../components/headertitle'
+    export default {
+      name: "dynamicBar",
+      components:{managementAdvice,managementReport,pharmacyInfo,healthIndicator,symptomsFeel,HeaderTitle},
+      data(){
+        return{
+          title:'健康动态',
+          isMa:false,
+          isMr:false,
+          isMh:false,
+          isMs:false,
+          isMu:false,
+          type: this.$route.query.type,   //管理动态type
+        }
+      },
+      methods:{
+        getManagementType(type){
+          type?this.type=type:'';
+          this.isMa=false;this.isMr=false;this.isMh=false;this.isMs=false;this.isMu=false;
+          if(this.type==='ma'){
+            this.isMa=true;
+          }else if(this.type==='mr'){
+            this.isMr=true;
+          }else if(this.type==='mh'){
+            this.isMh = true;
+          }else if(this.type==='ms'){
+            this.isMs=true;
+          }else if(this.type==='mu'){
+            this.isMu=true;
+          }
+        },
+      },
+      mounted() {
+        this.getManagementType('ms');//默认健康状况
+      }
+  }
+</script>
+
+<style scoped lang="less">
+  .dynamicBar {
+    width: 100%;
+    position: relative;
+    top: 1.8rem;
+    background: #ffffff;
+    .tab-head {
+      height: 2.15rem;
+      /*display:-webkit-box;*/
+      /*display:-webkit-flex;*/
+      /*display:-ms-flexbox;*/
+      display: flex;
+      /*-webkit-flex-wrap:nowrap;*/
+      /*-ms-flex-wrap:nowrap;*/
+      flex-wrap: nowrap;
+      /*-webkit-box-pack:justify;*/
+      /*-webkit-justify-content:space-between;*/
+      /*-ms-flex-pack:justify;*/
+      justify-content: space-between;
+     // background: #FF4878;
+      padding: 0;
+      overflow: auto;
+      background: white;
+      border-top-left-radius: .3rem;
+      border-top-right-radius: .3rem;
+    }
+   .tab-head-item-select{
+     font-size: 0.3rem;
+     font-weight: bold;
+     color: #e89b4d;
+   }
+    .tab-head-item {
+      width: 1rem;
+      height: 2rem;
+      //margin-left: 0.1rem;
+      background: white;
+      /*-webkit-box-flex:1;*/
+      /*-webkit-flex:1 0 auto;*/
+      /*-ms-flex:1 0 auto;*/
+      flex: 1 0 auto;
+      color: #606060;
+      font-size: 0.28rem;
+      padding: 0 0.05rem;
+      text-align: center;
+
+    img {
+      margin: 0.4rem auto 0.2rem auto;
+      width: 0.9rem;
+      height: 0.9rem;
+    }
+  }
+}
+</style>

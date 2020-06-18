@@ -1,0 +1,128 @@
+<!--xtt-->
+<template>
+    <div class="stewardInfo">
+      <div class="introtop">
+        <div class="introblock">
+          <div class="photo"><img src="../../assets/imgs/steward_x.png"></div>
+          <div class="name">{{stewardInfo.name}}</div>
+          <div class="rank">{{stewardInfo.level}}</div>
+        </div>
+      </div>
+      <div class="introcontent">
+        <div class="brief">
+          <div class="briefwhite">
+          <div class="briefImg">管家简介</div>
+          <div class="brieftext">{{introduction}}</div>
+        </div>
+        </div>
+      </div>
+      <medical-bottom></medical-bottom>
+    </div>
+</template>
+
+<script>
+  import {getMedicalInfo} from '../../api/index'
+  import MedicalBottom from '../../components/medicalBottom'
+    export default {
+      name: "stewardInfo",
+      components:{MedicalBottom},
+      data(){
+        return{
+          stewardId:this.$route.query.id,
+          stewardInfo:'',
+          introduction:''
+        }
+      },
+      methods:{
+        getStewardInfo(){
+          getMedicalInfo(this.stewardId).then(res=>{
+            this.stewardInfo=res.data.data;
+            this.introduction=this.stewardInfo.brief;
+          })
+        }
+      },
+      mounted() {
+        this.getStewardInfo();
+      }
+    }
+</script>
+
+<style scoped lang="less">
+ .stewardInfo{
+   .introtop{
+     height: 415px;
+     background: url("../../assets/imgs/introbar_x.png") no-repeat;
+     background-size:100% 215px;
+     background-color: white;
+     .introblock{
+       margin-left: auto;
+       margin-right: auto;
+       padding-top: 120px;
+       width: 200px;
+       height: 250px;
+       text-align: center;
+       .photo{
+         margin-left: auto;
+         margin-right: auto;
+         width: 180px;
+         height: 180px;
+         border-radius: 90px;
+         background: #ffffff;
+         display: flex;
+         justify-content: center;
+         align-items: center;
+         img{
+           width: 172px;
+           height: 172px;
+           border-radius: 86px;
+         }
+       }
+       .name{
+         font-size: 30px;
+         color: #0F847E;
+         font-weight: bold;
+       }
+       .rank{
+         font-size: 26px;
+         color: #777777;
+       }
+     }
+   }
+   .introcontent{
+     .brief{
+       margin: 20px auto 0 auto;
+       width: 720px;
+       height: auto;
+       background: #40b2a0;
+       box-shadow: 0px 0px 8px #a7a7a7;
+       border-radius: 20px;
+       overflow: hidden;
+       .briefwhite {
+         width: 700px;
+         height: auto;
+         float: right;
+         background: white;
+         .briefImg {
+           margin-top: 20px;
+           width: 200px;
+           height: 45px;
+           padding-left: 70px;
+           padding-top: 5px;
+           color: #40B2A0;
+           font-size: 30px;
+           font-weight: bold;
+           background: url("../../assets/imgs/intro2_x.png") no-repeat 20px;
+           background-size: 31px 39px;
+         }
+         .brieftext{
+           margin-left: 20px;
+           color: #777777;
+           font-size: 28px;
+           line-height: 40px;
+           padding:20px 0;
+         }
+       }
+     }
+   }
+ }
+</style>

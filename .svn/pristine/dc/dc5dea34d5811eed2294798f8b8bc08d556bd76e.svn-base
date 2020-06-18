@@ -1,0 +1,180 @@
+/*
+ * @Author: zzh 
+ * @Date: 2019-12-26 14:32:57 
+ * @Last Modified by: zzh
+ * @Last Modified time: 2019-12-27 15:53:17
+ */
+<template>
+  <div class="quickAppoint_container">
+    <div class="banner_container"></div>
+    <div class="tab_container">
+      <div class="tab_item" :class="{'active_tab':currentTabIndex==index}" @click="changeTab(item,index)" :key="item.title" v-for="(item,index) in tabLists">
+        <div class="item_icon">
+          <img :src="item.iconUrl" />
+        </div>
+        <div class="item_title">{{item.title}}</div>
+      </div>
+    </div>
+    <div class="list_container">
+      <div class="list_item" :key="item.title" v-for="item in appointLists">
+        <div class="item_img">
+          <img :src="item.imgUrl" />
+        </div>
+        <div class="item_text">
+          <div class="item_title">{{item.catNm}}</div>
+          <div class="item_times">{{`剩余次数 ${item.residueDegree}`}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getAppointList } from "../../api/index";
+export default {
+  components: {},
+  name: "quickAppoint",
+  props: [],
+  data() {
+    return {
+      currentTabIndex:0,
+      currentTabCatCd:"80060.100",
+      tabLists: [
+        {
+          title: "就医服务",
+          iconUrl: require("../../assets/imgs/icon_yjyy_doctor.png"),
+          catCd: "80060.100"
+        },
+        {
+          title: "定制体验",
+          iconUrl: require("../../assets/imgs/icon_yjyy_custom_pre.png"),
+          catCd: "80060.101"
+        },
+        {
+          title: "上门医护",
+          iconUrl: require("../../assets/imgs/icon_yjyy_medical.png"),
+          catCd: "80060.102"
+        },
+        {
+          title: "陪诊代办",
+          iconUrl: require("../../assets/imgs/icon_yjyy_agent.png"),
+          catCd: "80060.103"
+        }
+      ],
+      appointLists: [
+        {
+          imgUrl: require("../../assets/imgs/img_yjyy_clinc.png"),
+          title: "门诊挂号预约",
+          times: 2
+        },
+        {
+          imgUrl: require("../../assets/imgs/img_yjyy_drug.png"),
+          title: "送药上门服务",
+          times: 2
+        },
+        {
+          imgUrl: require("../../assets/imgs/img_yjyy_report.png"),
+          title: "代拿化验报告",
+          times: 2
+        }
+      ]
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {
+      currentTabCatCd(newVal,oldVal){
+          this.getAppointListFun(newVal)
+      }
+  },
+  mounted() {
+    this.getAppointListFun(this.currentTabCatCd);
+  },
+  methods: {
+    getAppointListFun(cd) {
+      getAppointList(4727089507456000, cd).then(res => {
+        this.appointLists = res.data.list;
+      });
+    },
+    changeTab(item,index){
+        this.currentTabIndex=index
+        this.currentTabCatCd=item.catCd
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.quickAppoint_container {
+  .banner_container {
+    height: 201px;
+    width: 100%;
+    background: url("../../assets/imgs/img_yjyy_banner.png") no-repeat;
+    background-size: 100% 100%;
+  }
+  .tab_container {
+    background-color: #fff;
+    display: flex;
+    height: 146px;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 25px 66px 21px;
+    justify-content: space-between;
+    .tab_item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .item_icon {
+        img {
+          height: 51px;
+        }
+      }
+      .item_title {
+        margin-top: 12px;
+        font-size: 28px;
+        color: #606060;
+      }
+    }
+    .active_tab{
+        .item_title{
+            color: #F6A540;
+        }
+    }
+  }
+  .list_container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    .list_item {
+      display: flex;
+      margin-top: 25px;
+      background-color: #fff;
+      height: 149px;
+      width: 701px;
+      align-items: center;
+      .item_img {
+        margin-left: 20px;
+        img {
+          width: 213px;
+          height: 123px;
+        }
+      }
+      .item_text {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        margin-left: 27px;
+        color: #777777;
+        .item_title {
+          font-size: 30px;
+          font-weight: 600;
+        }
+        .item_times {
+          margin-top: 20px;
+          font-size: 28px;
+        }
+      }
+    }
+  }
+}
+</style>

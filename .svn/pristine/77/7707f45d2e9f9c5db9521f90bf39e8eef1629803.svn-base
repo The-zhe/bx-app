@@ -1,0 +1,173 @@
+<template>
+  <div class="product_list">
+    <div class="header">
+      <div class="swiper-container">
+        <div class="swiper-wrapper">
+          <div v-for="(item,index) in swiperItems" :key="index" class="swiper-slide"><img class="header_img" :src="item.img"></div>
+        </div>
+
+        <div class="swiper-pagination"></div>
+      </div>
+    </div>
+    <div class="content">
+      <div class="content_title flex_between">
+        <div v-for="item in titleItems" :class="currentTitle == item.type ? 'active_title':''" class="title_item font_weight c_gray ali_center" @click="changeTitle(item.type,item.cd)">{{ item.title}}</div>
+      </div>
+
+      <div class="content_container">
+        <component is="ProductCommon" :productLists="productLists" :pageType="pageType"></component>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import ProductCommon from '../../components/pages/product_common';
+  import Swiper from 'swiper';
+
+  export default {
+    components: {ProductCommon}, name: 'productList',
+    data () {
+      return {
+        currentTitle:1,
+        titleItems:[
+          {title:'代办陪诊',type:'1',cd:'20010.100'},
+          {title:'健康服务',type:'2',cd:'20010.110'},
+          {title:'社区云医',type:'3',cd:'20010.120'},
+          {title:'名医诊疗',type:'4',cd:'20010.130'},
+        ],
+        swiperItems:[
+          {img:require('../../assets/images/swiper1.jpg')},
+          {img:require('../../assets/images/swiper2.jpg')},
+          {img:require('../../assets/images/swiper3.jpg')}
+        ],
+        productLists:[
+            {name:'精品婴幼儿套餐',spec:'3大服务.银牌会员3大服务.银牌…',price:'79.8元/月起',count:1,id:1},
+            {name:'精品婴幼儿套餐',spec:'3大服务.银牌会员3大服务.银牌…',price:'79.8元/月起',count:2,id:2},
+            {name:'精品婴幼儿套餐',spec:'3大服务.银牌会员3大服务.银牌…',price:'79.8元/月起',count:1,id:3},
+        ],
+        pageType:2,
+        pageNum:1,
+        productCd:'20010.100',
+        code:''
+      }
+    },
+    mounted(){
+        let urlLink = window.location.href;
+        this.getUrlParam(urlLink);
+
+        if(this.code){
+            this.submitCode();
+        }
+    },
+    methods:{
+        //获取code;
+        getUrlParam(url) {   //name为要获取的参数名
+            let link = url;
+            let arr1 = link.split('?');
+            let arr2 =  arr1[1].split('&');
+            let arr3 =  arr2[0].split('=');
+            let code = arr3[1];
+            this.code = code;
+        },
+        submitCode(){
+            let url = '/wxMp/access/login';
+            let data = {
+                code:this.code
+            };
+            let response = (res)=>{
+                let token = res.data;
+                this.$store.commit('setNewToken',token);
+
+                this.getList();
+                this.getSwiper();
+            };
+
+            this.$store.state.getMoreData(url,data,response);
+        },
+      //获取服务列表
+      getList(){
+        let url = '/hjjk/service/page';
+        let data = {"w":[{"k":"typeCd","v":this.productCd,"m":"LK"}],"o":[],"p":{"n":this.pageNum,"s":20}};
+        let response = (res)=>{
+            this.productLists = res.data.list;
+        };
+        this.$store.state.getListData(url,data,response);
+      },
+      getSwiper(){
+        new Swiper ('.swiper-container', {
+          loop: true,
+          autoplay: true,
+          // 如果需要分页器
+          pagination: {
+            el: '.swiper-pagination',
+          },
+        })
+      },
+      changeTitle(type,cd){
+        this.currentTitle = type;
+        this.productCd = cd;
+
+        this.getList();
+      }
+    }
+
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+  .product_list{
+    .header{
+      padding: 20px 32px;
+      background:url("../../assets/images/bg_1@2x.png") no-repeat center center;
+      background-size: 750px 352px;
+      .header_img{
+        width: 686px;
+        height: 240px;
+        border-radius: 20px;
+      }
+    }
+
+    .content{
+      .content_title{
+        height: 80px;
+        padding: 0 32px;
+        background-color: #ffffff;
+
+        div{
+          height: 80px;
+          line-height: 80px;
+        }
+      }
+
+      .content_container{
+        padding: 16px 32px 1px 32px;
+      }
+    }
+
+    .active_title{
+      color: #0FA29C;
+      font-size: 40px;
+      font-weight: 600;
+      background: url("../../assets/images/line@2x.png") no-repeat center bottom;
+      background-size: 20px 8px;
+    }
+  }
+</style>
+<style lang="less">
+  .product_list{
+    .swiper-pagination-bullet{
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      border-radius: 100%;
+      background:#000000;
+    }
+    .swiper-pagination-bullet-active{
+      background:#32A99F;
+      width: 20px;
+      border-radius: 10px;
+    }
+  }
+</style>

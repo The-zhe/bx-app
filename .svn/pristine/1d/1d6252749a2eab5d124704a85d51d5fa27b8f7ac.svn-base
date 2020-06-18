@@ -1,0 +1,93 @@
+.bd(@border_width,@border_color) {
+    border:@border_width solid @border_color;
+}
+.bdb(@border_width,@border_color){
+    border-bottom:@border_width solid @border_color;
+}
+.bdt(@border_width,@border_color){
+    border-top:@border_width solid @border_color;
+}
+.bdr(@border_width,@border_color){
+    border-right:@border_width solid @border_color;
+}
+.bdl(@border_width,@border_color){
+    border-left:@border_width solid @border_color;
+}
+.bgc(@background_color){
+    background-color: @background_color;
+}
+.h(@height){
+    height: @height;
+}
+.tac(){
+    text-align: center;
+}
+.lh(@line_height){
+    line-height: @line_height;
+}
+.w(@width){
+    width: @width;
+}
+.fs(@fontSize){
+    font-size: @fontSize;
+}
+.fc(@font_color){
+    color: @font_color;
+}
+.fw(@font_weight){
+    font-weight: @font_weight;
+}
+.br(@border_radius){
+    border-radius: @border_radius;
+}
+.bb(){
+    box-sizing: border-box;
+}
+.mglr(@margin){
+    margin:0 @margin;
+}
+.mgl(@margin_left){
+    margin-left: @margin_left;
+}
+.mgr(@margin_right){
+    margin-right: @margin_right;
+}
+.mgt(@margin_top){
+    margin-top: @margin_top;
+}
+.mgb(@margin_bottom){
+    margin-bottom: @margin_bottom;
+}
+.pd(@top;@right;@bottom;@left){
+    padding:@top @right @bottom @left; 
+}
+.pdl(@left){
+    padding-left: @left;
+}
+.pdr(@right){
+    padding-right: @right;
+}
+.pdt(@top){
+    padding-top: @top;
+}
+.pdb(@bottom){
+    padding-bottom: @bottom;
+}
+.pdlr(@padding){
+    padding:0 @padding;
+}
+.flex_y_center(){
+    display: flex;
+    align-items: center;
+}
+.flex_x_center(){
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+.ptr(){
+    position: relative;
+}
+.pta(){
+    position: absolute;
+}

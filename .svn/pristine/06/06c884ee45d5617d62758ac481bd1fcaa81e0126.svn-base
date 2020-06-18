@@ -1,0 +1,322 @@
+// 2020/1/9 created by xtt
+<template>
+    <div class="reportCheckInfo">
+      <div class="headerPart_container"></div>
+      <div class="report_container">
+        <div class="report_header">
+          <div class="hospital">{{reportInfo.hospName}}</div>
+          <div class="date">{{reportInfo.inspDate}}</div>
+        </div>
+        <div class="report_content">
+          <div class="report_info">
+            <div class="top">
+              <div class="info department">
+                <div class="title">科&emsp;室：</div>
+                <div class="text">{{reportInfo.deptNm}}</div>
+              </div>
+              <div class="info doctor">
+                <div class="title">医&emsp;生：</div>
+                <div class="text">{{reportInfo.doctor}}</div>
+              </div>
+            </div>
+            <div class="info outPatient_num">
+              <div class="title">门诊号：</div>
+              <div class="text">{{reportInfo.opcNo}}</div>
+            </div>
+          </div>
+          <div class="part medicalHistory_container">
+            <div class="title">简要病史</div>
+            <div class="text">{{reportInfo.briefHistory}}</div>
+          </div>
+          <div class="part diagnosticPerformance_container">
+            <div class="title">诊查表现</div>
+            <div class="text">{{reportInfo.imgFind}}</div>
+          </div>
+          <div class="part diagnosticResult_container">
+            <div class="title">诊断结论</div>
+            <div class="text">{{reportInfo.imgImp}}</div>
+          </div>
+          <div class="part reportDoctor_container">
+            <div class="title">报告医生：</div>
+            <div class="text_">{{reportInfo.reportDoctor}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="r_img" v-show="reportInfo.catCd==='1'">
+        <div class="r_img_top">报告照片：</div>
+        <div class="r_img_content">
+          <div class="r_img_content_top">
+            <div>会员上传</div>
+            <div class="r_img_content_top_small">上传时间： {{reportInfo.crtTm}}</div>
+          </div>
+          <div class="r_img_content_b">
+             <img :src="reportInfo.imgUrl"/>
+          </div>
+        </div>
+      </div>
+      <div class="r_bottom">
+       <div class="r_info">
+         <div class="r_info_t">
+           <div class="r_info_t_photo"><img :src="reportInfo.doctorImgUrl?reportInfo.doctorImgUrl:doctorImg"></div>
+           <div class="r_info_t_name">
+             {{reportInfo.adviceDoctor}}
+             <div class="r_info_t_name_small">{{reportInfo.title}}</div>
+           </div>
+           <div class="r_info_t_btn"></div>
+         </div>
+         <div class="r_info_b">
+           {{reportInfo.msg}}
+         </div>
+       </div>
+      </div>
+    </div>
+</template>
+
+<script>
+  import {getReportCheck} from '../../../api/index'
+    export default {
+       name: "reportCheckInfo",
+      components:{},
+       data(){
+          return{
+            reportInfo: {},
+            currentReportId: 0,
+            checkList: [],
+            pgdwUrl: require("../../../assets/imgs/icon_da_arrow_upper.png"),
+            pggwUrl: require("../../../assets/imgs/icoon_da_triangle_lower.png"),
+            pddwUrl: require("../../../assets/imgs/icon_da_arrow_lower.png"),
+            pdgwUrl: require("../../../assets/imgs/icoon_da_triangle_upper.png"),
+            doctorImg:require("../../../assets/imgs/img_yhtd_doctor.png"),
+            nurseImg:require("../../../assets/imgs/img_yhtd_nurse.png"),
+            stewardImg:require("../../../assets/imgs/img_yhtd_steware.png"),
+            checkSheet: [],
+            checkid:this.$route.query.id,
+          }
+       },
+      methods:{
+         getInfo() {
+           getReportCheck(this.checkid).then(res=>{
+             this.reportInfo=res.data.data;
+             let name=this.reportInfo.name;
+             this.$store.commit("setHeaderTitle", name);
+             console.log('check',res.data.data);
+           })
+         }
+      },
+      mounted() {
+       this.getInfo();
+      }
+    }
+</script>
+
+<style scoped lang="less">
+  .reportCheckInfo{
+    width: 100%;
+    height: 100%;
+    background: #F4F4F4;
+    padding-bottom: 60px;
+    .headerPart_container {
+      height: 200px;
+      background-color: #008b84;
+    }
+    .report_container {
+      border-radius: 14px;
+      box-shadow: 0 0 8px #bebcbc;
+      box-sizing: border-box;
+      width: 701px;
+      margin: -200px auto 0;
+      background-color: #fff;
+      .report_header {
+        border-radius: 14px 14px 0 0;
+        position: relative;
+        padding: 25px 20px 0px;
+        background-color: #f4f4f4;
+        font-weight: 600;
+        font-size: 30px;
+        color: #777777;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        box-sizing: border-box;
+        margin-bottom: 16px;
+        .date {
+          margin-top: 12px;
+          margin-bottom: 19px;
+        }
+        &:after{
+          position: absolute;
+          content: "";
+          bottom: -8px;
+          height: 8px;
+          background-color: #cdcdcd;
+          width: 660px;
+        }
+      }
+      .report_content {
+        padding: 0 20px;
+        .report_info {
+          border-top: 2px solid #cdcdcd;
+          border-bottom: 21px solid #f4f4f4;
+          display: flex;
+          flex-direction: column;
+          box-sizing: border-box;
+          padding: 29px 14px 38px;
+          font-size: 28px;
+          color: #777777;
+          .top {
+            display: flex;
+            .doctor {
+              margin-left: auto;
+              margin-right: 90px;
+            }
+          }
+          .info {
+            display: flex;
+            .title {
+              font-weight: 600;
+            }
+            .text {
+            }
+            &:not(:last-child) {
+              margin-bottom: 29px;
+            }
+          }
+        }
+        .part {
+          padding: 29px 14px 29px 14px;
+          font-size: 28px;
+          .title {
+            color: #606060;
+            font-weight: 600;
+          }
+          .text {
+            margin-top: 27px;
+            color: #777777;
+          }
+          &:not(:first-child) {
+            border-top: 2px solid #ededed;
+          }
+        }
+        .reportDoctor_container {
+          display: flex;
+          .text_ {
+            color: #777777;
+          }
+        }
+      }
+    }
+    .r_img{
+      width: 700px;
+      height: 550px;
+      background: white;
+      border-radius: 14px;
+      box-shadow: 0 0 8px #bebcbc;
+      margin: 25px auto 0 auto;
+      .r_img_top{
+        padding-top: 20px;
+        padding-left: 30px;
+        color: #777777;
+        font-size: 30px;
+        font-weight: bold;
+        width: 670px;
+        height: 70px;
+        border-bottom: 1px solid #DFDFDF;
+      }
+      .r_img_content{
+        width: 650px;
+        height: 80px;
+        margin: 0 auto;
+        .r_img_content_top{
+          margin-top: 20px;
+          font-size: 30px;
+          color: #777777;
+          width: 650px;
+          height: 60px;
+          display: flex;
+          justify-content: space-between;
+          .r_img_content_top_small{
+            font-size: 28px;
+          }
+        }
+        .r_img_content_b{
+          width: 650px;
+          height: 360px;
+          background: #EEEEEE;
+          display: flex;
+          align-items:center;
+          justify-content:center;
+          img{
+            width: 70px;
+            height: 60px;
+          }
+        }
+      }
+    }
+    .r_bottom{
+      border-radius: 14px;
+      box-shadow: 0 0 8px #bebcbc;
+      width: 700px;
+      height: 310px;
+      margin: 25px auto;
+      background: #3EB4A1;
+      padding-top: 70px;
+      overflow: hidden;
+      .r_info{
+        width: 700px;
+        height: 310px;
+        background: white;
+        .r_info_t{
+          width: 700px;
+          height: 180px;
+          display: flex;
+          justify-content: space-between;
+          .r_info_t_photo{
+            margin-top: 30px;
+            margin-left: 30px;
+            width: 130px;
+            height: 130px;
+            img{
+              width: 120px;
+              height: 120px;
+              border-radius: 60px;
+            }
+          }
+          .r_info_t_name{
+            margin-left: 20px;
+            margin-top: 50px;
+            color:#5B5B5B;
+            font-size: 30px;
+            font-weight: bold;
+            width: 350px;
+            height: 90px;
+            .r_info_t_name_small{
+              color: #777777;
+              font-weight: normal;
+            }
+          }
+          .r_info_t_btn{
+            margin-top: 60px;
+            margin-right: 40px;
+            width: 140px;
+            height: 60px;
+            background: url("../../../assets/imgs/reportbtn.png");
+            background-size: 140px 60px;
+          }
+        }
+        .r_info_b{
+          line-height: 50px;
+          margin: 0 auto;
+          width: 650px;
+          height: 90px;
+          font-size: 28px;
+          color: #777777;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+  }
+</style>

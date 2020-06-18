@@ -1,0 +1,206 @@
+<template>
+  <div class="diseaseCourse_container">
+    <div class="headerPart_container"></div>
+    <div class="tab_container">
+      <div
+        class="tab_item"
+        :class="{'active_item':currentTabIndex==index}"
+        :key="item.title"
+        @click="changeComponent(item,index)"
+        v-for="(item,index) in tabList"
+      >
+        <div class="item_icon">
+          <img :src="currentTabIndex==index?item.activeIconUrl:item.iconUrl" />
+        </div>
+        <div class="item_title">{{item.title}}</div>
+      </div>
+    </div>
+    <div class="search_container">
+      <div class="time start_time">
+        {{startTime==''?'开始时间':startTime}}
+        <calendar title=""  style="opacity:0;position:absolute; left:2px; top:-2px; width:114px;height:15px" v-model="startTime"></calendar>
+        <img src="../../../../assets/imgs/btn_da_time.png" />
+      </div>
+      <div class="crossbar"></div>
+      <div class="time end_time">
+        {{endTime==''?'结束时间':endTime}}
+         <calendar title="" style="opacity:0; position:absolute; left:4px; top:-2px; width:114px;height:15px" v-model="endTime"></calendar> 
+        <img src="../../../../assets/imgs/btn_da_time.png" />
+      </div>
+      <div class="search_button" @click="searchList">确定</div>
+    </div>
+    <div class="record_container">
+      <component @uploadSuccess="uploadSuccessEvent" :listData="listData" :is="currentComponentName"></component>
+    </div>
+  </div>
+</template>
+
+<script>
+import {getDiseaseList} from '@/api/apiz'
+import {Group,Calendar} from 'vux';
+import pathoGraphy from "./components/pathoGraphy";
+import checkReport from "./components/checkReport";
+import medicalOrder from "./components/medicalOrder";
+export default {
+  components: { pathoGraphy, checkReport, medicalOrder,Group,Calendar },
+  name: "diseaseCourse",
+  data() {
+    return {
+      currentComponentName:'pathoGraphy',
+      currentTabIndex: 0,
+      startTime:"",
+      endTime:"",
+      tabList: [
+        {
+          title: "病情记录",
+          iconUrl: require("../../../../assets/imgs/icon_wdda_recordd.png"),
+          activeIconUrl: require("../../../../assets/imgs/icon_wdda_record.png"),
+          componentName: "pathoGraphy",
+        },
+        {
+          title: "检查报告",
+          iconUrl: require("../../../../assets/imgs/icon_wdda_repor.png"),
+          activeIconUrl: require("../../../../assets/imgs/icon_wdda_report.png"),
+          componentName: "checkReport",
+        },
+        {
+          title: "医嘱",
+          iconUrl: require("../../../../assets/imgs/icon_wdda_advice.png"),
+          activeIconUrl: require("../../../../assets/imgs/icon_wdda_record.png"),
+          componentName: "medicalOrder",
+        }
+      ],
+      listData:[]
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {
+    this.getDiseaseListFun(this.startTime,this.endTime)
+    this.$store.commit('setHeaderTitle','私医档案')
+  },
+  methods: {
+    changeComponent(item, index) {
+      this.currentTabIndex = index;
+      this.currentComponentName = item.componentName;
+    },
+    searchList(){
+      let startTime = this.startTime+' 00:00:00'
+      let endTime = this.endTime + ' 23:59:59'
+      this.getDiseaseListFun(startTime,endTime)
+    },
+    getDiseaseListFun(){
+      getDiseaseList(this.startTime,this.endTime).then((res)=>
+      {this.listData=res.data})
+    },
+    uploadSuccessEvent(){
+      this.startTime=""
+      this.endTime=""
+      this.$nextTick(()=>
+        this.getDiseaseListFun()
+      )
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.diseaseCourse_container {
+  background-color: #f4f4f4;
+  padding-bottom: 20px;
+  .headerPart_container {
+    background-color: #008b84;
+    height: 91px;
+  }
+  .tab_container {
+    border-radius: 15px;
+    box-shadow: 0 0 8px #999999;
+    padding: 22px 0 26px;
+    box-sizing: border-box;
+    width: 700px;
+    height: 141px;
+    display: flex;
+    margin: -70px auto 0;
+    justify-content: space-between;
+    background-color: #fff;
+    .tab_item {
+      width: 232px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      font-size: 30px;
+      color: #999999;
+      font-weight: 400;
+      display: flex;
+      .item_icon {
+        img {
+          height: 51px;
+        }
+      }
+      .item_title {
+        margin-top: 8px;
+      }
+      &:not(:first-child) {
+        border-left: 1px solid #dbdbdb;
+      }
+    }
+    .active_item {
+      color: #e39a4b;
+      font-weight: 600;
+    }
+  }
+  .search_container {
+    display: flex;
+    padding: 32px 25px;
+    box-sizing: border-box;
+    align-items: center;
+    .time {
+      height: 61px;
+      width: 251px;
+      line-height: 61px;
+      background-color: #ffffff;
+      color: #40b2a0;
+      font-size: 30px;
+      border-radius: 25px;
+      padding-left: 20px;
+      box-sizing: border-box;
+      position: relative;
+      img {
+        position: absolute;
+        width: 33px;
+        top: 14px;
+        right: 20px;
+      }
+    }
+    .start_time {
+    }
+    .crossbar {
+      margin-left: 9px;
+      margin-right: 8px;
+      height: 2px;
+      width: 25px;
+      background-color: #3eb4a1;
+    }
+    .end_time {
+    }
+    .search_button {
+      margin-left: 16px;
+      font-size: 30px;
+      color: #ffffff;
+      background-color: #3eb4a1;
+      line-height: 61px;
+      text-align: center;
+      border-radius: 35px;
+      width: 141px;
+      height: 61px;
+    }
+  }
+  .record_container {
+    padding: 0 25px;
+  }
+}
+</style>
+<style>
+@import url('../../../../assets/less/vantstyle/picker.css');
+</style>

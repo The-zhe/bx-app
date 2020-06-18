@@ -1,0 +1,91 @@
+<template>
+    <div class="appoint_result_container">
+        <div class="result_info_container">
+            <div class="result_title">
+                <div class="title_img">
+                    <img src="../../assets/images/agree@1x.png" />您的预约单已提交成功，我们会尽快为您确认，请保持手机畅通
+                </div>
+            </div>
+             <div class="result_mount" v-if="times==1||times==0">
+                您服务次数已不足，是否立即购买
+            </div> 
+        </div>
+        <div class="result_choose_container">
+            <div class="cancel_container" @click="cancel_click">
+                {{times==4?'取消':'确认'}}
+            </div>
+            <div class="buy_container" v-if="times==1||times==0" @click="buy_click" >
+                立即购买
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+    name:'appointresult',
+    props:['times'],
+    mounted(){
+    },
+    methods:{
+        cancel_click(){
+            this.$emit('cancel')
+        },
+        buy_click(){
+            this.$emit('buy')
+        }
+    }
+};
+</script>
+
+<style scoped lang="less">
+.appoint_result_container{
+    width:602px;
+    background:rgba(255,255,255,1);
+    border-radius:16px;
+    .result_info_container{
+/*         height: 245px; */
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 60px;
+        padding-bottom: 60px;
+        color: #333333;
+        font-size: 32px;
+        border-bottom: 1px solid #dcdcdc;
+        .result_title{
+            padding: 0 60px 0 60px;
+            display: flex;
+            align-items: center;
+            .title_img{
+                img{
+                    margin-right: 12px;
+                    display: inline-block;
+                }
+            }
+        }
+        .result_mount{
+            margin-top: 59px;
+        }
+    }
+    .result_choose_container{
+        display: flex;
+        .cancel_container{
+            height: 100px;
+            line-height: 100px;
+            color: #3587C3;
+            text-align: center;
+            border-right: 1px solid #dcdcdc;
+            flex: 1;
+        }
+        .buy_container{
+            height: 100px;
+            line-height: 100px;
+            color: #3587C3;
+            text-align: center;
+            flex: 1;
+        }
+
+    }
+}
+</style>

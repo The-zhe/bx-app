@@ -1,0 +1,142 @@
+<template>
+  <!-- 非会员首页便捷就医 -->
+  <div class="ConvenitentMedical_container">
+    <!-- 标题 -->
+    <div class="title_container">
+      <module-title>
+        <template v-slot:title>便捷就医</template>
+        <template v-slot:subtitle>CONVENIENT MEDICAL TREATMENT</template>
+      </module-title>
+    </div>
+    <!-- 代办图片 -->
+    <div class="img_container">
+      <img src="../../../assets/imgs/daiban.png" />
+    </div>
+    <!-- 模块 -->
+    <div class="module_container">
+      <div class="module_item" :key="index" v-for="(item,index) in serviceList">
+        <div class="item_icon">
+          <img :src="item.imgUrl" />
+        </div>
+        <div class="item_title">{{item.name}}</div>
+      </div>
+      <div class="module_item">
+        <div class="item_icon">
+          <img src="../../../assets/imgs/more_service.png" />
+        </div>
+        <div class="item_title">更多服务</div>
+      </div>
+    </div>
+    <!-- 疾病筛查 -->
+    <div class="disease_screening_container">
+      <div class="disease_item" :key="index" v-for="(item,index) in diseaseList1">
+        <div class="item_icon">
+          <img :src="item.iconUrl" />
+        </div>
+        <div class="item_title">
+          <img :src="item.titleUrl" />
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import ModuleTitle from "../../../components/ModuleTitle";
+export default {
+  name: "ConvenitentMedical",
+  props:['serviceList','diseaseList'],
+  components: {
+    ModuleTitle
+  },
+  data() {
+    return {
+      diseaseList1: [
+        {
+          iconUrl: require("../../../assets/imgs/aa.png"),
+          titleUrl: require("../../../assets/imgs/a.png")
+        },
+        {
+          iconUrl: require("../../../assets/imgs/bb.png"),
+          titleUrl: require("../../../assets/imgs/b.png")
+        },
+        {
+          iconUrl: require("../../../assets/imgs/cc.png"),
+          titleUrl: require("../../../assets/imgs/c.png")
+        },
+        {
+          iconUrl: require("../../../assets/imgs/dd.png"),
+          titleUrl: require("../../../assets/imgs/d.png")
+        },
+        {
+          iconUrl: require("../../../assets/imgs/more_check_icon.png"),
+          titleUrl: require("../../../assets/imgs/more_check_title.png")
+        }
+      ]
+    };
+  },
+  methods: {}
+};
+</script>
+
+<style scoped lang="less">
+@import "../../../../static/lessfunc.less";
+.ConvenitentMedical_container {
+  .mgt(52px);
+  .img_container {
+    .mgt(45px);
+    img {
+      .w(750px);
+      .h(190px);
+    }
+  }
+  .module_container {
+    justify-content: space-around;
+    display: flex;
+    .pdlr(66px);
+    flex-wrap: wrap;
+    .module_item {
+      .h(180px);
+      .w(140px);
+      .flex_x_center();
+      .item_icon {
+        .mgt(60px);
+        img {
+          .h(50px);
+          .w(50px);
+        }
+      }
+      .item_title {
+        .mgt(30px);
+        .fs(26px);
+        .fc(#5d5d5d);
+      }
+    }
+  }
+  .disease_screening_container {
+    .mgt(80px);
+    .h(400px);
+    .w(750px);
+    display: flex;
+    justify-content: space-around;
+    background: url("../../../assets/imgs/disease_bg.png") no-repeat;
+    background-size: 100% 100%;
+    .disease_item {
+      .mgt(240px);
+      .flex_x_center();
+      .item_icon {
+        img {
+        .h(68px);
+        .w(68px);
+        }
+      }
+      .item_title {
+        .mgt(16px);
+        img {
+          .h(36px);
+        }
+      }
+    }
+  }
+}
+</style>

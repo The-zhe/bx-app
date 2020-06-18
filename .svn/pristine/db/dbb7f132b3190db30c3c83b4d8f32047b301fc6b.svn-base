@@ -1,0 +1,84 @@
+<template>
+    <div class="payOrder">
+        <div class="main">
+            <div class="acticle">
+                <div class="act_img"><img src="../../assets/imgs/wxyq_3.png" alt=""></div>
+                <div class="act_msg">
+                    <div class="msg_title">高血压是怎么回事？</div>
+                    <div class="msg_name">刘佳 •  主任医师 •  宁波市医疗中心 李惠利医院</div>
+                    <div class="msg_dr">
+                        <div class="msg_price">￥10</div>
+                        <div class="msg_num"> x 1</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+<script>
+export default {
+    name:'payOrder',
+    data(){
+        return{
+
+        }
+    }
+}
+</script>
+<style lang="less" scoped>
+.payOrder{
+    height: 100%;
+    width: 100%;
+    .main{
+        background-color: rgb(244, 244, 244);
+        padding: .3rem;
+        .acticle{
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: .28rem;
+            background-color: white;
+            .act_img{
+                width: 1.8rem;
+                height: 1.8rem;
+                img{
+                    width: 1.8rem;
+                    height: 1.8rem;
+                }
+            }
+            .act_msg{
+                display: flex;
+                flex-direction: column;
+                font-size:.28rem;
+                font-family:Microsoft YaHei;
+                font-weight:400;
+                color:rgba(163,163,163,1);
+                .msg_title{
+                    font-size:.3rem;
+                    color:rgba(76,76,76,1);
+                }
+                .msg_name{
+                    padding: .2rem 0rem;
+                }
+                .msg_dr{
+                    display: flex;
+                    flex-direction: row;
+                    justify-content: space-between;
+                    .msg_price{
+                        font-size:.3rem;
+                        font-family:Microsoft YaHei;
+                        font-weight:400;
+                        color:rgba(239,107,17,1);
+                    }
+                    .msg_num{
+                        font-size:.26rem;
+                        font-family:Microsoft YaHei;
+                        font-weight:400;
+                        color:rgba(73,73,73,1);
+                    }
+                }
+            }
+        }
+    }
+}
+</style>

@@ -1,0 +1,168 @@
+<template>
+  <div class="addressManage_container" :style="{position:addressList.length>4?'relative':'',top:addressList.length>4?'0px':''}">
+   
+    <div class="list_container">
+      <div class="item" :key="item.address" v-for="(item,index) in addressList">
+        <div class="memberInfo">
+          <div class="name">{{item.name}}</div>
+          <div class="phone">{{item.phone}}</div>
+        </div>
+        <div class="address">{{item.address}}</div>
+        <div class="item_manage">
+          <div class="isDefault">
+            <div class="icon">
+              <img :src="item.isDefault?isDefaultIconUrl:notDefaultIconUrl" />
+            </div>
+            <div class="text" :class="{'default':item.isDefault}">默认地址</div>
+          </div>
+          <div class="edit" @click="updAddress(item.id)">
+            <img src="../../assets/imgs/btn_grzx_edit.png" />
+          </div>
+          <div class="delete" @click="delAddressFun(item.id,index)">
+            <img src="../../assets/imgs/btn_grzx_del.png" />
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="addAddress_container" @click="addAddress">新增地址</div>
+  </div>
+</template>
+
+<script>
+import {getAddressList,delAddress} from '../../api/index'
+export default {
+  components: {},
+  name: "",
+  data() {
+    return {
+      isDefaultIconUrl: require("../../assets/imgs/icon_grzx_add_pre.png"),
+      notDefaultIconUrl: require("../../assets/imgs/icon_grzx_add_nor.png"),
+      addressList: []
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {
+    this.getMemberId()
+    this.getAddressListFun()
+  },
+  methods: {
+    getAddressListFun(){
+      getAddressList().then((res)=>{
+        this.addressList=res.data.list
+      })
+    },
+    addAddress(){
+      this.$router_({name:'addressAdd',params:{hasAddress:this.addressList.length>0}})
+    },
+    updAddress(id){
+      this.$router_({name:'addressEdit',params:{id}})
+    },
+    delAddressFun(id,index){
+      delAddress(id).then((res)=>{
+        this.addressList.splice(index,1)
+      })
+    },
+        getMemberId(){
+      this.$bridge.callHandler("getMemberIdTest", "", (res) => {
+        let memberId = res
+        sessionStorage.setItem('memberId',memberId)
+      });
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.addressManage_container {
+  padding-top: 24px;
+  box-sizing: border-box;
+  background-color: #f4f4f4;
+  bottom: 0;
+  width: 100%;
+  .list_container {
+    width: 702px;
+    margin: 0 auto -100px;
+    box-sizing: border-box;
+    padding-bottom: 124px;
+    .item {
+      border-radius: 20px;
+      color: #777777;
+      width: 702px;
+      background-color: #fff;
+      font-size: 30px;
+      .memberInfo {
+        align-items: center;
+        padding: 33px 0 0 29px;
+        display: flex;
+        .name {
+          font-weight: 600;
+        }
+        .phone {
+          margin-left: 45px;
+          font-weight: 400;
+          font-size: 32px;
+        }
+      }
+      .address {
+        padding: 26px 43px 21px 28px;
+        font-weight: 400;
+      }
+      .item_manage {
+        border-top: 2px solid #e6e6e6;
+        align-items: center;
+        height: 70px;
+        display: flex;
+        .isDefault {
+          margin-left: 26px;
+          align-items: center;
+          display: flex;
+          .icon {
+            img {
+              height: 25px;
+              width: 25px;
+            }
+          }
+          .text {
+            margin-left: 16px;
+          }
+          .default {
+            color: #048a83;
+          }
+        }
+        .edit {
+          margin-left: 343px;
+          img {
+            height: 41px;
+            width: 41px;
+          }
+        }
+        .delete {
+          margin-right: 37px;
+          margin-left: auto;
+          img {
+            width: 39px;
+            height: 41px;
+          }
+        }
+      }
+      &:not(:last-child) {
+        margin-bottom: 24px;
+      }
+    }
+  }
+  .addAddress_container {
+    position: absolute;
+    bottom: 0;
+    height: 101px;
+    width: 100%;
+    background-color: #3eb4a1;
+    font-size: 36px;
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+</style>

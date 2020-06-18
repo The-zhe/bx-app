@@ -1,0 +1,234 @@
+<template>
+  <div class="returnWay_container">
+    <van-popup v-model="showReturnWayPicker" position="bottom">
+      <van-picker
+        show-toolbar
+        :columns="returnWayList"
+        @cancel="showreturnWayPicker = false"
+        @confirm="onReturnWayConfirm"
+      />
+    </van-popup>
+      <div class="header_tip">
+        <div class="icon">
+          <img src="@/assets/imgs/msg_bjjy_tips.png"/>
+        </div>
+        <div class="text">
+          医院办理相关业务，需要<span class="card">身份证</span>和<span class="card">医保卡</span>。请尽快寄送证 件卡，我们会在收到您的证件后，尽快为您安排相关服务， 其中上门取件需要收取取件费。
+        </div>
+      </div>
+      <div class="main_content">
+        <div class="return_way">
+          <div class="choose_return_way" @click="showReturnWayPicker= true">
+            <div class="label">选择证件交送方式</div>
+            <div class="input">
+              <div class="value">
+                {{returnWay}}
+              </div>
+              <div class="arrow">
+                <img src="@/assets/imgs/Drop_down_button.png"/>
+              </div>
+            </div>
+          </div>
+          <div class="form_container">
+            <div class="form_item" v-if="returnWayIndex==0||returnWayIndex==1">
+              <div class="item_label">{{returnWayIndex==0?'寄':'交'}}送地址：</div>
+              <div class="item_input">
+                <input type="text" :placeholder="`请输入${returnWayIndex==0?'寄':'交'}送地址`" v-model="address"/>
+              </div>
+            </div>
+            <div class="form_item" v-if="returnWayIndex==0||returnWayIndex==1">
+              <div class="item_label">收&ensp;件&ensp;人：</div>
+              <div class="item_input">
+                <input type="text" placeholder="请输入收件人" v-model="receiver"/>
+              </div>
+            </div>
+            <div class="form_item" v-if="returnWayIndex==0">
+              <div class="item_label">快递公司：</div>
+              <div class="item_input">
+                <input type="text" placeholder="请输入快递公司" v-model="expressCompany"/>
+              </div>
+            </div>
+            <div class="form_item" v-if="returnWayIndex==0">
+              <div class="item_label">快递单号：</div>
+              <div class="item_input">
+                <input type="text" placeholder="请输入快递单号" v-model="expressNum"/>
+              </div>
+            </div>
+            <div class="form_item" v-if="returnWayIndex==1">
+              <div class="item_label">服务点电话：</div>
+              <div class="item_input">
+                <input type="text" placeholder="请输入服务点电话" v-model="servicePhone"/>
+              </div>
+            </div>
+            <div class="form_item" v-if="returnWayIndex==1">
+              <div class="item_label">交送确认码：</div>
+              <div class="item_input">
+                <input type="text" placeholder="请输入交送确认码" v-model="sureNum"/>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="service_note">
+          <div class="label">服务说明：</div>
+          <div class="text">1.请确保订单提交，审核通过后第一时间寄送给我们，并在 订单中心中录入物流信息；若在您的服务完成时间前无法收 到您的证件，则无法为您进行相关业务办理。请谅解。</div>
+          <div class="text">2. 如在证件寄送后取消订单，您的证件可至服务点自取或由 我们快递给您，但快递费用需自付。</div>
+        </div>
+      </div>
+      <div class="submit_button">确认</div>
+  </div>
+</template>
+
+<script>
+  export default {
+    components: {},
+    name: 'returnWay',
+    data(){
+        return{
+          showReturnWayPicker:false,
+          returnWayList:['快递寄送','自行提交','上门取件'],
+          returnWay:"快递寄送",
+          returnWayIndex:0,
+          address:"",
+          receiver:"",
+          expressCompany:"",
+          expressNum:"",
+          servicePhone:"",
+          sureNum:""
+        }
+    },
+    created(){
+
+    },
+    computed:{
+    },
+    watch:{
+
+    },
+    mounted(){
+    },
+    methods:{
+      onReturnWayConfirm(value,index){
+        this.returnWay=value,
+        this.returnWayIndex=index
+        this.showReturnWayPicker=false
+      },
+    },
+}
+</script>
+
+<style lang="less" scope>
+.returnWay_container{
+  .header_tip{
+    align-items: flex-start;
+    height: 180px;
+    background-color: #ffffff;
+    display: flex;
+    box-sizing: border-box;
+    padding: 33px 23px 40px 23px;
+    .icon{
+      img{
+        margin-top: 4px;
+        width: 27px;
+        height: 28px;
+      }
+    }
+    .text{
+      margin-left: 12px;
+      font-size: 26px;
+      color: #777777;
+      .card{
+        color: #E4993A;
+        font-weight: 600;
+      }
+    }
+  }
+  .main_content{
+    padding: 50px 25px 30px;
+    .return_way{
+      height: 482px;
+      box-sizing: border-box;
+      background-color: #ffffff;
+      width: 640px;
+      margin: 0 auto 54px;
+      .choose_return_way{
+        border-bottom: 7px solid #f4f4f4;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100px;
+        .label{
+          font-size: 30px;
+          color: #777777;
+        }
+        .input{
+          margin-left: 6px;
+          display: flex;
+          align-items: center;
+          width: 200px;
+          padding:0 5px 11px 41px;
+          border-bottom: 1px solid #D9D9D9;
+          .value{
+            color: #E4993A;
+            font-size: 30px;
+          }
+          .arrow{
+            margin-left: auto;
+            img{
+              height: 19px;
+              width: 21px;
+            }
+          }
+        }
+      }
+      .form_container{
+        padding:20px 25px 0;
+        .form_item{
+          height: 80px;
+          display: flex;
+          align-items: center;
+          .item_label{
+              color: #848484;
+              font-size: 28px;
+          }
+          .item_input{
+            input{
+              font-size: 26px;
+              color: #5C5D5D;
+            }
+          }
+          &:not(:last-child){
+            border-bottom: 2px dashed #E3E3E3;
+          }
+        }
+      }
+    }
+    .service_note{
+      border-top: 1px solid rgb(237, 237, 237);
+      padding: 37px 12px 0;
+        font-size: 26px;
+      .label{
+        color: #E4993A;
+        font-weight: 600;
+      }
+      .text{
+        margin-top: 15px;
+        color: #9b9b9b;
+      }
+    }
+  }
+  .submit_button{
+    height: 100px;
+    background-color: #3EB4A1;
+    color: #ffffff;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
+}
+ </style>
+<style>
+@import url("../../assets/less/vantstyle/picker.css");
+</style>

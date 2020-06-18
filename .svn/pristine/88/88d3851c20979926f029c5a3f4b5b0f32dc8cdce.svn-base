@@ -1,0 +1,204 @@
+<template>
+    <div class="newsInfo">
+        <div class="header">
+            <div class="hd_icon"><img src="../../assets/imgs/logo.png" alt=""></div>
+            <div class="hd_search">
+                <input type="text" placeholder="文章首页或关键词">
+            </div>
+            <div class="hd_sicon"><img src="../../assets/imgs/btn_news_search_white.png" alt=""></div>
+        </div>
+        <div class="hd_banner">
+            <van-swipe :autoplay="3000" style="height:2.8rem;width:6.9rem;border-radius: .1rem;">
+                <van-swipe-item v-for="(image, index) in images" :key="index">
+                    <img :src="image.image" style="width:100%;height:100%">
+                </van-swipe-item>
+            </van-swipe>
+        </div>
+        <div class="space"></div>
+        <TypeShow :typeList="typeList"></TypeShow>
+        <ListColumns :cardList="cardList" :cardFirst="cardFirst"></ListColumns>
+    </div>
+</template>
+<script>
+import TypeShow from '../../components/typeShow'
+import ListColumns from '../../components/listColumns'
+export default {
+    name:'newsInfo',
+    components: { TypeShow,ListColumns },
+    data(){
+        return{
+            images: [
+                {image:'https://img.yzcdn.cn/vant/apple-1.jpg'},
+                {image:'https://img.yzcdn.cn/vant/apple-2.jpg'},
+            ],
+            typeList:[
+                {
+                    images: require('../../assets/imgs/img_yjyy_photo.png'),
+                    title:'健康真相台'
+                },
+                {
+                    images: require('../../assets/imgs/img_yjyy_photo.png'),
+                    title:'健康真相台'
+                },
+                {
+                    images: require('../../assets/imgs/img_yjyy_photo.png'),
+                    title:'健康真相台'
+                },
+                {
+                    images: require('../../assets/imgs/img_yjyy_photo.png'),
+                    title:'健康真相台'
+                },
+                {
+                    images: require('../../assets/imgs/img_yjyy_photo.png'),
+                    title:'健康真相台'
+                },
+                {
+                    images: require('../../assets/imgs/img_yjyy_photo.png'),
+                    title:'健康真相台'
+                },
+                {
+                    images: require('../../assets/imgs/img_yjyy_photo.png'),
+                    title:'健康真相台'
+                },
+                {
+                    images: require('../../assets/imgs/img_yjyy_photo.png'),
+                    title:'健康真相台'
+                },
+            ],
+            cardList:[
+                {
+                    title:'健康真相台1',
+                    list:[
+                        {
+                            image:'../assets/imgs/wxyq_3.png',
+                            title:'高血压是怎么回事？',
+                            name:'刘佳 •  主任医师 •  宁波市医疗中心 李惠利医院',
+                            date:'2020/6/3',
+                            read:'1234阅读',
+                            cont:'根据全球疫情最新实时统计数据显示，全球累计确诊新冠肺炎病例6340811例，累计死亡378359例。其中，美国新冠肺炎确诊超182万，累计确诊高达1828736例，累计死亡106046例。这个时候，美股的走势更让人意想不到，居然在周二美股再一次强势上涨的情况。'
+                        },
+                        {
+                            image:'../assets/imgs/wxyq_1.png',
+                            title:'高血压是怎么回事？',
+                            name:'刘备 •  主任医师 •  宁波市医疗中心 李惠利医院',
+                            date:'2020/6/4',
+                            read:'1235阅读',
+                            cont:'根据全球疫情最新实时统计数据显示，全球累计确诊新冠肺炎病例6340811例，累计死亡378359例。其中，美国新冠肺炎确诊超182万，累计确诊高达1828736例，累计死亡106046例。这个时候，美股的走势更让人意想不到，居然在周二美股再一次强势上涨的情况。'
+                        },
+                        {
+                            image:'../assets/imgs/wxyq_3.png',
+                            title:'高血压是怎么回事？',
+                            name:'刘星 •  主任医师 •  宁波市医疗中心 李惠利医院',
+                            date:'2020/6/5',
+                            read:'1234阅读',
+                            cont:'根据全球疫情最新实时统计数据显示，全球累计确诊新冠肺炎病例6340811例，累计死亡378359例。其中，美国新冠肺炎确诊超182万，累计确诊高达1828736例，累计死亡106046例。这个时候，美股的走势更让人意想不到，居然在周二美股再一次强势上涨的情况。'
+                        },
+                    ]
+                },
+                {
+                    title:'健康真相台2',
+                    list:[
+                        {
+                            image:'../assets/imgs/wxyq_3.png',
+                            title:'高血压是怎么回事？',
+                            name:'刘佳 •  主任医师 •  宁波市医疗中心 李惠利医院',
+                            date:'2020/6/3',
+                            read:'1234阅读',
+                            cont:'根据全球疫情最新实时统计数据显示，全球累计确诊新冠肺炎病例6340811例，累计死亡378359例。其中，美国新冠肺炎确诊超182万，累计确诊高达1828736例，累计死亡106046例。这个时候，美股的走势更让人意想不到，居然在周二美股再一次强势上涨的情况。'
+                        },
+                        {
+                            image:'../assets/imgs/wxyq_1.png',
+                            title:'高血压是怎么回事？',
+                            name:'刘备 •  主任医师 •  宁波市医疗中心 李惠利医院',
+                            date:'2020/6/4',
+                            read:'1235阅读',
+                            cont:'根据全球疫情最新实时统计数据显示，全球累计确诊新冠肺炎病例6340811例，累计死亡378359例。其中，美国新冠肺炎确诊超182万，累计确诊高达1828736例，累计死亡106046例。这个时候，美股的走势更让人意想不到，居然在周二美股再一次强势上涨的情况。'
+                        },
+                        {
+                            image:'../assets/imgs/wxyq_3.png',
+                            title:'高血压是怎么回事？',
+                            name:'刘星 •  主任医师 •  宁波市医疗中心 李惠利医院',
+                            date:'2020/6/5',
+                            read:'1234阅读',
+                            cont:'根据全球疫情最新实时统计数据显示，全球累计确诊新冠肺炎病例6340811例，累计死亡378359例。其中，美国新冠肺炎确诊超182万，累计确诊高达1828736例，累计死亡106046例。这个时候，美股的走势更让人意想不到，居然在周二美股再一次强势上涨的情况。'
+                        },
+                    ]
+                },
+            ],
+            cardFirst:[{
+                bigImg:'',
+                bigText:'',
+                bigDate:''
+            }]
+            
+        }
+    },
+    methods:{
+        getRes(){
+            this.cardFirst.bigImg = this.cardList[0].image
+            this.cardFirst.bigText = this.cardList[0].cont
+            this.cardFirst.bigDate = this.cardList[0].date
+        }
+    },
+    mounted(){
+        this.getRes()
+    }
+}
+</script>
+<style lang="less" scoped>
+.newsInfo{
+    width: 100%;
+    height: 100%;
+}
+.header{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    position: relative;
+    height: 2.44rem;
+    padding:.2rem;
+    background-image: linear-gradient(to right,rgba(0, 140, 147, 1), rgba(42, 177, 167, 1));
+    .hd_icon{
+        width:0.82rem;
+        height:.6rem;
+        img{
+            height: 100%;
+            width: 100%;
+        }
+    }
+    .hd_search{
+        font-size:.26rem;
+        font-family:Microsoft YaHei;
+        font-weight:400;
+        color:rgba(183,183,183,1);
+        input{
+            padding:0rem .28rem;
+            width:5rem;
+            height:.6rem;
+            border-radius: .25rem;
+            outline: none;
+        }
+    }
+    .hd_sicon{
+        width: .36rem;
+        height: .36rem;
+        margin-top: .1rem;
+        img{
+            width: 100%;
+            height: 100%;
+        }
+    }
+}
+.hd_banner{
+    position: absolute;
+    top: 1rem;
+    left: 4%;
+    z-index: 1000;
+}
+.space{
+    height: 1.46rem;
+    width: 100%;
+    background: white;
+}
+
+</style>

@@ -1,0 +1,817 @@
+<template>
+  <div class="wxdoctorinfo">
+    <div class="filltop">
+      医生详情
+    </div>
+    <div class="d_top">
+      <div class="d_top_head">
+        <div class="d_top_head_photo">
+          <img :src="doctorinfo.imgUrl!=''?doctorinfo.imgUrl:doctorImg"/>
+         <!-- <div class="photo_z"><img :src="doctorinfo.isEpidemic==='2'?zimg:yimg"/></div>-->
+        </div>
+        <div class="d_top_head_name">
+          {{doctorinfo.name}} <span>{{doctorinfo.titleNm}}</span>
+          <div class="hos">{{doctorinfo.hospitalName}} {{doctorinfo.departmentName}}</div>
+        </div>
+        <!--<div class="d_top_head_zx" @click="togx"><img src="../../../assets/imgs/xdocinfo1_1.png"></div>-->
+      </div>
+      <div class="d_top_bottom">
+        <div class="d_yz">
+          咨询人数
+          <div class="d_yznum">{{doctorinfo.servicePopulationNum}}</div>
+          <!--<div class="d_yznum">{{doctorinfo.praiseNum}}</div>-->
+        </div>
+        <div class="d_yz_right">
+          <img src="../../../assets/imgs/xdoc33.png"/>
+          <img src="../../../assets/imgs/xdoc33.png"/>
+          <img src="../../../assets/imgs/xdoc33.png"/>
+          <img src="../../../assets/imgs/xdoc33.png"/>
+          <img src="../../../assets/imgs/xdoc3.png"/>
+        </div>
+      </div>
+    </div>
+    <div class="d_tip">
+      疫情防控期间，为减缓医院接诊压力，方便患者就医，提 供3次免费咨询服务
+    </div>
+    <div class="div_type">
+      <div class="d_type">
+        <div :class="activeIndex===index?'d_type_item':'d_type_itemh'" v-for="(item,index) in typeitem"
+             @click="toindex(index)">  <!--@click="toPage(index)"-->
+          <div :class="style[index]">
+            <img v-show="doctorinfo.isEpidemic!=='12'&&activeIndex!==index" :src="doctorinfo.isEpidemic==='1'?item.img:item.aimg"/>
+            <img v-show="doctorinfo.isEpidemic==='12'&&activeIndex!==index" :src="item.bimg"/>
+            <img v-show="activeIndex===index" :src="item.cimg"/>
+            <div class="white_t" v-show="activeIndex===index"><img :src="white_tragle"/></div>
+          </div>
+        </div>
+      </div>
+      <div class="d_type_tip" v-for="(item,index) in fwdetail" v-show="activeIndex===index"><div v-show="activeIndex===index">{{item.detail}}</div></div>
+      <div class="d_type_price" v-show="activeIndex===1">
+        <div class="d_type_p_item">
+          <div class="select"><img :src="is1?select1:select2" @click="toselect(1)"></div>
+          <div class="d_type_p_item_name">图文会诊</div>
+          <div class="d_type_p_item_twprice">
+            <div class="tucishu">剩余免费:3次</div>
+            <div class="tuwenprice"><del>￥&emsp;168元/次</del></div>
+          </div>
+        </div>
+        <div class="d_type_p_item">
+          <div class="select"><img :src="is2?select1:select2" @click="toselect(2)"></div>
+          <div class="d_type_p_item_name">视频会诊</div>
+          <div class="d_type_p_item_price">￥&emsp;500元/次</div>
+        </div>
+        <div class="d_type_p_item">
+          <div class="select"><img :src="is3?select1:select2" @click="toselect(3)"></div>
+          <div class="d_type_p_item_name">现场会诊</div>
+          <div class="d_type_p_item_price">￥&emsp;500元/次</div>
+        </div>
+      </div>
+    </div>
+    <div class="d_content">
+      <div class="d_zy">专业擅长</div>
+      <div class="zy_c">
+        {{doctorinfo.skillsLable}}
+      </div>
+      <div class="d_zhiy">执业地点</div>
+      <div class="zhiy_c">
+        <div><span>第一执业点</span>：{{doctorinfo.address}}</div>
+      </div>
+      <div class="d_zyjl">执业经历</div>
+      <div class="zyjl_c">{{doctorinfo.experience}}</div>
+    </div>
+    <div class="d_btn" @click="toPage"></div>
+    <van-popup v-model="show" round>
+      <div class="warp">
+        <div class="w_x" @click="tocancel"><img src="../../../assets/imgs/xconsult_x.png"/></div>
+        <div class="w_title">下载APP</div>
+        <div class="w_content">享受更多专家一对一咨询，请前往 APP内操作。</div>
+        <div class="w_m"><img src="../../../assets/imgs/xconsult_m.png"></div>
+        <div class="w_s">识别二维码，即刻下载APP</div>
+      </div>
+    </van-popup>
+  </div>
+</template>
+
+<script>
+  import {getwxdoctorinfo, getmodifydz} from '../../../api/index'
+  import {getconsultId, getismbtable, getisyqsubimt, getisyqtable, getyqtableinfo} from "../../../api";
+
+  export default {
+    name: "wxdoctorinfo",
+    data() {
+      return {
+        fwdetail:[{
+          detail:'新冠'
+        },{
+          detail:'精通高血压、心脏病、糖尿病和神经系统及骨质 疏松症和门诊护理的临床专家为患者答疑解惑'
+        },{
+          detail:'一对一'
+        },{
+          detail:'MDT会诊'
+        },{
+          detail:'手术会诊'
+        },{
+          detail:'私人医生'
+        },
+        ],
+        is1: true,
+        is2: false,
+        is3: false,
+        select1: require('../../../assets/imgs/xfill1_sex1.png'),
+        select2: require('../../../assets/imgs/xfill1_sex2.png'),
+        activeIndex: 9,
+        white_tragle: require("../../../assets/imgs/x_whitet.png"),
+        doctorImg: require("../../../assets/imgs/x_docimg.png"),
+        show: false,
+        ganx: require('../../../assets/imgs/xdocinfo9.png'),
+        unganx: require('../../../assets/imgs/xdocinfo8.png'),
+        recordid: this.$route.query.id,
+        doctorinfo: {},
+        state: 0,
+        typeitem: [{
+          img: require('../../../assets/imgs/xdoctype1.png'),   //lv
+          aimg: require('../../../assets/imgs/xdoctype1_1.png'),  //hui
+          bimg: require('../../../assets/imgs/xdoctype1.png'),
+          cimg: require('../../../assets/imgs/xdoctype1_2.png'),
+        }, {
+          img: require('../../../assets/imgs/xdoctype2_1.png'),   //hui
+          aimg: require('../../../assets/imgs/xdoctype2.png'),   //lv
+          bimg: require('../../../assets/imgs/xdoctype2.png'),
+          cimg: require('../../../assets/imgs/xdoctype2_2.png'),
+        }, {
+          img: require('../../../assets/imgs/xdoctype3_1.png'), //hui
+          aimg: require('../../../assets/imgs/xdoctype3_1.png'),
+          bimg: require('../../../assets/imgs/xdoctype3_1.png'),
+          cimg: require('../../../assets/imgs/xdoctype3_2.png'),
+        }, {
+          img: require('../../../assets/imgs/xdoctype4_1.png'),  //hui
+          aimg: require('../../../assets/imgs/xdoctype4_1.png'),
+          bimg: require('../../../assets/imgs/xdoctype4_1.png'),
+          cimg: require('../../../assets/imgs/xdoctype4_2.png'),
+        }, {
+          img: require('../../../assets/imgs/xdoctype5.png'),  //hui
+          aimg: require('../../../assets/imgs/xdoctype5.png'),
+          bimg: require('../../../assets/imgs/xdoctype5.png'),
+          cimg: require('../../../assets/imgs/xdoctype5_2.png'),
+        }, {
+          img: require('../../../assets/imgs/xdoctype6_1.png'),  //hui
+          aimg: require('../../../assets/imgs/xdoctype6_1.png'),
+          bimg: require('../../../assets/imgs/xdoctype6_1.png'),
+          cimg: require('../../../assets/imgs/xdoctype6_2.png'),
+        }],
+        style: ['simg', 'simg', 'bimg', 'simg', 'simg', 'simg'],
+        zimg: require('../../../assets/imgs/wx9_3.png'),
+        yimg: require('../../../assets/imgs/x_yizhen.png')
+      }
+    },
+    methods: {
+      toselect(index) {
+        if (index === 1) {
+          this.is1 = !this.is1;
+        } else if (index === 2) {
+          this.is2 = !this.is2;
+        } else if (index === 3) {
+          this.is3 = !this.is3;
+        }
+      },
+      toindex(index) {
+        this.activeIndex = index;
+      },
+      tocancel() {
+        this.show = false;
+      },
+      toPage() {
+        if (this.activeIndex === 0) {
+          if (this.doctorinfo.isEpidemic === '2') {
+            this.$dialog.alert({
+              title: '提示',
+              message: ' 当前医生无新冠义诊服务',
+              confirmButtonText: '返回',
+              confirmButtonColor: '#3FA998'
+            }).then(() => {
+            });
+          }
+          else {
+            let id = this.doctorinfo.userId;
+            console.log('infoiddd', id);
+            sessionStorage.setItem('consultdoctorId', id);
+            let userId = Number(localStorage.getItem('userId'));
+            getisyqsubimt(userId).then((res) => {  //isSend 有没有提交过  stat有没有回复过，  0未提交或未回复 1 已提交或已回复
+              console.log('是否提交过 是否回复过', res.data.data);
+              if (res.data.data.isSend === '1') {
+                if (res.data.data.stat === '1') {
+                  this.$dialog.alert({
+                    title: '提示',
+                    message: '您的免费咨询已用完',
+                    confirmButtonText: '确 定',
+                    confirmButtonColor: '#3FA998',
+                  }).then(() => {
+                  }).catch(() => {
+                  });
+                } else {
+                  this.$dialog.confirm({
+                    title: '提示',
+                    message: '是否要修改已填写的表单',
+                    confirmButtonText: '修改',
+                    cancelButtonText: '跳过',
+                    confirmButtonColor: '#56B2AD',
+                    cancelButtonColor: '#56B2AD'
+                  }).then(() => {
+
+                    getconsultId(userId).then((res)=>{
+                      console.log('疫情consultid',res.data.list[0].hjjkYqConsultVo.id);
+                      let consultId=res.data.list[0].hjjkYqConsultVo.id;
+                      sessionStorage.setItem('consultId',consultId);
+                      getyqtableinfo(consultId).then((res) => {
+                     console.log('疫情详情', res);
+                     if (res.data.code === 0) {
+
+                       sessionStorage.setItem('districtNm', res.data.data.hjjkYqConsultVo.districtNm),
+                         sessionStorage.setItem('age', res.data.data.hjjkYqConsultVo.age),
+                         sessionStorage.setItem('cityNm', res.data.data.hjjkYqConsultVo.cityNm),
+                         sessionStorage.setItem('fkxxOptionsA', res.data.data.hjjkYqConsultVo.fkxxOptionsA),
+                         sessionStorage.setItem('fkxxOptionsB', res.data.data.hjjkYqConsultVo.fkxxOptionsB),
+                         sessionStorage.setItem('fkxxOptionsBDesc', res.data.data.hjjkYqConsultVo.fkxxOptionsBDesc),
+                         sessionStorage.setItem('fkxxOptionsC', res.data.data.hjjkYqConsultVo.fkxxOptionsC),
+                         sessionStorage.setItem('fkxxOptionsCDesc', res.data.data.hjjkYqConsultVo.fkxxOptionsCDesc),
+                         sessionStorage.setItem('fkxxOptionsD', res.data.data.hjjkYqConsultVo.fkxxOptionsD),
+                         sessionStorage.setItem('fkxxOptionsDDesc', res.data.data.hjjkYqConsultVo.fkxxOptionsDDesc),
+                         sessionStorage.setItem('pastHistory', res.data.data.hjjkYqConsultVo.pastHistory),
+                         sessionStorage.setItem('proviceNm', res.data.data.hjjkYqConsultVo.proviceNm),
+                         sessionStorage.setItem('reportImg', res.data.data.hjjkYqConsultVo.reportImg),
+                         sessionStorage.setItem('sex', res.data.data.hjjkYqConsultVo.sex),
+                         sessionStorage.setItem('symOptionsEx', res.data.data.hjjkYqConsultVo.symOptionsEx),
+                         sessionStorage.setItem('symOptionsExTime', res.data.data.hjjkYqConsultVo.symOptionsExTime),
+                         sessionStorage.setItem('symOptionsFr', res.data.data.hjjkYqConsultVo.symOptionsFr),
+                         sessionStorage.setItem('symOptionsFrTime', res.data.data.hjjkYqConsultVo.symOptionsFrTime),
+                         sessionStorage.setItem('symOptionsFx', res.data.data.hjjkYqConsultVo.symOptionsFx),
+                         sessionStorage.setItem('symOptionsFxTime', res.data.data.hjjkYqConsultVo.symOptionsFxTime),
+                         sessionStorage.setItem('symOptionsKs', res.data.data.hjjkYqConsultVo.symOptionsKs),
+                         sessionStorage.setItem('symOptionsKsTime', res.data.data.hjjkYqConsultVo.symOptionsKsTime),
+                         sessionStorage.setItem('symOptionsOt', res.data.data.hjjkYqConsultVo.symOptionsOt),
+                         sessionStorage.setItem('symOptionsOtTime', res.data.data.hjjkYqConsultVo.symOptionsOtTime),
+                         sessionStorage.setItem('symOptionsXmqj', res.data.data.hjjkYqConsultVo.symOptionsXmqj),
+                         sessionStorage.setItem('symOptionsXmqjTime', res.data.data.hjjkYqConsultVo.symOptionsXmqjTime),
+                         sessionStorage.setItem('temp', res.data.data.hjjkYqConsultVo.temp),
+                         sessionStorage.setItem('visitingProcess', res.data.data.hjjkYqConsultVo.visitingProcess),
+                         sessionStorage.setItem('illnessDesc', res.data.data.hjjkYqConsultVo.illnessDesc),
+                         sessionStorage.setItem('jqProviceNm', res.data.data.hjjkYqConsultVo.jqProviceNm),
+                         sessionStorage.setItem('jqCityNm', res.data.data.hjjkYqConsultVo.jqCityNm),
+
+                         sessionStorage.setItem('istableupd', '1');
+                       this.$router_({path: '/fillbasic'});
+                     }
+                   });
+                    });
+
+
+
+                  }).catch(() => {
+                    sessionStorage.setItem('freetalktype','1');
+                    this.$router_({path: '/wxconsultuser'});
+                  });
+                }
+
+              } else {
+                this.$router_({path: '/fillbasic'});
+              }
+            });
+          }
+        }
+        if (this.activeIndex === 1) {
+          let userId = Number(localStorage.getItem('userId'));
+          getismbtable(userId).then((res) => {
+            let issubmit = res.data.data;
+            if (this.doctorinfo.isEpidemic === '1') {
+              this.$dialog.alert({
+                title: '提示',
+                message: ' 当前医生无慢病咨询服务',
+                confirmButtonText: '返回',
+                confirmButtonColor: '#3FA998'
+              }).then(() => {
+              });
+            } else {
+             /* if (issubmit === '1') {  //已经提交过
+
+              } else {          //还没提交过
+
+              }*/
+
+              /* let type = sessionStorage.getItem('phoneType');
+               let inapp = sessionStorage.getItem('inApp');*/
+              let id = this.doctorinfo.userId;
+              console.log('infoiddd', id);
+              sessionStorage.setItem('consultdoctorId', id);
+              let sex = localStorage.getItem('persex');
+              let birthday = localStorage.getItem('perage');
+              if (sex && birthday) {
+                sessionStorage.setItem('freetalktype','2');
+                this.$router_({path: '/wxconsultuser'});
+              } else {
+                this.$router_({path: '/userupdinfo'});
+              }
+            }
+
+          });
+
+        }
+        if (this.activeIndex === 2) {
+          this.$dialog.alert({
+            title: '提示',
+            message: '您还不是倍熙私医会员，无法使用此功能',
+            confirmButtonText: '返回',
+            confirmButtonColor: '#3FA998'
+          }).then(() => {
+
+          });
+        }
+        if (this.activeIndex === 3) {
+          this.$dialog.alert({
+            title: '提示',
+            message: ' 当前医生无MDT会诊服务',
+            confirmButtonText: '返回',
+            confirmButtonColor: '#3FA998'
+          }).then(() => {
+
+          });
+        }
+        if (this.activeIndex === 4) {
+          this.$dialog.alert({
+            title: '提示',
+            message: ' 当前医生无手术会诊服务',
+            confirmButtonText: '返回',
+            confirmButtonColor: '#3FA998'
+          }).then(() => {
+
+          });
+        }
+        if (this.activeIndex === 5) {
+          this.$dialog.alert({
+            title: '提示',
+            message: ' 当前医生无私人医生服务',
+            confirmButtonText: '返回',
+            confirmButtonColor: '#3FA998'
+          }).then(() => {
+
+          });
+        }
+      },
+      togx() {
+        this.$dialog.alert({
+          title: '提示',
+          message: '您还不是倍熙私医会员，无法使用此功能',
+          confirmButtonText: '返回',
+          confirmButtonColor: '#3FA998'
+        }).then(() => {
+
+        });
+        // let userId = '';
+        // let teamId = '';
+        // getmodifydz(userId, teamId).then((res) => {
+        //
+        // })
+      },
+      getinfo() {
+        getwxdoctorinfo(this.recordid).then((res) => {
+          this.state = res.data.data.isThumbs;
+          this.doctorinfo = res.data.data.hjjkHealthTeamVo;
+          console.log('docinf', res);
+        })
+      }
+    },
+    mounted() {
+      this.getinfo();
+      if(sessionStorage.getItem('istype')==='slow'){
+        this.activeIndex=1;
+      }
+    }
+  }
+</script>
+
+<style scoped lang="less">
+  .wxdoctorinfo {
+    color: #777777;
+    font-size: 0.3rem;
+    padding-bottom: 2rem;
+
+    .filltop {
+      height: 0.9rem;
+      background: url("../../../assets/imgs/x_filltop.png");
+      background-size: 100% 0.9rem;
+      font-size: 0.32rem;
+      font-weight: bold;
+      color: white;
+      line-height: 0.9rem;
+      text-align: center;
+    }
+
+    .d_btn {
+      width: 3.48rem;
+      height: 0.66rem;
+      background: url("../../../assets/imgs/x_jrzx.png") no-repeat;
+      background-size: 3.48rem 0.66rem;
+      position: fixed;
+      bottom: 6%;
+      left: 50%;
+      margin-left: -1.72rem;
+    }
+
+    .warp {
+      width: 5.13rem;
+      height: 4.5rem;
+      background: white;
+      color: #777777;
+
+      .w_x {
+        position: absolute;
+        right: 0.3rem;
+        top: 0.2rem;
+        width: 0.24rem;
+        height: 0.24rem;
+
+        img {
+          width: 0.24rem;
+          height: 0.24rem;
+        }
+      }
+
+      .w_s {
+        margin: 0.2rem auto 0;
+        width: 3.34rem;
+        height: 0.27rem;
+        font-size: 0.28rem;
+      }
+
+      .w_m {
+        margin: 0.3rem auto;
+        width: 1.59rem;
+        height: 1.59rem;
+
+        img {
+          width: 1.59rem;
+          height: 1.59rem;
+        }
+      }
+
+      .w_title {
+        margin: 0.4rem auto 0.3rem;
+        width: 1.4rem;
+        height: 0.34rem;
+        font-size: 0.34rem;
+        color: #3FA998;
+      }
+
+      .w_content {
+        margin: 0 auto;
+        width: 4.5rem;
+        height: 0.7rem;
+        font-size: 0.3rem;
+      }
+    }
+
+    .simg {
+      width: 1.5rem;
+      height: 0.9rem;
+
+      img {
+        margin: 0 auto;
+        width: 1.04rem;
+        height: 0.9rem;
+      }
+
+      .white_t {
+        margin: 0.15rem auto 0;
+        width: 0.42rem;
+        height: 0.22rem;
+
+        img {
+          width: 0.42rem;
+          height: 0.22rem;
+        }
+      }
+    }
+
+    .bimg {
+      width: 1.8rem;
+      height: 0.9rem;
+
+      img {
+        margin: 0 auto;
+        width: 1.3rem;
+        height: 0.9rem;
+      }
+
+      .white_t {
+        margin: 0.15rem auto 0;
+        width: 0.42rem;
+        height: 0.22rem;
+
+        img {
+          width: 0.42rem;
+          height: 0.22rem;
+        }
+      }
+    }
+
+    .d_top {
+      padding-top: 0.3rem;
+      margin: 0.3rem auto;
+      width: 7rem;
+      height: 1.7rem;
+      box-shadow: 0rem 0rem 0.1rem rgba(96, 96, 96, 0.25);
+
+      .d_top_head {
+        margin-left: 0.3rem;
+        width: 6.3rem;
+        height: 1.2rem;
+        display: flex;
+        justify-content: flex-start;
+
+        .d_top_head_photo {
+          width: 0.94rem;
+          height: 0.94rem;
+
+          img {
+            width: 0.94rem;
+            height: 0.94rem;
+            border-radius: 0.47rem;
+          }
+
+          .photo_z {
+            margin-top: -0.62rem;
+            margin-left: 0.7rem;
+            width: 0.54rem;
+            height: 0.62rem;
+
+            img {
+              width: 0.54rem;
+              height: 0.62rem;
+            }
+          }
+        }
+
+        .d_top_head_name {
+          margin-left: 0.4rem;
+          margin-top: 0.05rem;
+          width: 3.3rem;
+          height: 0.9rem;
+          color: #5D5D5D;
+          font-size: 0.3rem;
+          font-weight: bold;
+
+          span {
+            font-size: 0.28rem;
+            font-weight: normal;
+          }
+
+          .hos {
+            margin-top: 0.1rem;
+            font-size: 0.28rem;
+            font-weight: normal;
+          }
+        }
+
+        .d_top_head_zx {
+          margin-top: 0.4rem;
+          width: 1.04rem;
+          height: 0.92rem;
+
+          img {
+            width: 1.04rem;
+            height: 0.92rem;
+          }
+        }
+      }
+
+      .d_top_bottom {
+        width: 7rem;
+        height: 0.4rem;
+        display: flex;
+        justify-content: space-between;
+
+        .d_yz_right {
+          width: 2rem;
+          height: 0.38rem;
+          display: flex;
+          justify-content: flex-start;
+
+          img {
+            margin-left: 0.1rem;
+            width: 0.27rem;
+            height: 0.28rem;
+          }
+        }
+
+        .d_yz {
+          color: #999999;
+          font-size: 0.26rem;
+          margin-left: 0.3rem;
+          width: 4rem;
+          height: 0.38rem;
+          display: flex;
+          justify-content: flex-start;
+
+          img {
+            width: 0.27rem;
+            height: 0.28rem;
+          }
+
+          .d_yznum {
+            margin-left: 0.3rem;
+            width: 0.4rem;
+            color: #F4793B;
+          }
+        }
+      }
+    }
+
+    .d_tip {
+      padding: 0.1rem 0.2rem;
+      margin: 0 auto 0.3rem;
+      width: 6.6rem;
+      height: 0.7rem;
+      box-shadow: 0rem 0rem 0.1rem rgba(96, 96, 96, 0.25);
+      font-size: 0.26rem;
+      color: #EB6100;
+    }
+
+    .div_type {
+      box-shadow: 0rem 0rem 0.1rem rgba(96, 96, 96, 0.25);
+      margin: 0.2rem auto;
+      width: 7rem;
+      height: auto;
+      padding-bottom: 0.2rem;
+      //height: 2.4rem;
+      .d_type_tip {
+        padding-bottom: 0.2rem;
+        width: 6.3rem;
+        height: 0.7rem;
+        margin: 0 auto;
+        border-bottom: 2px solid #F2F2F2;
+      }
+
+      .d_type_price {
+        padding-top: 0.3rem;
+        width: 7rem;
+        height: auto;
+
+        .d_type_p_item {
+          height: 0.8rem;
+          font-weight: bold;
+          display: flex;
+          justify-content: flex-start;
+
+          .select {
+            margin-left: 0.4rem;
+            width: 0.35rem;
+            height: 0.35rem;
+
+            img {
+              width: 0.35rem;
+              height: 0.35rem;
+            }
+          }
+
+          .d_type_p_item_name {
+            margin-left: 0.25rem;
+            font-size: 0.3rem;
+            color: #777777;
+          }
+          .d_type_p_item_twprice{
+            margin-left: 2.2rem;
+           .tucishu{
+             font-size: 0.28rem;
+             font-weight: bold;
+             color: #DC5518;
+           }
+            .tuwenprice{
+              font-weight: normal;
+              font-size: 0.26rem;
+              color: #989898;
+            }
+          }
+          .d_type_p_item_price {
+            margin-left: 2.2rem;
+            font-size: 0.28rem;
+            color: #DC5518;
+          }
+        }
+      }
+    }
+
+    .d_type {
+      width: 7rem;
+      height: 1.5rem;
+      display: flex;
+      flex-wrap: nowrap;
+      justify-content: space-between;
+      padding: 0;
+      overflow: auto;
+
+      .d_type_itemb {
+        margin: 0.2rem 0.2rem;
+        width: 1.3rem;
+        height: 0.9rem;
+
+        img {
+          width: 1.3rem;
+          height: 0.9rem;
+        }
+      }
+
+      .d_type_item {
+        padding-top: 0.2rem;
+        width: 2rem;
+        height: 1.2rem;
+        background: #E8F4F2;
+      }
+
+      .d_type_itemh {
+        padding-top: 0.2rem;
+        width: 2rem;
+        height: 1.2rem;
+      }
+    }
+
+    .d_content {
+      padding-bottom: 0.2rem;
+      padding-top: 0.3rem;
+      margin: 0 auto;
+      width: 7rem;
+      height: auto;
+      box-shadow: 0rem 0rem 0.1rem rgba(96, 96, 96, 0.25);
+
+      .d_zy {
+        margin-left: 0.32rem;
+        font-weight: bold;
+        padding-left: 0.5rem;
+        width: 1.8rem;
+        height: 0.34rem;
+        background: url("../../../assets/imgs/xdocinfo3.png") no-repeat;
+        background-size: 0.34rem 0.34rem;
+      }
+
+      .zy_c {
+        margin-top: 0.2rem;
+        margin-left: 0.34rem;
+      }
+
+      .d_zhiy {
+        margin-top: 0.3rem;
+        margin-left: 0.32rem;
+        font-weight: bold;
+        padding-left: 0.5rem;
+        width: 1.8rem;
+        height: 0.33rem;
+        background: url("../../../assets/imgs/xdocinfo4.png") no-repeat;
+        background-size: 0.31rem 0.33rem;
+      }
+
+      .zhiy_c {
+        margin-top: 0.2rem;
+        margin-left: 0.34rem;
+      }
+
+      .d_zyjl {
+        margin-top: 0.3rem;
+        margin-left: 0.32rem;
+        font-weight: bold;
+        padding-left: 0.5rem;
+        width: 1.8rem;
+        height: 0.39rem;
+        background: url("../../../assets/imgs/xdocinfo5.png") no-repeat;
+        background-size: 0.31rem 0.39rem;
+      }
+
+      .zyjl_c {
+        margin-top: 0.2rem;
+        margin-left: 0.34rem;
+        width: 6.3rem;
+      }
+    }
+
+    .d_gx {
+      .d_ungx {
+        margin: 0.75rem auto;
+        width: 2.21rem;
+        height: 0.63rem;
+
+        img {
+          width: 2.21rem;
+          height: 0.63rem;
+        }
+      }
+
+      .d_ingx {
+        margin: 0.75rem auto;
+        width: 2.21rem;
+        height: 0.63rem;
+
+        img {
+          width: 0.41rem;
+          height: 0.35rem;
+        }
+      }
+    }
+  }
+</style>

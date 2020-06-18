@@ -1,0 +1,580 @@
+<template>
+    <div class="newsInfoDetails">
+        <van-overlay :show="vipshow">
+            <div class="wrapper" >
+                <div class="block">
+                    <div class="tip">本文是会员专享课程，您还不是会员，需付费阅读！</div>
+                    <div class="price">
+                        <div class="price_top">价格：10元</div>
+                        <div class="price_msg">（付费后可永久免费阅读）</div>
+                    </div>
+                    <div class="vipImg">
+                        <img src="../../assets/imgs/img_pop_vip.png" alt="">
+                    </div>
+                    <div class="btn">
+                        <div class="vip" @click="tobeVip()">成为会员</div>
+                        <div class="divder"></div>
+                        <div class="buy">立即购买</div>
+                    </div>
+                </div>
+            </div>
+        </van-overlay>
+        <van-overlay :show="liveshow">
+            <div class="wrapper">
+                <div class="block">
+                    <div class="tip">您还未登陆,请登录！</div>
+                    <div class="price">
+                        <div class="price_top">价格：10元</div>
+                        <div class="price_msg">（付费后可永久免费阅读）</div>
+                    </div>
+                    <div class="vipImg">
+                        <img src="../../assets/imgs/img_pop_vip.png" alt="">
+                    </div>
+                    <div class="btn">
+                        <div class="vip" @click="tobeVip()">登陆</div>
+                        <div class="divder"></div>
+                        <div class="buy">取消</div>
+                    </div>
+                </div>
+            </div>
+        </van-overlay>
+        <div class="tab_container">
+            <div class="tab_item" :class="{'active_item':index==activeTabIndex}" @click="selectTab(item,index)" :key="item.pid" v-for="(item,index) in tabList">
+                <div class="tab_title">{{item.name}}</div>
+            </div>
+            <div class="tab_icon">
+                <img src="../../assets/imgs/wxyq_3.png" alt="">
+            </div>
+        </div>
+        <div class="author">
+            <div class="act_img"><img src="../../assets/imgs/wxyq_3.png" alt=""></div>
+            <div class="act_msg">
+                <div class="msg_title">高血压是怎么回事？</div>
+                <div class="msg_name">刘佳 •  主任医师 •  宁波市医疗中心 李惠利医院</div>
+                <div class="msg_dr">
+                    <div class="msg_price">￥10</div>
+                    <div class="msg_num"> x 1</div>
+                </div>
+            </div>
+        </div>
+        <div class="btn">
+            <div class="btn_img">
+                <div class="btn_text">1元/天加入会员   拥有家庭电子健康档案 9项就医特权 全年免费看>></div>
+            </div>
+        </div>
+        <div class="line">
+            <div class="divder"></div>
+        </div>
+        <div class="article"> 
+            李叔患病这么多年，高血压病方面的知识知道不 少，算是半个医生，仍觉得这套言论听起来有理有据，甚至有醍醐灌顶的感觉。按压不住心中的冲动，他拨打了屏幕上的电话，当即订购了10盒药膏。
+        </div>
+        <div class="line">
+            <div class="divder"></div>
+        </div>
+        <div class="ad" style="padding:.3rem;background:white">
+             <van-swipe :autoplay="3000" style="height:2.31rem;">
+                <van-swipe-item v-for="(downimages, index) in downimages" :key="index">
+                    <img v-lazy="downimages.imgUrl" :src="downimages.imgUrl" style="width:100%;height:100%"/>
+                </van-swipe-item>
+            </van-swipe>
+        </div>
+        <div class="about">
+            <div class="about_title">更多好文</div>
+            <ul>
+                <!-- <li v-for="(item,index) in articlelist" :key="index" @click="toNews(item.attrSourceId)">
+                    <div class="about_img"><img :src="item.imgUrl" alt=""></div>
+                    <span>{{item.readNum}}人阅读</span>
+                    <div class="small_title">{{item.notic}}</div>
+                </li> -->
+                <li>
+                    <div class="about_img"><img :src="this.advertising" alt=""></div>
+                    <span>123121人阅读</span>
+                    <div class="small_title">降压要到底能不能停</div>
+                </li>
+                <li>
+                    <div class="about_img"><img :src="this.advertising" alt=""></div>
+                    <span>123121人阅读</span>
+                    <div class="small_title">降压要到底能不能停</div>
+                </li>
+                <li>
+                    <div class="about_img"><img :src="this.advertising" alt=""></div>
+                    <span>123121人阅读</span>
+                    <div class="small_title">降压要到底能不能停</div>
+                </li>
+            </ul>
+        </div>
+    </div>
+</template>
+<script>
+export default {
+    name:'newsInfoDetails',
+    data(){
+        return{
+            userId:'1231321321',
+            isvip:true,
+            vipshow: false,
+            liveshow:false,
+            activeTabIndex:0,
+            tabList:[
+                {
+                    id:'453215542101',
+                    name:'健康真相台',
+                },
+                {
+                    id:'453215542101',
+                    name:'健康真相台',
+                },
+                {
+                    id:'453215542101',
+                    name:'健康真相台',
+                },
+                {
+                    id:'453215542101',
+                    name:'健康真相台',
+                },
+                {
+                    id:'453215542101',
+                    name:'健康真相台',
+                },
+                {
+                    id:'453215542101',
+                    name:'健康真相台',
+                },
+                {
+                    id:'453215542101',
+                    name:'健康真相台',
+                },
+            ],
+            downimages:[
+                {
+                    imgUrl:require('../../assets/imgs/wxyq_3.png')
+                },
+                {
+                    imgUrl:require('../../assets/imgs/wxyq_3.png')
+                },
+            ]
+        }
+    },
+    methods:{
+        selectTab(item,index){
+            // this.informationList=[];
+            // this.pageNum=1;
+            this.activeTabIndex=index;
+            // this.id=item.id;
+            // this.getHealthInfoListFun(item.id,1)
+        },
+        vipShow(){
+            this.show = false
+            console.log('show',this.show)
+        },
+        tobeVip(){
+            this.show = false
+            console.log('tobeVip')
+        },
+        livevip(){
+            if(this.userId == ''){
+                this.liveshow = true
+            }else if(this.userId !== '' && this.isvip == false){
+                this.vipshow = true
+            }
+        }
+    },
+    mounted(){
+        this.livevip()
+    }
+}
+</script>
+<style lang="less" scoped>
+.newsInfoDetails{
+     .wrapper {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+    }
+    .block {
+            width:5.41rem;
+            height:7.1rem;
+            background-color: #fff;
+            border-radius: .2rem;
+            .tip{
+                height:.8rem;
+                padding: .6rem ;
+                background: rgba(160,160,160,.5);
+                text-align: center;
+                font-size:.3rem;
+                font-family:Microsoft YaHei;
+                font-weight:bold;
+                color:rgba(96,96,96,1);
+            }
+            .price{
+                display: flex;
+                flex-direction: column;
+                padding: .6rem;
+                height: .8rem;
+                background-color: white;
+                .price_top{
+                    font-size:.3rem;
+                    font-family:Microsoft YaHei;
+                    font-weight:bold;
+                    color:rgba(234,85,20,1);
+                    text-align: center;
+                }
+                .price_msg{
+                    font-size:.26rem;
+                    font-family:Microsoft YaHei;
+                    font-weight:400;
+                    text-align: center;
+                    color: rgba(93, 93, 93, 1);
+                    margin-top: .1rem;
+                }
+            }
+            .vipImg{
+                height: 2.23rem;
+                img{
+                    width: 100%;
+                }
+            }
+            .btn{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-around;
+                font-size: .32rem;
+                padding: .3rem;
+                .vip{
+                    font-size:.3rem;
+                    font-family:Microsoft YaHei;
+                    font-weight:400;
+                    color:rgba(47,165,145,1);
+                }
+                .divder{
+                    width: .01rem;
+                    background-color: rgba(160,160,160,.5);
+                }
+                .btn{
+                    font-size:.3rem;
+                    font-family:Microsoft YaHei;
+                    font-weight:400;
+                    color:rgba(81,81,81,1);
+                }
+            }
+        }
+    .tab_container{
+        // position: relative;
+        padding-top: 0.3rem;
+        padding-right: 1rem;
+        background-color: white;
+        width:auto;
+        height: 0.8rem;
+        font-size: 0.3rem;
+        /*align-items: center;
+        display: flex;
+        justify-content: flex-start;*/
+        color: #606060;
+        white-space: nowrap;/*文本不会换行，文本会在在同一行上继续*/
+        overflow-y:auto;/*可滑动*/
+        .tab_item{
+            margin-left: 0.3rem;
+            width: auto;
+            /*display: flex;
+            flex-direction: column;
+            align-items: center;*/
+            display: inline-block;/*行内块元素*/
+            .tab_title{
+
+            }
+            img{
+                margin-top: 0.16rem;
+                width: 0.6rem;
+                height: 0.09rem;
+                opacity: 0;
+            }
+            .tab_space{
+                // height: .6rem;
+                // width: .6rem
+            }
+        }
+        .tab_item:last-child{
+            margin-left: 0.3rem;
+            margin-right: 0.3rem;
+            width: auto;
+            /*display: flex;
+            flex-direction: column;
+            align-items: center;*/
+            display: inline-block;/*行内块元素*/
+            .tab_title{
+
+            }
+            img{
+                margin-top: 0.16rem;
+                width: 0.6rem;
+                height: 0.09rem;
+                opacity: 0;
+            }
+            .tab_space{
+                height: .6rem;
+                width: .6rem;
+                position: fixed;
+                top: 0.25rem;
+                right: 0;
+            }
+        }
+        .active_item{
+            .tab_title{
+                font-weight: bold;
+                color: rgba(41, 155, 146, 1);
+            }
+            img{
+                opacity: 1;
+            }
+        }
+        .tab_icon{
+            height: .6rem;
+            width: .6rem;
+            background-color: lightblue;
+            position: absolute;
+            top: .2rem;
+            right: 0;
+            img{
+                width: 100%;
+                height: 100%;
+            }
+        }
+    }
+    .tab_container::-webkit-scrollbar{
+        display: none;
+    }
+    .author{
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-top: .3rem;
+        padding: .28rem;
+        background-color: white;
+        .act_img{
+            width: 1.8rem;
+            height: 1.8rem;
+            img{
+                width: 1.8rem;
+                height: 1.8rem;
+            }
+        }
+        .act_msg{
+            display: flex;
+            flex-direction: column;
+            margin-left: .3rem;
+            font-size:.28rem;
+            font-family:Microsoft YaHei;
+            font-weight:400;
+            color:rgba(163,163,163,1);
+            .msg_title{
+                font-size:.3rem;
+                color:rgba(76,76,76,1);
+            }
+            .msg_name{
+                padding: .2rem 0rem;
+            }
+            .msg_dr{
+                display: flex;
+                flex-direction: row;
+                justify-content: space-between;
+                .msg_price{
+                    font-size:.3rem;
+                    font-family:Microsoft YaHei;
+                    font-weight:400;
+                    color:rgba(239,107,17,1);
+                }
+                .msg_num{
+                    font-size:.26rem;
+                    font-family:Microsoft YaHei;
+                    font-weight:400;
+                    color:rgba(73,73,73,1);
+                }
+            }
+        }
+    }
+    .btn{
+        background-color: white;
+        padding: .3rem;
+        .btn_img{
+            // width: 6.7rem;
+            height: 1rem;
+            background-image: url('../../assets/imgs/btn_news_bg_one(2).png');
+            background-size: 100% 100%;
+            padding: 0rem .8rem 0rem 1.5rem;
+            .btn_text{
+                padding-top: .1rem;
+                font-size:.28rem;
+                font-family:Microsoft YaHei;
+                font-weight:400;
+                color:rgba(255,255,255,1);
+            }
+        }
+    }
+    .line{
+        width: 100%;
+        padding: 0.1rem 0rem;
+        background-color: white;
+        .divder{
+            height: .01rem;
+            width: 6.91rem;
+            margin: 0 auto;
+            background: rgba(160,160,160,.5);;
+        }
+    }
+    .article{
+        font-size:.3rem;
+        font-family:Microsoft YaHei;
+        font-weight:400;
+        color:rgba(76,76,76,1);
+        padding: .3rem;
+        background-color: white;
+        word-wrap: break-word;
+        word-break: normal;
+        letter-spacing: 1px;
+        line-height: .4rem;
+    }
+    .about{
+        display: flex;
+        flex-direction: column;
+        margin-bottom: .3rem;
+        background-color: white;
+        .about_title{
+            padding: 0.3rem 0.3rem 0.2rem 0.3rem;
+            font-size:.3rem;
+            font-family:Microsoft YaHei;
+            font-weight:bold;
+            color:rgba(76,76,76,1);
+        }
+        ul{
+            list-style:none;
+            padding: 0rem .3rem;
+                li{
+                    display: flex;
+                    flex-direction: column;
+                    float:left;
+                    position: relative;
+                    width: 2.1rem;
+                    margin: 0rem .15rem;
+                    .about_img{
+                        width: 2.1rem;
+                        height: 2.81rem;
+                        img{
+                         width: 100%;
+                         height: 100%;
+                        }
+                    }
+                    
+                    span{
+                        position: absolute;
+                        bottom: .91rem;
+                        width: 100%;
+                        background-color: rgba(45,45,45,.5);
+                        font-size:.24rem;
+                        font-family:Microsoft YaHei;
+                        font-weight:400;
+                        color:rgba(255,255,255,1);
+                        text-indent: .1rem;
+                    }
+                    .small_title{
+                        margin-top: 0.1rem;
+                        font-size:.3rem;
+                        font-family:Microsoft YaHei;
+                        font-weight:400;
+                        color:rgba(76,76,76,1);
+                        word-break: break-all;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                    }
+                }
+                li:first-child{
+                    display: flex;
+                    flex-direction: column;
+                    float:left;
+                    position: relative;
+                    width: 2.1rem;
+                    margin: 0rem .15rem;
+                    margin-left: 0rem;
+                    .about_img{
+                        width: 2.1rem;
+                        height: 2.81rem;
+                        img{
+                         width: 100%;
+                         height: 100%;
+                        }
+                    }
+                    
+                    span{
+                        position: absolute;
+                        bottom: 0.91rem;
+                        width: 100%;
+                        background-color: rgba(45,45,45,.5);
+                        font-size:.24rem;
+                        font-family:Microsoft YaHei;
+                        font-weight:400;
+                        color:rgba(255,255,255,1);
+                        text-indent: .1rem;
+                    }
+                    .small_title{
+                        margin-top: 0.1rem;
+                        font-size:.3rem;
+                        font-family:Microsoft YaHei;
+                        font-weight:400;
+                        color:rgba(76,76,76,1);
+                        word-break: break-all;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                    }
+                }
+                li:last-child{
+                    display: flex;
+                    flex-direction: column;
+                    float:left;
+                    position: relative;
+                    width: 2.1rem;
+                    margin: 0rem .15rem;
+                    margin-right: 0rem;
+                    .about_img{
+                        width: 2.1rem;
+                        height: 2.81rem;
+                        img{
+                         width: 100%;
+                         height: 100%;
+                        }
+                    }
+                    
+                    span{
+                        position: absolute;
+                        width: 100%;
+                        bottom: 0.91rem;
+                        background-color: rgba(45,45,45,.5);
+                        font-size:.24rem;
+                        font-family:Microsoft YaHei;
+                        font-weight:400;
+                        color:rgba(255,255,255,1);
+                        text-indent: .1rem;
+                    }
+                    .small_title{
+                        margin-top: 0.1rem;
+                        font-size:.3rem;
+                        font-family:Microsoft YaHei;
+                        font-weight:400;
+                        color:rgba(76,76,76,1);
+                        word-break: break-all;
+                        text-overflow: ellipsis;
+                        overflow: hidden;
+                        display: -webkit-box;
+                        -webkit-line-clamp: 2;
+                        -webkit-box-orient: vertical;
+                    }
+                }
+            }
+    }
+}
+</style>

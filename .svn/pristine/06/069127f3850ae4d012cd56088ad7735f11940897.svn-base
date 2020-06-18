@@ -1,0 +1,219 @@
+<!--xtt-->
+<template>
+    <div class="medicalTeam">
+      <div class="title">我的私人医生</div>
+      <div v-for="item1 in doctorList">
+      <div class="intro">
+        <div class="photo"><img :src="item1.img" @click="toDoctor(item1.id)"></div>
+        <div class="introtext">
+          <div class="introname">{{item1.name}}&emsp;<span>{{item1.workDoctor}}</span></div>
+          <div>{{item1.department}}</div>
+          <div>{{item1.hospital}}</div>
+        </div>
+        <div class="consult" @click="toConsult(item1.id,1)"><img src="../../assets/imgs/consult_x.png"></div>
+      </div>
+      </div>
+      <div class="title">我的私人管家</div>
+      <div v-for="item2 in stewardList">
+        <div class="intro">
+          <div class="photo"><img :src="item2.img" @click="toSteward(item2.id)"></div>
+          <div class="introtext">
+            <div class="introname">{{item2.name}}</div>
+            <div>&emsp;</div>
+            <div>{{item2.level}}</div>
+          </div>
+          <div class="consult" @click="toConsult(item2.id,2)"><img src="../../assets/imgs/consult_x.png"></div>
+        </div>
+      </div>
+      <div class="title">我的私人护士</div>
+      <div v-for="item3 in nurseList">
+        <div class="intro">
+          <div class="photo"><img :src="item3.img" @click="toNurse(item3.id)"></div>
+          <div class="introtext">
+            <div class="introname">{{item3.name}}</div>
+            <div>&emsp;</div>
+            <div>{{item3.level}}</div>
+          </div>
+          <div class="consult" @click="toConsult(item3.id,3)"><img src="../../assets/imgs/consult_x.png"></div>
+        </div>
+      </div>
+      <!--<MedicalBottom></MedicalBottom>-->
+    </div>
+</template>
+
+<script>
+  import {getMedicalTeamData,getMedicalTeamCount} from '../../api/index'
+  import MedicalBottom from '../../components/medicalBottom'
+    export default {
+      components:{MedicalBottom},
+        name: "medicalTeam",
+        data(){
+          return{
+            doctorList:[
+             /* {img:require('../../assets/imgs/doctor_x.png'),name:'李颖',keshi:'内科',adr:'宁波市第一医院',jibie:'主治医生'}*/
+            ],
+            stewardList:[],
+            nurseList:[],
+            doctorId:'',
+            stewardId:'',
+            nurseId:'',
+            consultnum:1,
+            doctornum:1,
+            nursenum:1,
+            memberId:''
+          }
+        },
+        methods:{
+          getNativeMemberId(){
+            this.$bridge.callHandler("getMemberId", "", (res) => {
+              this.memberId = res;
+              sessionStorage.setItem('nativeMemberId',res)
+              this.$nextTick(()=>{
+                this.getMedicalTeamDataList();
+              })
+            });
+          },
+        getMedicalTeamDataList(){
+          let memberId=sessionStorage.getItem('nativeMemberId');//'4535481258038273'
+          getMedicalTeamData(memberId,80060.106).then(res=>{
+            console.log('medical',res.data.data);
+            res.data.data.forEach((element)=>{
+              if(element.catCd==='0'){
+                this.doctorList.push(element);
+              }
+              if(element.catCd==='1'){
+                this.nurseList.push(element);
+              }
+              if(element.catCd==='2'){
+                this.stewardList.push(element);
+              }
+            })
+            // res.data.list.forEach((element)=>{
+            //   if(element.hjjkHealthTeamVo.catCd==='0'){
+            //     this.doctorList.push(element.hjjkHealthTeamVo);
+            //   }
+            //   if(element.hjjkHealthTeamVo.catCd==='1'){
+            //     this.nurseList.push(element.hjjkHealthTeamVo);
+            //   }
+            //   if(element.hjjkHealthTeamVo.catCd==='2'){
+            //     this.stewardList.push(element.hjjkHealthTeamVo);
+            //   }
+            //   console.log(this.doctorList);
+            //   console.log(this.nurseList);
+            //   console.log(this.stewardList);
+            // })
+
+          });
+        },
+          toDoctor(id){
+            this.$router_({path:'/doctorInfo',query:{id:id}});
+          },
+          toSteward(id){
+            this.$router_({path:'/steWardInfo',query:{id:id}});
+          },
+          toNurse(id){
+            this.$router_({path:'/nurseInfo',query:{id:id}});
+          },
+          toConsult(id,type){
+          console.log(id);
+            let memberId='4535481258038273';
+            //1是医生 2管家 3护士
+            this.$router_({path: '/consultWeb', query: {id: id, type: type}});
+          /*  if(type===1) {
+              //医生图文大次
+              getMedicalTeamCount(memberId,id,0).then(res=>{
+                console.log('医生次数',res.data.data);
+                this.doctornum=res.data.data;
+                this.$dialog.confirm({
+                  title: '图文咨询确认',
+                  message: '每次图文咨询交流包含10次图文信' + '\n' +
+                    '息发送机会请简明扼要的描述您' + '\n' +
+                    '的病情或需求，医生会为您尽快作' + '\n' +
+                    '答。' + '\n' +
+                    '剩余次数：' + this.doctornum
+                }).then(() => {
+                  this.$router_({path: '/consultWeb', query: {id: id, type: type}});
+                }).catch(() => {
+                  console.log('999');
+                });
+              });
+            }*/
+       /*   if(type===2){
+            this.$router_({path: '/consultWeb', query: {id: id, type: type}});
+          }*/
+         /* if(type===3) {
+            //护士图文大次
+            getMedicalTeamCount(memberId,id,0).then(res=>{
+            });
+           }*/
+          }
+        },
+      mounted() {
+       this.getNativeMemberId();
+        this.getMedicalTeamDataList();
+
+      }
+    }
+</script>
+
+<style scoped lang="less">
+  .medicalTeam{
+    width: 100%;
+    background: white;
+    height: 100%;
+    .title{
+      padding-top: 15px;
+      padding-left: 20px;
+      font-size: 28px;
+      color: #999999;
+      width: 750px;
+      height: 50px;
+      background: #f4f4f4;
+    }
+    .intro{
+      padding-top: 30px;
+      color: #777777;
+      font-size: 28px;
+      border-top:1px solid #f4f4f4;
+      width: 750px;
+      display: flex;
+      justify-content: space-around;
+      .introtext{
+        width: 200px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .introname{
+        font-size: 30px;
+        color:#0F847E;
+        font-weight: bold;
+        span{
+          text-align: center;
+          display:inline-block;
+          width: 105px;
+          height: 30px;
+          border-radius: 15px;
+          border: 1px solid #f6a540;
+          font-size: 20px;
+          color: #F6A540;
+        }
+      }
+      .photo{
+        width: 118px;
+        height: 118px;
+        border-radius: 59px;
+        img{width: 118px;height: 118px;border-radius: 59px;}
+      }
+      .consult{
+        width: 145px;
+        height: 145px;
+        img{width: 145px;height: 145px}
+      }
+    }
+  }
+</style>
+<style>
+  @import url('../../assets/less/vantstyle/dialog.css');
+  @import url('../../assets/less/vantstyle/button.css');
+</style>

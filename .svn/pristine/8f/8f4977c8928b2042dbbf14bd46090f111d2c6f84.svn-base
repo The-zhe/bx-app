@@ -1,0 +1,9 @@
+export default {
+    beforeRouteEnter: (to, from, next) => {
+        if (!navigator.onLine) {
+            next('/offline')
+        } else {
+            next()
+        }
+    },
+}

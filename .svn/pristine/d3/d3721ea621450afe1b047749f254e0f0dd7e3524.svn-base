@@ -1,0 +1,250 @@
+<template>
+  <div class="checklistDetail_container">
+    <div class="headerPart_container"></div>
+    <div class="report_container">
+      <div class="report_header">
+        <div class="hospital">{{reportInfo.hospital}}</div>
+        <div class="title">报告单</div>
+      </div>
+      <div class="report_info">
+        <div class="info department">
+          <div class="title">科&emsp;室：</div>
+          <div class="text">{{reportInfo.department}}</div>
+        </div>
+        <div class="info doctor">
+          <div class="title">医&emsp;生：</div>
+          <div class="text">{{reportInfo.doctor}}</div>
+        </div>
+        <div class="info date">
+          <div class="title">时&emsp;间：</div>
+          <div class="text">{{reportInfo.date}}</div>
+        </div>
+      </div>
+      <div class="outPatient_num">
+        <div class="title">门诊号</div>
+        <div class="text">{{reportInfo.outPatientNum}}</div>
+      </div>
+    </div>
+    <div class="check_report_container">
+      <div class="header">
+        <div>检查报告（</div>
+        <div class="currentIndex">1</div>
+        <div>/2）</div>
+        <div class="next">
+          <div class="text">下一份</div>
+          <div class="icon">
+            <img src="../../assets/imgs/btn_da_next.png" />
+          </div>
+        </div>
+      </div>
+      <div class="content">
+        <div class="item">
+          <div class="title">检查类型：</div>
+          <div class="text">{{reportList[0].checkType}}</div>
+        </div>
+        <div class="item">
+          <div class="title">检查项目：</div>
+          <div class="text">{{reportList[0].checkItem}}</div>
+        </div>
+        <div class="item status">
+          <div class="title">皮试状态：</div>
+          <div class="text">{{reportList[0].status}}</div>
+        </div>
+        <div class="item date">
+          <div class="title">检查时间：</div>
+          <div class="text">{{reportList[0].checkDate}}</div>
+        </div>
+      </div>
+    </div>
+    <div class="medicalHistory_container">
+      <detail-card>
+          <template v-slot:title>
+            简要病史
+          </template>
+          <template v-slot:content>
+            上腹痛不适2周，无明显腹泻。拒绝胃镜
+          </template>
+      </detail-card>
+    </div>
+    <div class="diagnosticPerformance_container">
+      <detail-card>
+          <template v-slot:title>
+            诊断表现
+          </template>
+          <template v-slot:content>
+            胃： 服造影剂后，胃充盈良好,胃壁各层显示清晰，比例正常，胃粘膜粗糙， 胃粘膜连续性好，胃蠕动和排空情况良好。 肝脏： 形态大小正常，包膜轮廓清晰光点欠均匀，细密，肝内血管走向清晰 ，左右肝内胆管不扩张。门脉主干内径10mm。 胆囊： 大小 60×23mm，胆囊壁光滑，透声佳。囊壁上可见2×2mm中等回声区。 胆总管内径：6mm。 胰腺： 胰头 16mm，体 12mm，尾 13mm；胰腺光点分布均匀，主胰管不扩张。 脾脏： 厚 30mm，长径 83mm，脾区光点分布均匀，包膜光整。 肾脏： 双肾大小形态正常，包膜光滑、清晰，皮髓质分界清，集合系统未见分离。 右肾中部可见3×2mm强回声区。
+          </template>
+      </detail-card>
+    </div>
+    <div class="diagnosticResult_container">
+      <detail-card>
+          <template v-slot:title>
+            诊断结论
+          </template>
+          <template v-slot:content>
+            浅表性胃炎。 肝、胰、脾未见明显异常。 胆囊小息 肉。 右肾小结石。
+          </template>
+      </detail-card>
+    </div>
+  </div>
+</template>
+
+<script>
+import DetailCard from '../../components/detailCard'
+export default {
+  components: {DetailCard},
+  name: "checklistDetail",
+  data() {
+    return {
+      reportInfo: {
+        hospital: "鄞州人民医院",
+        department: "--",
+        doctor: "苏荷",
+        date: "2015-11-08",
+        outPatientNum: "20151108030201044"
+      },
+      reportList: [
+        {
+          checkType: "门诊",
+          checkItem: "胃-170176",
+          status: "非皮试",
+          checkDate: "--"
+        }
+      ]
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {},
+  methods: {}
+};
+</script>
+
+<style lang="less" scope>
+.checklistDetail_container {
+  background-color: #f4f4f4;
+  padding-bottom: 20px;
+  .headerPart_container {
+    height: 300px;
+    background-color: #008b84;
+  }
+  .report_container {
+    border-radius: 14px;
+    box-shadow: 0 0 8px #bebcbc;
+    box-sizing: border-box;
+    padding: 25px 20px 0;
+    width: 701px;
+    height: 386px;
+    margin: -300px auto 0;
+    background-color: #fff;
+    .report_header {
+      font-size: 30px;
+      color: #777777;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+      padding-bottom: 19px;
+      border-bottom: 5px solid #cdcdcd;
+      margin-bottom: 5px;
+      .hospital {
+      }
+      .title {
+        margin-top: 12px;
+        font-weight: 600;
+      }
+    }
+    .report_info {
+      border-top: 3px solid #cdcdcd;
+      display: flex;
+      box-sizing: border-box;
+      padding: 13px 14px 15px;
+      font-size: 28px;
+      color: #777777;
+      justify-content: space-between;
+      border-bottom: 2px dashed #e7e7e7;
+      .info {
+        .title {
+        }
+        .text {
+          margin-top: 12px;
+        }
+      }
+    }
+    .outPatient_num {
+      font-size: 28px;
+      margin-top: 14px;
+      color: #777777;
+      padding-left: 10px;
+      .title {
+      }
+      .text {
+      }
+    }
+  }
+  .check_report_container {
+    background-color: #fff;
+    width: 701px;
+    margin: 28px auto 23px;
+    height: 248px;
+    box-shadow: 0 0 8px #bebcbc;
+    border-radius: 14px;
+    .header {
+      border-bottom: 4px solid rgb(235, 235, 235);
+      box-sizing: border-box;
+      padding: 0 26px;
+      height: 88px;
+      font-weight: 600;
+      color: #777777;
+      font-size: 30px;
+      display: flex;
+      align-items: center;
+      .currentIndex {
+        color: #008b84;
+      }
+      .next {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        .text {
+          font-size: 28px;
+          color: #048a83;
+        }
+        .icon {
+          margin-left: 14px;
+          img {
+            height: 27px;
+          }
+        }
+      }
+    }
+    .content{
+      display: flex;
+      flex-wrap: wrap;
+      box-sizing: border-box;
+      height: 158px;
+      font-size: 28px;
+      color: #777777;
+
+      padding:  27px 0 45px 28px;
+      .item{
+        display: flex;
+        width: 330px;
+      }
+      .status{
+        margin-top: 33px;
+      }
+      .date{
+        margin-top: 33px;
+      }
+    }
+  }
+  .diagnosticPerformance_container{
+    margin-top: 24px;
+  }
+  .diagnosticResult_container{
+    margin-top: 28px;
+  }
+}
+</style>

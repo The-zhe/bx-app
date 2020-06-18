@@ -1,0 +1,506 @@
+<template>
+    <div class="wxdoctorlist">
+      <div class="filltop">
+        医生列表
+      </div>
+      <div class="d_top">
+        <div class="d_top_input">
+          <div class="d_top_input_f" v-show="isinput" @click="toinput">输入医生姓名</div>
+          <div class="d_top_input_c" v-show="!isinput"><input v-model="docname" @keyup="inputname"/></div>
+        </div>
+        <div class="d_top_select" @click="tokeshi" v-show="istype==='slow'">{{secondDepNm?secondDepNm:'科室'}}</div>
+        <div class="d_top_select" @click="toselect" v-show="istype==='yizhen'">{{state}}</div>
+        <van-popup
+          v-model="selectshow"
+          position="bottom"
+        ><van-picker
+          show-toolbar
+          title="标题"
+          :columns="columns"
+          @cancel="onCancel"
+          @confirm="onConfirm"
+        />
+        </van-popup>
+      </div>
+      <div class="d_content" v-for="item in doctorlist" @click="todoctorinfo(item.hjjkHealthTeamVo.id)">
+         <div class="d_head">
+           <div class="d_head_photo">
+            <img :src="item.hjjkHealthTeamVo.imgUrl!=''?item.hjjkHealthTeamVo.imgUrl:doctorImg"/>
+             <!--<div class="photo_z"><img :src="item.hjjkHealthTeamVo.isEpidemic==='2'?zimg:yimg"/></div>-->
+           </div>
+           <div class="d_head_name">
+             {{item.hjjkHealthTeamVo.name}}  <span>{{item.hjjkHealthTeamVo.titleNm}}</span>
+           </div>
+           <div :class="item.hjjkHealthTeamVo.state===1?'d_head_state':'d_head_stateh'">{{item.hjjkHealthTeamVo.state===1?'在线':'离线'}}</div>
+           <div class="d_head_simg"><img :src="item.hjjkHealthTeamVo.state===1?inimg:unimg"></div>
+           <div class="d_head_next" @click="todoctorinfo(item.hjjkHealthTeamVo.id)"><div class="nextimg"></div></div>
+         </div>
+        <div class="d_hos">
+        <div class="d_head_hos">{{item.hjjkHealthTeamVo.hospitalName}} {{item.hjjkHealthTeamVo.departmentName}}</div>
+          <div class="d_div_yz" v-show="item.hjjkHealthTeamVo.isEpidemic==='1'||item.hjjkHealthTeamVo.isEpidemic==='12'">义诊</div>
+        </div>
+        <div class="d_yz">
+          <div>义诊人数</div>
+          <div class="d_yznum">{{item.hjjkHealthTeamVo.servicePopulationNum}}</div>
+          <div class="d_yz_right">
+            <img src="../../../assets/imgs/xdoc33.png"/>
+            <img src="../../../assets/imgs/xdoc33.png"/>
+            <img src="../../../assets/imgs/xdoc33.png"/>
+            <img src="../../../assets/imgs/xdoc33.png"/>
+            <img src="../../../assets/imgs/xdoc3.png"/>
+          </div>
+          <!--<img src="../../../assets/imgs/xdoc3.png"/>
+          <div class="d_yznum">{{item.hjjkHealthTeamVo.praiseNum}}</div>-->
+        </div>
+
+        <div class="d_sc"><span>擅长：</span>{{item.hjjkHealthTeamVo.skills}}</div>
+      </div>
+       <van-popup v-model="show" round >
+      <div class="warp">
+        <div class="w_x" @click="tocancel"><img src="../../../assets/imgs/xconsult_x.png"/></div>
+        <div class="w_title">下载APP</div>
+        <div class="w_content">享受更多专家一对一咨询，请前往 APP内操作。 </div>
+        <div class="w_m"><img src="../../../assets/imgs/xconsult_m.png"></div>
+        <div class="w_s">识别二维码，即刻下载APP</div>
+      </div>
+    </van-popup>
+    </div>
+</template>
+
+<script>
+  import {getwxdoctorlist} from '../../../api/index'
+  import {getwxdoctorlistmb} from "../../../api";
+    export default {
+      name: "wxdoctorlist",
+      beforeRouteEnter(to,from,next){
+        let hasLogin = Boolean(localStorage['userId']||localStorage['doctorId'])
+        if(hasLogin){
+          next()
+        }else{
+          next('/userlogin')
+        }
+      },
+      data(){
+          return{
+            doctorImg:require("../../../assets/imgs/x_docimg.png"),
+            show:false,
+            istype:sessionStorage.getItem('istype'),   //路由跳转过来
+            docname:'',
+            selectshow:false,
+            columns: ['义诊', '全部'],
+            state:'义诊',
+            stateCd:'',
+            inimg:require('../../../assets/imgs/xdoc2.png'),
+            unimg:require('../../../assets/imgs/xdoc1.png'),
+            isinput:true,
+            doctorlist:[],
+            secondDepNm:sessionStorage.getItem('secondDepNm'),  //科室名
+            //illtypeid:this.$route.query.id,
+            zimg:require('../../../assets/imgs/wx9_3.png'),
+            yimg:require('../../../assets/imgs/x_yizhen.png'),
+            newConsultPageNum:1,
+            replyPageNum:1,
+            newConsultTotal:0,
+            replyTotal:0
+          }
+      },
+      methods:{
+        tocancel(){
+          this.show=false;
+        },
+        toconsult(item) {
+          let type=sessionStorage.getItem('phoneType');
+          let inapp=sessionStorage.getItem('inApp');
+            if(type==='ios'){
+              console.log('username', item.hjjkHealthTeamVo.userId);
+              sessionStorage.setItem('consultdoctorId', item.hjjkHealthTeamVo.userId);
+             // let username = sessionStorage.getItem('perusername');
+              let sex = localStorage.getItem('persex');
+              let birthday = localStorage.getItem('perage');
+              if (sex && birthday) {
+                this.$router_({path: '/wxconsultuser'});
+              } else {
+                this.$router_({path: '/userupdinfo'});
+              }
+              console.log('user', item);
+            }else if(inapp==='1') {
+              console.log('username', item.hjjkHealthTeamVo.userId);
+              sessionStorage.setItem('consultdoctorId', item.hjjkHealthTeamVo.userId);
+              //let username = sessionStorage.getItem('perusername');
+              let sex = localStorage.getItem('persex');
+              let birthday = localStorage.getItem('perage');
+              if (sex && birthday) {
+                this.$router_({path: '/wxconsultuser'});
+              } else {
+                this.$router_({path: '/userupdinfo'});
+              }
+              sessionStorage.setItem('mbname', item.nowIllName);
+              console.log('user', item);
+            }else {
+              this.show=true;
+            }     //android
+        },
+        todoctorinfo(id){
+          this.$router_({path: '/wxdoctorinfo',query:{id:id}});
+        },
+        inputname(){
+          let secondDepId=sessionStorage.getItem('secondDepId');
+         // let illtypeid=this.illtypeid;
+       /*   if(illtypeid===undefined){
+            getwxdoctorlistmb(0,this.docname,this.stateCd,secondDepId).then((res) => {
+              this.doctorlist = res.data.list;
+              console.log(res.data.list);
+            })
+          }else {*/
+           // let illtypeid=this.illtypeid+'';
+            getwxdoctorlistmb(this.docname,this.stateCd,secondDepId).then((res) => {
+              this.doctorlist = res.data.list;
+              console.log(res.data.list);
+            })
+        //  }
+        },
+        toinput(){
+          this.isinput=false;
+        },
+        //跳转到科室
+        tokeshi(){
+          this.$router_({path: '/selectDepartment'});
+        },
+        toselect(){
+          this.selectshow=true;
+        },
+        onConfirm(value,index){
+          this.state=value;
+          if(index===0){
+            //this.stateCd='1';
+            getwxdoctorlistmb(this.docname,'1').then((res)=>{
+              this.doctorlist=res.data.list;
+              this.selectshow=false;
+            });
+          }else {
+           // this.stateCd='0';
+            getwxdoctorlistmb(this.docname).then((res)=>{
+              this.doctorlist=res.data.list;
+              this.selectshow=false;
+            });
+          }
+
+
+        },
+        onCancel(){
+          this.selectshow=false;
+        },
+        getinfo(){
+          console.log('illtypeid',this.illtypeid);
+          //let illtypeid=this.illtypeid;
+       /*   if(illtypeid){
+            let id=illtypeid+'';
+            getwxdoctorlistmb(id).then((res) => {
+              this.doctorlist = res.data.list;
+              console.log('mbres',res);
+            })
+          }else {*/
+            getwxdoctorlistmb(0,'1').then((res) => {
+              this.doctorlist = res.data.list;
+              console.log(res.data.list);
+            })
+         // }
+        },
+        getslowlist(){
+          let secondDepId=sessionStorage.getItem('secondDepId');
+          this.secondDepId=secondDepId;
+          //let illtypeid=this.illtypeid+'';
+          getwxdoctorlistmb(0,this.stateCd,secondDepId).then((res)=>{
+            this.doctorlist=res.data.list;
+            console.log(res.data.list);
+          })
+        }
+      },
+      mounted() {
+       /* let userId=sessionStorage.getItem('userId');
+        if(!userId){
+          this.$router_({path:'/userlogin'})
+        }*/
+       if(this.istype==='slow'&&sessionStorage.getItem('secondDepId')!=null){
+         console.log('slow',sessionStorage.getItem('secondDepId'));
+         this.getslowlist();
+       }else {
+         this.getinfo();
+       }
+        window.addEventListener('scroll',()=>{
+          var scrollTop = document.documentElement.scrollTop||document.body.scrollTop;
+          //变量windowHeight是可视区的高度
+          var windowHeight = document.documentElement.clientHeight || document.body.clientHeight;
+          //变量scrollHeight是滚动条的总高度
+          var scrollHeight = document.documentElement.scrollHeight||document.body.scrollHeight;
+          //console.log("距顶部"+scrollTop+"可视区高度"+windowHeight+"滚动条总高度"+scrollHeight);
+          //滚动条到底部的条件
+          if(scrollTop+windowHeight+3>=scrollHeight){
+            if(!this.activeTabIndex){
+              //this.getFormConsultListFun(this.newConsultPageNum)
+            }else{
+              //this.getReplyFormConsultListFun(this.replyPageNum)
+            }
+
+          }
+        })
+
+      }
+    }
+</script>
+
+<style scoped lang="less">
+.wxdoctorlist{
+  font-size: 0.3rem;
+  color: #777777;
+  padding-bottom: 0.3rem;
+  .filltop {
+    height: 0.9rem;
+    background: url("../../../assets/imgs/x_filltop.png");
+    background-size: 100% 0.9rem;
+    font-size: 0.32rem;
+    font-weight: bold;
+    color: white;
+    line-height: 0.9rem;
+    text-align: center;
+  }
+  .warp{
+    width: 5.13rem;
+    height: 4.5rem;
+    background: white;
+    color: #777777;
+    .w_x{
+      position: absolute;
+      right: 0.3rem;
+      top:0.2rem;
+      width: 0.24rem;
+      height: 0.24rem;
+      img{
+        width: 0.24rem;
+        height: 0.24rem;
+      }
+    }
+    .w_s{
+      margin: 0.2rem auto 0;
+      width: 3.34rem;
+      height: 0.27rem;
+      font-size: 0.28rem;
+    }
+    .w_m{
+      margin: 0.3rem auto;
+      width: 1.59rem;
+      height: 1.59rem;
+      img{
+        width: 1.59rem;
+        height: 1.59rem;
+      }
+    }
+    .w_title{
+      margin: 0.4rem auto 0.3rem;
+      width: 1.4rem;
+      height: 0.34rem;
+      font-size: 0.34rem;
+      color: #3FA998;
+    }
+    .w_content{
+      margin: 0 auto;
+      width: 4.5rem;
+      height: 0.7rem;
+      font-size: 0.3rem;
+    }
+  }
+  .d_top{
+    margin: 0.3rem auto 0 auto;
+    width: 7rem;
+    height: 0.6rem;
+    display: flex;
+    justify-content: space-between;
+    .d_top_input{
+      width: 4.7rem;
+      height: 0.57rem;
+      background:#F4F1F4;
+      .d_top_input_f{
+        margin: 0.06rem auto;
+        color: #BBBBBB;
+        padding-left: 0.4rem;
+        width: 1.9rem;
+        height: 0.38rem;
+        background: url("../../../assets/imgs/xdoc4.png") no-repeat 0 0.04rem;
+        background-size: 0.33rem 0.34rem;
+      }
+      .d_top_input_c{
+        margin: 0.06rem auto;
+        color: #BBBBBB;
+        padding-left: 0.3rem;
+        width: 2rem;
+        height: 0.38rem;
+        input{
+          width: 2rem;
+          background:#F4F1F4;
+        }
+      }
+    }
+    .d_top_select{
+      padding-top: 0.04rem;
+      padding-left: 0.3rem;
+      color: #56B2AD;
+      width: 1.8rem;
+      line-height: 0.53rem;
+      height: 0.53rem;
+      box-shadow:0rem 0rem 0.1rem rgba(96, 96, 96, 0.25);
+      background: url("../../../assets/imgs/xdoc5.png") no-repeat 1.6rem;
+      background-size: 0.21rem 0.19rem;
+    }
+  }
+  .d_content{
+    padding-bottom: 0.3rem;
+    margin: 0.3rem auto 0 auto;
+    width: 7rem;
+    height: auto;
+    box-shadow:0rem 0rem 0.1rem rgba(96, 96, 96, 0.25);
+    .d_head{
+      margin-left: 0.2rem;
+      padding-top: 0.28rem;
+      width: 6.5rem;
+      height: 1rem;
+      display: flex;
+      justify-content: space-between;
+      .d_head_photo{
+         width: 0.9rem;
+         height: 0.9rem;
+         img{
+           width: 0.9rem;
+           height: 0.9rem;
+           border-radius:0.45rem;
+         }
+        .photo_z{
+          margin-top: -0.62rem;
+          margin-left: 0.7rem;
+          width: 0.54rem;
+          height: 0.62rem;
+          img{
+            width: 0.54rem;
+            height: 0.62rem;
+          }
+        }
+      }
+      .d_head_name{
+        margin-top: 0.1rem;
+        margin-left: 0.2rem;
+        width: 3.6rem;
+        height: 0.4rem;
+        color: #5D5D5D;
+        font-weight: bold;
+        span{
+          font-weight: normal;
+          //font-size: 0.28rem;
+        }
+      }
+      .d_head_stateh{
+        width: 0.6rem;
+        height: 0.3rem;
+        color: #999999;
+        font-size: 0.28rem;
+      }
+      .d_head_state{
+        width: 0.6rem;
+        height: 0.3rem;
+        color: #56B2AD;
+        font-size: 0.28rem;
+      }
+      .d_head_simg{
+        width: 0.3rem;
+        height: 0.36rem;
+        img{
+          width: 0.3rem;
+          height: 0.36rem;
+        }
+      }
+      .d_head_next{
+        width: 0.5rem;
+        height: 0.4rem;
+        .nextimg{
+          margin-left: 0.3rem;
+          width: 0.18rem;
+          height: 0.31rem;
+          background: url("../../../assets/imgs/xdoc6.png");
+          background-size: 0.18rem 0.31rem;
+        }
+      }
+    }
+    .d_hos {
+       width: 5rem;
+       height: 0.4rem;
+      margin-top: -0.5rem;
+      margin-left: 1.4rem;
+      display: flex;
+      justify-content: flex-start;
+      .d_head_hos {
+        width: 3.8rem;
+        height: 0.4rem;
+        color: #5D5D5D;
+        //font-size: 0.28rem;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+      .d_div_yz{
+        text-align: center;
+        width: 0.89rem;
+        height: 0.39rem;
+        border: 0.02rem solid #BC562D;
+        border-radius: 0.08rem;
+        line-height: 0.39rem;
+        color:#BC562D;
+      }
+    }
+    .d_yz{
+      margin-top: 0.3rem;
+      color: #999999;
+      font-size: 0.24rem;
+      margin-left: 0.2rem;
+      width: 6rem;
+      height: 0.3rem;
+      display: flex;
+      justify-content: flex-start;
+      img{
+        width: 0.27rem;
+        height: 0.28rem;
+      }
+      .d_yznum{
+        margin-left:0.3rem;
+        width: 0.4rem;
+        color: #F4793B;
+      }
+      .d_yz_right {
+       margin-left: 2.3rem;
+        width: 2rem;
+        height: 0.38rem;
+        display: flex;
+        justify-content: flex-start;
+
+        img {
+          margin-left: 0.1rem;
+          width: 0.27rem;
+          height: 0.28rem;
+        }
+      }
+    }
+    .d_sc{
+      line-height: 0.56rem;
+      margin-top: 0.2rem;
+      margin-left: 0.18rem;
+      width: 6.6rem;
+      height:1rem;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      span{
+        font-weight: bold;
+      }
+    }
+  }
+}
+</style>

@@ -1,0 +1,95 @@
+// (runtime-only or standalone) has been set in webpack.base.conf with an alias.
+import 'babel-polyfill'
+import Es6Promise from 'es6-promise'
+Es6Promise.polyfill()
+
+//import Vue from 'vue'
+import App from './App'
+import router from './router'
+import store from '../vuex/store';
+import Vant from 'vant';
+// import VConsole from 'vconsole';
+import '../src/utils/rem'
+import 'vant/lib/index.css';
+/* import 'lib-flexible' */
+import '../static/common.css'
+import 'swiper/dist/css/swiper.css';
+import Bridge from './utils/Jsbridge'
+import F2 from '@antv/f2';
+import Viewer from 'v-viewer'
+import 'viewerjs/dist/viewer.css'
+/* import { DatetimePlugin } from 'vux' */
+import tim from './tim'
+import TIM from 'tim-js-sdk'
+import echarts from 'echarts'
+window.tim=tim  //初始化tim
+window.TIM=TIM
+/* Vue.use(DatetimePlugin,Calendar) */
+Vue.use(Viewer);
+Vue.use(echarts);
+Viewer.setDefaults({
+  Options: { 'inline': true, 'button': true, 'navbar': true, 'title': true, 'toolbar': true, 'tooltip': true, 'movable': true, 'zoomable': true, 'rotatable': true, 'scalable': true, 'transition': true, 'fullscreen': true, 'keyboard': true, 'url': 'data-source' }
+});
+// let vConsole = new VConsole();
+// Vue.use(vConsole);
+
+/*import { Skeleton } from 'vant';
+Vue.use(Skeleton);*/
+
+/*import Mui from 'vue-awesome-mui'
+Vue.use(Mui)*/
+
+Vue.prototype.$F2 = F2;
+Vue.prototype.$bridge = Bridge;
+Vue.config.productionTip = false;
+Vue.use(Vant);
+Vue.prototype.tim = tim;
+Vue.prototype.TIM = TIM;
+Vue.prototype.$echarts = echarts
+Vue.prototype.$router_ = function(option){
+  sessionStorage['routerFlag']++
+  this.$router.push(option)
+}
+//设置title
+router.beforeEach((to, from, next) => {
+  window.scrollTo(0,0)
+  /* 路由发生变化修改页面title */
+  if (to.meta.title) {
+    store.commit('setHeaderTitle',to.meta.title)
+    document.title=to.meta.title
+  }
+  next()
+});
+
+Vue.prototype.resetSetItem = function (key, newVal) {
+  if (key === 'wxunread') {
+
+    // 创建一个StorageEvent事件
+    var newStorageEvent = document.createEvent('StorageEvent');
+    const storage = {
+      setItem: function (k, val) {
+        sessionStorage.setItem(k, val);
+
+        // 初始化创建的事件
+        newStorageEvent.initStorageEvent('setItem', false, false, k, null, val, null, null);
+
+        // 派发对象
+        window.dispatchEvent(newStorageEvent)
+      }
+    }
+    return storage.setItem(key, newVal);
+  }
+}
+
+/* eslint-disable no-new */
+new Vue({
+  el: '#app',
+  router,
+  store,
+  components: { App },
+  template: '<App/>'
+});
+
+
+
+

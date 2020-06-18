@@ -1,0 +1,62 @@
+<template>
+<div>
+  <swiper :options="swiperOption" ref="mySwiper">
+    <!-- slides -->
+     <swiper-slide v-for="(item,index) in bannerImgList" :key="index">
+      <img :src="item" />
+    </swiper-slide> 
+    <div class="swiper-pagination"  slot="pagination"></div>
+  </swiper>
+</div>
+</template>
+
+<script>
+import 'swiper/dist/css/swiper.css'
+import {swiper,swiperSlide} from 'vue-awesome-swiper'
+export default {
+    name:"AwesomeSwiper",
+    props:['bannerImgList'],
+    components:{swiper,swiperSlide},
+    data(){
+        return{
+            swiperOption: {
+                pagination:{
+                    el: '.swiper-pagination',
+                },
+                paginationClickable:true,
+                autoplay:true,
+            }
+        }
+    },
+    computed: {
+      swiper() {
+        return this.$refs.mySwiper.swiper
+      }
+    },
+    mounted() {
+
+    }
+}
+</script>
+
+<style lang="less">
+.swiper-container{
+    .swiper-pagination-bullet-active{
+        background: #00bfa7;
+    }
+    .swiper-pagination-bullets{
+      bottom: 30px;
+      .swiper-pagination-bullet{
+        width: 15px;
+        height: 15px;
+        margin: 8px;
+      }
+    }
+}
+</style>
+<style lang="less" scoped>
+img{
+  height: 340px;
+  width: 730px;
+}
+</style>

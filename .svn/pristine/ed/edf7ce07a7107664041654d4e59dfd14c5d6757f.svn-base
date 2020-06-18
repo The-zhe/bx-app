@@ -1,0 +1,8 @@
+/* 是否为空对象 */
+export const isEmptyObj = (obj) =>{
+    return Boolean(Object.keys(obj).length)
+}
+/*  */
+export const has =(obj) =>{
+    
+}

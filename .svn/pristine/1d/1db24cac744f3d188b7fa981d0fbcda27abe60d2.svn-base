@@ -1,0 +1,182 @@
+/*
+ * @Author: zzh 
+ * @Date: 2019-12-26 14:32:15 
+ * @Last Modified by: zzh
+ * @Last Modified time: 2020-01-17 11:35:03
+ */
+<template>
+  <div class="checklistDetail_container" v-if="Object.keys(reportInfo).length>0">
+    <div class="headerPart_container"></div>
+    <div class="report_container">
+      <div class="report_header">
+        <div class="hospital">{{reportInfo.hospName}}</div>
+        <div class="date">{{reportInfo.opcDate.slice(0,10)}}</div>
+      </div>
+      <div class="report_content">
+        <div class="report_info">
+          <div class="top">
+            <div class="info department">
+              <div class="title">科&emsp;室：</div>
+              <div class="text">{{reportInfo.deptNm}}</div>
+            </div>
+            <div class="info doctor">
+              <div class="title">医&emsp;生：</div>
+              <div class="text">{{reportInfo.doctor}}</div>
+            </div>
+          </div>
+          <div class="info outPatient_num">
+            <div class="title">门诊号：</div>
+            <div class="text">{{reportInfo.opcNo}}</div>
+          </div>
+        </div>
+        <div class="part medicalHistory_container">
+          <div class="title">简要病史</div>
+          <div class="text">{{reportInfo.briefHistory}}</div>
+        </div>
+        <div class="part diagnosticPerformance_container">
+          <div class="title">诊查表现</div>
+          <div class="text">{{reportInfo.imgFind}}</div>
+        </div>
+        <div class="part diagnosticResult_container">
+          <div class="title">诊断结论</div>
+          <div class="text">{{reportInfo.imgImp}}</div>
+        </div>
+        <div class="part reportDoctor_container">
+          <div class="title">报告医生：</div>
+          <div class="text_">{{reportInfo.reportDoctor}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getCheckListDetail } from '@/api/apiz';
+export default {
+  components: {},
+  name: "checklistDetail",
+  data() {
+    return {
+      reportInfo: {},
+      currentReportId: 0,
+      checkList: []
+    };
+  },
+  created() {},
+  computed: {},
+  watch: {},
+  mounted() {
+    this.currentReportId = this.$route.params.id;
+    this.$nextTick(() => {
+      this.getCheckListDetailFunc(this.currentReportId);
+    });
+  },
+  methods: {
+    getCheckListDetailFunc(id) {
+      getCheckListDetail(id).then(res => {
+        this.reportInfo = res.data.data;
+        this.$store.commit("setHeaderTitle", res.data.data.name);
+      });
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.checklistDetail_container {
+  width: 100%;
+  background-color: #f4f4f4;
+  padding-bottom: 28px;
+  .headerPart_container {
+    height: 200px;
+    background-color: #008b84;
+  }
+  .report_container {
+    border-radius: 14px;
+    box-shadow: 0 0 8px #bebcbc;
+    box-sizing: border-box;
+    width: 701px;
+    margin: -200px auto 0;
+    background-color: #fff;
+    .report_header {
+      border-radius: 14px 14px 0 0;
+      position: relative;
+      padding: 25px 20px 0px;
+
+      background-color: #f4f4f4;
+      font-weight: 600;
+      font-size: 30px;
+      color: #777777;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      box-sizing: border-box;
+      margin-bottom: 16px;
+      .date {
+        margin-top: 12px;
+        margin-bottom: 19px;
+      }
+      &:after{
+        position: absolute;
+        content: "";
+        bottom: -8px;
+        height: 8px;
+        background-color: #cdcdcd;
+        width: 660px;
+      }
+    }
+    .report_content {
+      padding: 0 20px;
+      .report_info {
+        border-top: 2px solid #cdcdcd;
+        border-bottom: 21px solid #f4f4f4;
+        display: flex;
+        flex-direction: column;
+        box-sizing: border-box;
+        padding: 29px 14px 38px;
+        font-size: 28px;
+        color: #777777;
+        .top {
+          display: flex;
+          .doctor {
+            margin-left: auto;
+            margin-right: 90px;
+          }
+        }
+        .info {
+          display: flex;
+          .title {
+            font-weight: 600;
+          }
+          .text {
+          }
+          &:not(:last-child) {
+            margin-bottom: 29px;
+          }
+        }
+      }
+      .part {
+        padding: 29px 14px 29px 14px;
+        font-size: 28px;
+        .title {
+          color: #606060;
+          font-weight: 600;
+        }
+        .text {
+          margin-top: 27px;
+          color: #777777;
+        }
+        &:not(:first-child) {
+          border-top: 2px solid #ededed;
+        }
+      }
+      .reportDoctor_container {
+        display: flex;
+        .text_ {
+          color: #777777;
+        }
+      }
+    }
+  }
+}
+</style>

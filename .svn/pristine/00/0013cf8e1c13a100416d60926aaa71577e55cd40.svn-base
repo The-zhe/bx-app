@@ -1,0 +1,52 @@
+<template>
+  <div class="RateStar_container">
+      <img :src="oneStar" :key="item.sort" v-for="item in oneStarArr"/>
+      <img :src="halfStar" v-if="score!=oneStarArr.length" />
+      <img :src="zeroStar" :key="item.sort" v-for="item in zeroStarArr"/>
+  </div>
+</template>
+
+<script>
+export default {
+  name: "RateStar",
+  props:['score'],
+  data() {
+    return {
+      oneStar: require("../assets/imgs/one_star.png"),
+      halfStar: require("../assets/imgs/half_star.png"),
+      zeroStar: require("../assets/imgs/zero_star.png"),
+    };
+  },
+  computed: {
+    oneStarArr: function() {
+      let array = [];
+      for (let i = 0; i < Math.floor(this.score); i++) {
+        array.push({sort:Math.random()});
+      }
+      return array;
+    },
+    zeroStarArr: function() {
+      let array = [];
+      for (let i = 0; i < 5 - Math.ceil(this.score); i++) {
+        array.push({sort:Math.random()});
+      }
+      return array;
+    }
+  },
+  methods: {},
+  mounted() {
+
+  }
+};
+</script>
+
+<style lang="less" scoped>
+@import "../../static/lessfunc.less";
+.RateStar_container{
+    .mgt(5px);
+    display: flex;
+    img{
+        .h(20px);
+    }
+}
+</style>

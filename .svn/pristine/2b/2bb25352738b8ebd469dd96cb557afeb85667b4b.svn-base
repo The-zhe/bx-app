@@ -1,0 +1,340 @@
+<template>
+  <div class="outpatientDetails_container">
+    <div class="headerPart_container"></div>
+    <div class="detail_container">
+      <div class="item date">
+        <div class="item_title">就诊日期：</div>
+        <div class="item_text">{{detailInfo.date}}</div>
+      </div>
+      <div class="item hospital">
+        <div class="item_title">就诊医院：</div>
+        <div class="item_text">{{detailInfo.hospital}}</div>
+      </div>
+      <div class="item number">
+        <div class="item_title">门诊号：</div>
+        <div class="item_text">{{detailInfo.outpatientNumber}}</div>
+      </div>
+      <div class="item doctor">
+        <div class="item_title">接诊医生：</div>
+        <div class="item_text">{{detailInfo.doctorName}}</div>
+      </div>
+      <div class="item department">
+        <div class="item_title">接诊科室：</div>
+        <div class="item_text">{{detailInfo.department}}</div>
+      </div>
+      <div class="item result">
+        <div class="item_title">诊断信息：</div>
+        <div class="item_text">{{detailInfo.result}}</div>
+      </div>
+    </div>
+    <div class="tabBar_container">
+      <div class="tab_container">
+        <div class="tab_item" @click="changeTabComponent(item,index)" v-for="(item,index) in tabLists" :key="item.title">
+          <div class="item_icon">
+            <img :src="currentTabIndex==index?item.activeIconUrl:item.iconUrl" />
+          </div>
+          <div
+            class="item_title"
+            :class="{'active_item_title':currentTabIndex==index}"
+          >{{item.title}}</div>
+        </div>
+      </div>
+      <div class="component_container">
+        <component :is="currentTabComponent"></component>
+      </div>
+    </div>
+
+        <div class="outpatientCharges_container">
+      <div class="title">门诊收费</div>
+      <div class="content">
+        <div class="table_header">
+          <div class="header_index">序号</div>
+          <div class="header_invoiceNum">发票号</div>
+        </div>
+        <div class="table_list">
+          <div class="list_item" v-for="(listItem,listIndex) in chargeLists">
+            <div class="item_header">
+              <div class="item_index">{{listIndex}}</div>
+              <div class="item_invoiceNum">{{listItem.invoiceNum}}</div>
+            </div>
+            <div class="item_list">
+              <div class="item" v-for="(invoiceItem,invoiceIndex) in listItem.invoiceLists">
+                <div class="item_text">
+                  <div class="item_title">{{invoiceItem.title}}</div>
+                  <div class="item_type">{{invoiceItem.type}}</div>
+                </div>
+                <div class="item_num">{{`${invoiceItem.price}*${invoiceItem.count}`}}</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import PrescriptionList from "./components/prescriptionList";
+import CheckList from "./components/checkList";
+import InspectionList from "./components/inspectionList";
+export default {
+  components: { PrescriptionList, CheckList, InspectionList },
+  name: "outpatientDetails",
+  data() {
+    return {
+      currentTabIndex: 0,
+      currentTabComponent:'PrescriptionList',
+      detailInfo: {
+        date: "2019-08-11 10:20",
+        hospital: "宁波市医疗中心李惠利医院（兴宁院区）",
+        outpatientNumber: "G007190949",
+        doctorName: "刘忻",
+        department: "呼吸内科专业",
+        result: "急性上呼吸道感染+感染性发热"
+      },
+      tabLists: [
+        {
+          title: "处方信息",
+          componentName:'PrescriptionList',
+          iconUrl: require("../../assets/imgs/icon_da_cfxx_nor.png"),
+          activeIconUrl: require("../../assets/imgs/icon_da_cfxx_pre.png")
+        },
+        {
+          title: "检查单",
+          componentName:'CheckList',
+          iconUrl: require("../../assets/imgs/icon_da_jcd_nor.png"),
+          activeIconUrl: require("../../assets/imgs/icon_da_jcd_pre.png")
+        },
+        {
+          title: "检验单",
+          componentName:'InspectionList',
+          iconUrl: require("../../assets/imgs/icon_da_jyd_nor.png"),
+          activeIconUrl: require("../../assets/imgs/icon_da_jyd_nor.png")
+        }
+      ],
+      chargeLists: [
+        {
+          invoiceNum: "YS1569001213",
+          invoiceLists: [
+            {
+              title: "血常规（五分类）",
+              type: "化验费",
+              price: "15",
+              count: "1"
+            },
+            {
+              title: "超敏C反应蛋白测定",
+              type: "化验费",
+              price: "15",
+              count: "1"
+            },
+            {
+              title: "血清淀粉样蛋白测定（SAA）",
+              type: "化验费",
+              price: "23",
+              count: "1"
+            },
+            {
+              title: "静脉采血",
+              type: "治疗费",
+              price: "4.1",
+              count: "1"
+            },
+            {
+              title: "【国产】真空采血管",
+              type: "材料费",
+              price: "1.89",
+              count: "1"
+            }
+          ]
+        },
+        {
+          invoiceNum: "YS1569001213",
+          invoiceLists: [
+            {
+              title: "血常规（五分类）",
+              type: "化验费",
+              price: "15",
+              count: "1"
+            }
+          ]
+        }
+      ]
+    };
+  },
+  mounted() {},
+  methods: {
+      changeTabComponent(item,index){
+          this.currentTabIndex=index
+          this.currentTabComponent=item.componentName
+      }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.outpatientDetails_container {
+  background-color: #f4f4f4;
+  box-sizing: border-box;
+  padding-bottom: 29px;
+  .headerPart_container {
+    height: 300px;
+    background-color: #008b84;
+  }
+  .detail_container {
+    width: 701px;
+    height: 434px;
+    margin: -275px auto 0;
+    background-color: #fff;
+    border-radius: 10px;
+    box-sizing: border-box;
+    padding-left: 28px;
+    padding-top: 39px;
+    box-shadow: 0 0 8px #d8d6d6;
+    .item {
+      display: flex;
+      font-size: 28px;
+      color: #777777;
+      .item_title {
+        font-weight: 600;
+      }
+      &:not(:first-child) {
+        margin-top: 25px;
+      }
+    }
+  }
+  .tabBar_container {
+    box-sizing: border-box;
+    padding-bottom: 29px;
+    width: 701px;
+    margin: 25px auto 0;
+    background-color: #fff;
+    .tab_container {
+      box-sizing: border-box;
+      padding: 29px 0;
+      border-radius: 10px;
+      height: 151px;
+      box-shadow: 0 0 8px #d8d6d6;
+      display: flex;
+      .tab_item {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        width: 233px;
+        .item_icon {
+          img {
+            height: 50px;
+          }
+        }
+        .item_title {
+          margin-top: 17px;
+          color: #999999;
+          font-size: 26px;
+        }
+        .active_item_title {
+          font-weight: 600;
+          color: #f6a540;
+        }
+        &:not(:first-child) {
+          border-left: 2px solid #d5d5d5;
+        }
+      }
+    }
+    .component_container {
+      height: 100%;
+    }
+  }
+  .outpatientCharges_container {
+    box-shadow: 0 0 8px #d8d6d6;
+    margin: 26px auto 0;
+    background-color: #fff;
+    width: 701px;
+    border-radius: 12px;
+    box-sizing: border-box;
+    padding: 33px 19px 27px;
+    .title {
+      color: #048a83;
+      font-size: 30px;
+      font-weight: 600;
+      position: relative;
+      padding-bottom: 26px;
+      padding-left: 6px;
+      border-bottom: 2px solid rgb(221, 242, 239);
+      &::before {
+        content: "";
+        position: absolute;
+        left: -19px;
+        top: 4px;
+        width: 9px;
+        height: 36px;
+        background-color: #f6a63e;
+      }
+    }
+    .content {
+      margin-top: 28px;
+      border: 2px solid #d2d2d2;
+      .table_header {
+        display: flex;
+        background-color: #f4f4f4;
+        height: 51px;
+        color: #777777;
+        font-weight: 400;
+        .header_index {
+          width: 120px;
+          text-align: center;
+        }
+        .header_invoiceNum {
+          border-left: 2px solid #d2d2d2;
+          width: 542px;
+          text-align: center;
+        }
+      }
+      .table_list {
+        .list_item {
+          .item_header {
+            border-top: 2px solid #d2d2d2;
+            border-bottom: 2px solid #d2d2d2;
+            font-size: 28px;
+            color: #777777;
+            font-weight: 600;
+            display: flex;
+
+            .item_index {
+              width: 120px;
+              text-align: center;
+            }
+            .item_invoiceNum {
+              border-left: 2px solid #d2d2d2;
+              width: 542px;
+              text-align: center;
+            }
+          }
+          .item_list {
+            .item {
+              display: flex;
+              align-items: center;
+              justify-content: space-between;
+              font-size: 28px;
+              color: #777777;
+              height: 94px;
+              box-sizing: border-box;
+              padding: 0 17px;
+              .item_text {
+                .item_title {
+                }
+                .tiem_type {
+                }
+              }
+              .item_num {
+              }
+              &:not(:first-child) {
+                border-top: 2px dashed #e7e7e7;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
+</style>

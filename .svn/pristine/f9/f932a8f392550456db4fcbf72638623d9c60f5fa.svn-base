@@ -1,0 +1,249 @@
+// 2020/1/8 created by xtt
+<template>
+    <div class="pharmacyInfo">
+      <div class="p_line">
+       <div class="p_line_top">
+         <div class="p_line_top_medicine">
+           <div class="p_line_top_medicine_triangle"></div>
+         </div>
+         <div class="p_line_top_line"></div>
+         <div class="p_line_top_time">
+           <div class="p_line_top_time_triangle"></div>
+         </div>
+       </div>
+      </div>
+      <div class="p_info">
+       <div class="p_info_top">
+         <div class="p_info_top_left">
+           <div class="p_info_top_left_bold">最近用药<img src="../../../assets/imgs/pharmacy1.png"></div>
+           <div class="p_info_top_left_small">{{recentInfo.doctorName}}  {{recentInfo.title}} {{recentInfo.crtTm}}</div>
+         </div>
+         <div class="p_info_top_right">调整</div>
+       </div>
+        <div class="p_info_content">
+         <div class="p_info_content_div">药品名称： {{medicalInfo.medName}} <div class="p_info_content_div_circle"></div></div>
+          <div class="p_info_content_div">药品规格： {{medicalInfo.medSpec}}</div>
+          <div class="p_info_content_div1">用&emsp;&emsp;法：  {{medicalInfo.medUse}}，{{medicalInfo.phrUnit}}，{{medicalInfo.medMode}}</div>
+        </div>
+        <div class="p_info_btn">历史用药</div>
+      </div>
+      <div class="p_advice">
+        <div class="p_advice_title">管理建议：</div>
+        <div class="p_advice_info">
+          &emsp;&emsp;{{recentInfo.msg}}
+        </div>
+      </div>
+    </div>
+</template>
+
+<script>
+  import {getRecentMedical,getUserMedical} from '../../../api/index';
+    export default {
+        name: "pharmacyInfo",
+      data(){
+          return{
+             msg:'',  //管理建议
+             recentInfo:{
+               doctorName:''
+             },
+            medicalInfo:{
+
+            }
+          }
+      },
+      methods:{
+          getInfo(){
+            let userId='4754953811874816';
+            getRecentMedical(userId).then(res=>{
+               this.recentInfo=res.data.list[0];
+               this.medicalInfo=res.data.list[0].medDynamicsDtoList[0];
+               console.log('resentMM',res.data.list[0].medDynamicsDtoList[0]);
+            });
+            getUserMedical(userId).then(res=>{
+               console.log('userMedical',res);
+            });
+          }
+      },
+      mounted() {
+          this.getInfo();
+      }
+    }
+</script>
+
+<style scoped lang="less">
+   .pharmacyInfo{
+     width: 100%;
+     height: 100%;
+     background: #F4F4F4;
+     padding-bottom: 20px;
+     .p_line{
+       margin: 20px auto 0 auto;
+        width: 700px;
+       height: 375px;
+       background: white;
+       border-radius: 20px;
+       box-shadow: 0 0 8px #bebcbc;
+       .p_line_top{
+         margin: 0 auto;
+         padding-top: 20px;
+         width: 670px;
+         height: 80px;
+         border-bottom: 1px solid #DFDFDF;
+         display: flex;
+         justify-content: space-between;
+
+         .p_line_top_medicine{
+           width: 390px;
+           height: 53px;
+           border-radius:20px;
+           border: 3px solid #40b2a0;
+           .p_line_top_medicine_triangle{
+             margin-top: 20px;
+             height: 0px;
+             width: 0px;
+             z-index: 1;/*这个与后面的空心三角形有关*/
+             border-left: 10px solid transparent;
+             border-right: 10px solid transparent;
+             border-top: 20px solid #048A83;
+           }
+         }
+         .p_line_top_line{
+           width:2px;
+           height:53px;
+           background: #D0D0D0;
+         }
+         .p_line_top_time{
+           width: 165px;
+           height: 53px;
+           border-radius: 20px;
+           border: 3px solid #40b2a0;
+           .p_line_top_time_triangle{
+             margin-top: 20px;
+             height: 0px;
+             width: 0px;
+             z-index: 1;/*这个与后面的空心三角形有关*/
+             border-left: 10px solid transparent;
+             border-right: 10px solid transparent;
+             border-top: 20px solid #048A83;
+           }
+         }
+       }
+     }
+     .p_info{
+       margin: 20px auto 0 auto;
+        width: 700px;
+       height: auto;
+       padding-bottom: 20px;
+       background: white;
+       border-radius: 20px;
+       box-shadow: 0 0 8px #bebcbc;
+       .p_info_top{
+         width: 660px;
+         height: 110px;
+         border-bottom: 1px solid #DFDFDF;
+         margin: 0 auto;
+         display: flex;
+         justify-content: space-between;
+         .p_info_top_left{
+           margin-top: 20px;
+             width: 480px;
+             height: 80px;
+           .p_info_top_left_bold{
+             color: #606060;
+             font-size: 28px;
+             font-weight: bold;
+             width: 150px;
+              display: flex;
+             justify-content: space-between;
+             img{
+               margin-top: 5px;
+               width: 27px;
+               height: 27px;
+             }
+           }
+           .p_info_top_left_small{
+             color: #969696;
+             font-size: 26px;
+           }
+
+         }
+         .p_info_top_right{
+           margin-top: 20px;
+           text-align: center;
+           line-height: 60px;
+           color: white;
+           font-size: 30px;
+           width: 140px;
+           height: 60px;
+           background: #3EB4A1;
+           border-radius: 10px;
+         }
+       }
+       .p_info_content{
+         width: 660px;
+         height: 240px;
+         border: 1px solid #DFDFDF;
+         margin: 20px auto 0 auto;
+         .p_info_content_div{
+           color: #777777;
+           font-size: 28px;
+           margin: 20px auto;
+           width: 625px;
+           height: 60px;
+           border-bottom: 1px dashed #DADADA;
+           display: flex;
+           justify-content: space-between;
+           .p_info_content_div_circle{
+             width: 15px;
+             height: 15px;
+             background: #F48100;
+             border-radius: 15px;
+           }
+         }
+         .p_info_content_div1{
+           color: #777777;
+           font-size: 28px;
+           margin: 0 auto;
+           width: 625px;
+           height: 70px;
+         }
+       }
+       .p_info_btn{
+         text-align: center;
+         line-height: 60px;
+         font-size: 30px;
+         color: #3EB4A1;
+         width: 300px;
+         height: 60px;
+         border-radius: 30px;
+         border: 2px solid #3EB4A1;
+         margin: 20px auto 0 auto;
+       }
+     }
+     .p_advice{
+       padding-bottom: 10px;
+       margin: 20px auto 0 auto;
+       width: 700px;
+       height: auto;
+       background: white;
+       border-radius: 20px;
+       box-shadow: 0 0 8px #bebcbc;
+       .p_advice_title{
+         padding-top: 20px;
+         margin: 0 auto;
+         width: 660px;
+         height: 40px;
+         color: #606060;
+         font-size: 28px;
+       }
+       .p_advice_info{
+         line-height: 45px;
+         width: 660px;
+         height: auto;
+         margin: 10px auto;
+         color: #969696;
+         font-size: 26px;
+       }
+     }
+   }
+</style>

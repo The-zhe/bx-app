@@ -1,0 +1,389 @@
+<template>
+  <div class="info_common c_gray">
+    <van-dialog v-model="showMsg">
+      <div class="ali_center">请联系 <a href="wtai://wp//mc;400-300-500">400-300-500</a></div>
+    </van-dialog>
+
+
+    <div class="header"  @click="hideSelect">
+      <div class="swiper-container">
+        <div class="swiper-wrapper">
+          <div v-for="item,index in info.imgUrls" :key="index" class="swiper-slide"><img class="header_banner" :src="item"></div>
+        </div>
+
+        <div class="swiper-pagination"></div>
+      </div>
+
+      <div class="header_spec">
+        <div class="c_black header_name">{{ info.name }}</div>
+        <div class="fs_28">{{ info.subTitle }}</div>
+
+        <div class="fs_24 flex_between price_item">
+          <div>
+            <font class="fs_36 c_red">￥{{ info.salePrice }}</font>
+            <font class="info_oldPrice c_gray_2">原价 {{ info.costPrice }}</font>
+          </div>
+          <div class="flex_start">
+            <div class="sales">销量 {{ info.salesVolume }}</div>
+            <div class="comment_rate" v-if="pType == 1">好评率 {{info.acclaim}}%</div>
+          </div>
+        </div>
+
+        <div v-if="pType == 2" class="fs_26">
+          <div class="line_">服务须知：{{info.notice}}</div>
+          <div class="line_">服务类型：</div>
+          <div class="line_">可用时间段：</div>
+        </div>
+        <div class="special_explain fs_26" v-if="info.specialNote" >特殊说明：{{info.specialNote}}</div>
+        <div class="coupon_line fs_26">优惠券：暂无优惠券</div>
+      </div>
+    </div>
+    <div class="content"  @click="hideSelect">
+
+      <div class="content_part" v-if="pType == 1">
+        <div class="part_title c_black">套餐类型</div>
+        <div class="part_text fs_28">
+          <div class="flex_around">
+            <div class="type_item ali_center" :class="item.id==selectedId?'item_active':''"
+            @click="changeType(item.id)"
+             v-for="item in info.specDtoList">
+             {{ item.specNm }}
+             </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content_part" v-if="pType == 1">
+        <div class="part_title c_black">套餐明细</div>
+        <div class="part_text fs_28">
+          <div v-for="item in info.servicesDtoList" v-if="item.setMealSpecId==selectedId" class="text_item flex_between">
+            <div>{{ item.name }}</div>
+            <div>X{{ item.quantity }}</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="content_part" v-if="pType == 1" >
+        <div class="part_title c_black">费用须知</div>
+        <div class="part_text fs_28" v-html="info.expensesNote">
+        </div>
+      </div>
+
+      <div class="content_part">
+        <div class="part_title c_black">{{ pType == 1?'套餐详情':'商品详情'}}</div>
+        <div class="part_text fs_28" v-html="info.cont">
+
+        </div>
+      </div>
+
+    </div>
+
+    <div class="info_footer">
+      <div class="flex_between">
+        <div class="flex_around fs_24 flex_left">
+          <div @click="getShowMsg">
+            <img class="icon_" src="../../assets/images/kefu_icon@2x.png">
+            <div>客服</div>
+          </div>
+          <div>
+            <img class="icon_" src="../../assets/images/soucang_icon@2x.png">
+            <div>收藏</div>
+          </div>
+        </div>
+        <div class="footer_btn c_white" @click="showSelect()">立即购买</div>
+      </div>
+    </div>
+
+    <!--memuselect-->
+    <div class="menu_border" v-if="selectShow">
+      <component is="specs" :type_list="info.specDtoList" :idObj = "idObj" :name="name" @changeShow="getIsShow($event)"></component>
+    </div>
+    <!--memuselect end-->
+  </div>
+</template>
+
+<script>
+  import specs from '@/components/pages/specs';
+  import Swiper from 'swiper';
+  export default {
+    components: {specs}, name: 'infoCommon',
+    data () {
+      return {
+        idObj:{},
+        show:true,
+        selectShow:0,
+        selectedId:1,
+        info:{
+          img:require('../../assets/images/banner@2x.png'),
+          name:'儿童成长测评  0-3岁专业养育指导',
+          spec:'专业发育水平测试 儿科医生深度沟通 定制化的养育方案',
+          price:'¥1999.00',
+          oldPrice:'¥2999.00',
+          count:'2330',
+          servicesDtoList:[
+            {
+              name:'套餐明细',
+              time:'X2(60分钟)'
+            },
+            {
+              name:'套餐明细',
+              time:'X2(60分钟)'
+            }
+          ],
+          productInfo:'<div>11111</div>'
+        },
+        pType:'',  //1是套餐 2服务
+        quantity : 1,
+        id:'',
+        userId:1,
+        name:'',
+        showMsg:false
+      }
+    },
+    mounted(){
+      let id = parseInt(this.$route.query.pId);
+      let type = this.$route.query.pType;
+      this.pType = type;
+      this.id = id;
+      this.userId = 1;
+      this.getInfo(id,type);
+      this.idObj = {
+        id : id,
+        userId : this.userId
+      };
+      
+      this.getSwiper();
+      
+    },
+    methods:{
+      getInfo(id,type){
+        let url;
+        let data;
+
+        if(type == 1){
+          url = '/hjjk/setMeal/info';
+          data = {
+            id : id,
+          };
+        }else if(type == 2){
+          url = '/hjjk/service/info';
+          data = {
+            id : id
+          };
+        }
+
+        let response = (res)=>{
+            this.info = res.data;
+            this.name = res.data.name;
+            console.log(this.info)
+          if(type == 2){
+            let obj = [{
+              imgUrl: 'http://img4.imgtn.bdimg.com/it/u=3276179142,1686381254&fm=26&gp=0.jpg',
+              salePrice:'100',
+              specNm:'医疗服务',
+              id:'1'
+            }];
+
+            //this.info.specDtoList = obj;
+            console.log(this.info.specDtoList)
+          }
+
+        };
+        this.$store.state.getMoreData(url,data,response);
+      },
+      getSwiper(){
+        new Swiper ('.swiper-container', {
+          loop: true,
+          autoplay: true,
+          // 如果需要分页器
+          pagination: {
+            el: '.swiper-pagination',
+          },
+        })
+      },
+        //改变父组件的selectShow
+      getIsShow(msg){
+          this.selectShow = msg;
+      },
+      //显示购买菜单
+      showSelect(){
+
+        this.selectShow = 1 //1是显示 0隐藏
+      },
+      //显示购买菜单
+      hideSelect(){
+        this.selectShow = 0 //1是显示 0隐藏
+      },
+
+      getShowMsg(){
+        this.showMsg = true;
+      },
+      changeType(id){
+        this.selectedId=id
+      },
+    }
+
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+  .info_common{
+    .header_banner{
+      width: 750px;
+      height: 700px;
+    }
+    .header_spec{
+      padding: 32px;
+
+      .header_name{
+        margin-bottom: 15px;
+        font-weight: bold;
+      }
+      .price_item{
+        padding: 40px 0 30px 0;
+        border-bottom: 1px solid #DCDCDC;
+        .sales{
+          color: #888888;
+          margin-right: 10px;
+        }
+        .comment_rate{
+          padding-left: 10px;
+          border-left: 1px solid #E3E3E3;
+          color: #888888;
+        }
+      }
+      .special_explain{
+        color: #888888;
+        margin-top: 27px;
+      }
+      .coupon_line{
+        height: 75px;
+        line-height: 75px;
+        border-bottom: 1px solid #DCDCDC;
+        color: #888888;
+      }
+      .line_{
+        height: 70px;
+        line-height: 70px;
+        color: #888888;
+      }
+
+      .info_oldPrice{
+        text-decoration: line-through;
+        margin-left: 10px;
+      }
+    }
+
+
+    .content{
+      padding: 36px 32px;
+      margin-bottom: 80px;
+
+      .content_part{
+        margin-bottom: 61px;
+        .part_title{
+          text-align: center;
+          padding: 10px;
+          width: 136px;
+          margin: 0 auto 30px auto;
+          border-bottom: 4px solid #FFC870;
+          font-weight: bold;
+        }
+
+        .part_text{
+          padding: 0 16px;
+
+          .text_item{
+            padding: 0 33px;
+            height: 75px;
+            line-height: 75px;
+            border-bottom: 1px solid #DCDCDC;
+          }
+          .type_item{
+            width:120px;
+            height:56px;
+            line-height:56px;
+            color:#646464;
+            background:rgba(255,255,255,1);
+            border:2px solid rgba(222, 222, 222, 1);
+            border-radius:8px;
+          }
+          .item_active{
+            color: #0FA29C;
+            border:2px solid rgba(15, 162, 156, 1);          
+          }
+        }
+      }
+    }
+
+    .info_footer{
+      width: 100%;
+      position: fixed;
+      right: 0;
+      bottom: 0;
+      background-color: #ffffff;
+
+      .footer_btn{
+        text-align: center;
+        width: 524px;
+        height: 90px;
+        line-height: 90px;
+        background-color: #0FA29C;
+      }
+      .icon_{
+        margin-bottom: 5px;
+        width: 46px;
+        height: 39px;
+      }
+      .flex_left{
+        width: 226px;
+        padding:0 33px;
+        box-sizing: border-box;
+      }
+    }
+
+    .menu_border{
+      width: 100%;
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      z-index: 5;
+    }
+  }
+</style>
+
+<style lang="less">
+  .van-dialog {
+    width: 50%;
+    font-size: 32px;
+    padding: 30px 30px 20px 30px;
+
+    .van-dialog__message{
+      font-size: 28px;
+      max-height: 60vh;
+      padding: 30px;
+      overflow-y: auto;
+      line-height: 60px;
+    }
+    .van-button {
+      font-size: 32px;
+      margin-top: 20px;
+    }
+
+  }
+  .info_common{
+    .swiper-pagination-bullet{
+      width: 10px;
+      height: 10px;
+      display: inline-block;
+      border-radius: 100%;
+      background:#000000;
+    }
+    .swiper-pagination-bullet-active{
+      background:#32A99F;
+      width: 20px;
+      border-radius: 10px;
+    }
+  }
+</style>

@@ -1,0 +1,527 @@
+<template>
+  <div class="fillphone">
+    <div class="filltop">
+      5.&ensp;联系电话
+    </div>
+    <div class="filltip">医生咨询消息将以手机短信方式发送至您的手机,</div>
+    <div class="filltip"> 请填写你的真实手机号码</div>
+    <div class="login_content">
+      <div class="l_phone">
+        <div class="p_img"><img src="../../../assets/imgs/x_loginp.png"/></div>
+        <div class="p_input"><input placeholder="请输入手机号" type="number" pattern="\d*" v-model="phone"/></div>
+      </div>
+      <div class="l_phone">
+        <div class="p_img"><img src="../../../assets/imgs/x_loginc.png"/></div>
+        <div class="p_input"><input placeholder="请输入验证码" type="number" pattern="\d*" v-model="code"/>
+          <span style="color:#D6D8D9">|</span>
+          <span @click="tocheck" v-show="iscode">获取验证码</span>
+          <span v-show="!iscode">重新发送{{second}}s</span>
+        </div>
+      </div>
+    </div>
+    <div class="p_app"><img src="../../../assets/imgs/x_dkapp.png"></div>
+    <div class="p_tip">与医生一对一免费咨询</div>
+    <div class="fillbtn" v-show="hideshow">
+      <div class="fillzx" @click="toahead"></div>
+      <div class="fillnext" @click="tonext"></div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import {getSubForm, gettablecode} from '../../../api/index'
+  import Toast from "vant/es/toast";
+  import {getSig} from "../../../api";
+
+  export default {
+    name: "fillphone",
+    data() {
+      return {
+        docmHeight: document.documentElement.clientHeight ||document.body.clientHeight,
+        showHeight: document.documentElement.clientHeight ||document.body.clientHeight,
+        hideshow:true,  //显示或者隐藏footer
+        issubmit:false,
+        iscode: true,
+        phone: localStorage.getItem('tablephone'),
+        code: '',
+        second: '60',
+        isapp: true,
+        userId:'',
+        userSig:'',
+        isuserId:localStorage.getItem('userId'),
+      }
+    },
+    methods: {
+      getNativeapp() {
+        this.$bridge.callHandler("isAndroid", "", (res) => {
+          if (res === 1) {
+            this.isapp = false;
+          }
+        });
+      },
+      tocheck() {
+        if (!this.phone) {
+          Toast('请输入手机号');
+        } else if (this.phone && this.phone.length !== 11) {
+          Toast('请输入正确的手机号');
+        } else {
+          this.iscode = false;
+          gettablecode(this.phone).then((res) => {
+            console.log('yqcode',res);
+            if(res.data.code===0){
+              this.second = '60';
+              this.set_interval(this.second);
+            }else if(res.data.code===400){
+              this.$dialog.alert({
+                title: '提示',
+                message: '你已提交过表单',
+                confirmButtonText: '确 定',
+                confirmButtonColor: '#3FA998',
+              }).then(() => {
+                this.emptytable();
+                this.$router_({path: '/'});
+              }).catch(() => {
+              });
+            }
+          });
+        }
+      },
+      toahead() {
+        this.$router_({path: '/fillsass'});
+      },
+      emptytable() {
+          sessionStorage.removeItem('istableupd');
+          sessionStorage.removeItem('yqlistsubmit');
+          sessionStorage.removeItem('jqDistrictNm');
+          sessionStorage.removeItem('districtNm');
+          sessionStorage.removeItem('age');
+          sessionStorage.removeItem('cityNm');
+          sessionStorage.removeItem('code');
+          sessionStorage.removeItem('fkxxOptionsA');
+          sessionStorage.removeItem('fkxxOptionsB');
+          sessionStorage.removeItem('fkxxOptionsBDesc');
+          sessionStorage.removeItem('fkxxOptionsC');
+          sessionStorage.removeItem('fkxxOptionsCDesc');
+          sessionStorage.removeItem('fkxxOptionsD');
+          sessionStorage.removeItem('fkxxOptionsDDesc');
+
+          sessionStorage.removeItem('illnessDesc');
+          sessionStorage.removeItem('jqCityNm');
+          sessionStorage.removeItem('jqProviceNm');
+          sessionStorage.removeItem('name');
+          sessionStorage.removeItem('pastHistory');
+
+          sessionStorage.removeItem('phone');
+          sessionStorage.removeItem('proviceNm');
+          sessionStorage.removeItem('reportImg');
+          sessionStorage.removeItem('sex');
+          sessionStorage.removeItem('statNm');
+
+          sessionStorage.removeItem('symOptionsExot');
+          sessionStorage.removeItem('symOptionsExotTime');
+          sessionStorage.removeItem('symOptionsFlst');
+          sessionStorage.removeItem('symOptionsFlstTime');
+          sessionStorage.removeItem('symOptionsFr');
+
+          sessionStorage.removeItem('symOptionsFrTime');
+          sessionStorage.removeItem('symOptionsFx');
+          sessionStorage.removeItem('symOptionsFxTime');
+          sessionStorage.removeItem('symOptionsKs');
+          sessionStorage.removeItem('symOptionsKsTime');
+
+          sessionStorage.removeItem('symOptionsXmqj');
+          sessionStorage.removeItem('symOptionsXmqjTime');
+          sessionStorage.removeItem('temp');
+          sessionStorage.removeItem('tripCityNm');
+          sessionStorage.removeItem('tripDesc');
+
+          sessionStorage.removeItem('tripEndTime');
+          sessionStorage.removeItem('tripProviceNm');
+          sessionStorage.removeItem('tripStartTime');
+          sessionStorage.removeItem('visitingProcess');
+
+      },
+      tosubmit(){
+        if(!this.code){
+          Toast('请输入验证码');
+        }else {
+          let hjjkYqConsultRo = {
+            hjjkYqTripVos: JSON.parse(sessionStorage.getItem('yqlistsubmit')),
+            jqDistrictNm: sessionStorage.getItem('jqDistrictNm'),
+            districtNm: sessionStorage.getItem('districtNm'),
+            age: sessionStorage.getItem('age'),
+            catCd: "",
+            catNm: "",
+            cityCd: "",
+            cityNm: sessionStorage.getItem('cityNm'),
+            code: this.code,
+            fkxxOptionsA: sessionStorage.getItem('fkxxOptionsA'),
+            fkxxOptionsB: sessionStorage.getItem('fkxxOptionsB'),
+            fkxxOptionsBDesc: sessionStorage.getItem('fkxxOptionsBDesc'),
+            fkxxOptionsC: sessionStorage.getItem('fkxxOptionsC'),
+            fkxxOptionsCDesc: sessionStorage.getItem('fkxxOptionsCDesc'),
+            fkxxOptionsD: sessionStorage.getItem('fkxxOptionsD'),
+            fkxxOptionsDDesc: sessionStorage.getItem('fkxxOptionsDDesc'),
+            id: 0,
+            pastHistory: sessionStorage.getItem('pastHistory'),
+            phone: this.phone,
+            proviceCd: "",
+            proviceNm: sessionStorage.getItem('proviceNm'),
+            reportImg: sessionStorage.getItem('reportImg'),
+            sex: sessionStorage.getItem('sex'),
+            statCd: "",
+            statNm: "",
+            symOptionsEx: sessionStorage.getItem('symOptionsEx'),
+            symOptionsExTime: sessionStorage.getItem('symOptionsExTime'),
+            symOptionsFr: sessionStorage.getItem('symOptionsFr'),
+            symOptionsFrTime: sessionStorage.getItem('symOptionsFrTime'),
+            symOptionsFx: sessionStorage.getItem('symOptionsFx'),
+            symOptionsFxTime: sessionStorage.getItem('symOptionsFxTime'),
+            symOptionsKs: sessionStorage.getItem('symOptionsKs'),
+            symOptionsKsTime: sessionStorage.getItem('symOptionsKsTime'),
+            symOptionsOt: sessionStorage.getItem('symOptionsOt'),
+            symOptionsOtTime: sessionStorage.getItem('symOptionsOtTime'),
+            symOptionsXmqj: sessionStorage.getItem('symOptionsXmqj'),
+            symOptionsXmqjTime: sessionStorage.getItem('symOptionsXmqjTime'),
+            temp: sessionStorage.getItem('temp'),
+            /*tripCityCd: "",
+          tripCityNm: sessionStorage.getItem('tripCityNm'),
+          tripDesc: sessionStorage.getItem('tripDesc'),
+          tripEndTime: sessionStorage.getItem('tripEndTime'),
+          tripProviceCd: "",
+          tripProviceNm: sessionStorage.getItem('tripProviceNm'),
+          tripStartTime: sessionStorage.getItem('tripStartTime'),*/
+            userId: Number(localStorage.getItem('userId')),
+            visitingProcess: sessionStorage.getItem('visitingProcess'),
+            illnessDesc: sessionStorage.getItem('illnessDesc'),
+            jqProviceNm: sessionStorage.getItem('jqProviceNm'),
+            jqCityNm: sessionStorage.getItem('jqCityNm'),
+
+          };
+          getSubForm(hjjkYqConsultRo).then((res) => {
+            this.issubmit=true;
+            this.userId = res.data.data;
+            console.log('ppp', res);
+            if (res.data.code === 0) {
+              this.getUserSig();
+              let inApp = Boolean(sessionStorage.getItem('inApp'));
+              if (inApp) {
+                this.$dialog.alert({
+                  title: '提交成功',
+                  message: '医生将会尽快回复您的咨询 请注意消息查收！',
+                  confirmButtonText: '确 定',
+                  confirmButtonColor: '#3FA998',
+                }).then(() => {
+                  this.emptytable();
+                  this.$router_({path: '/'});
+                }).catch(() => {
+
+                });
+              } else {
+                this.$dialog.confirm({
+                  title: '提交成功',
+                  message: '医生将会尽快回复您的咨询 请注意消息查收！' + '<br>' + '也可下载APP，与医生一对一即时交流',
+                  confirmButtonText: '确 定',
+                  cancelButtonText: '打开APP',
+                  confirmButtonColor: '#56B2AD',
+                  cancelButtonColor: '#56B2AD'
+                }).then(() => {
+                  this.emptytable();
+                  this.$router_({path: '/'});
+                }).catch(() => {
+                  this.emptytable();
+                });
+              }
+            }else if(res.data===''){
+              Toast('验证码输入错误');
+            }
+            else {
+              let msg = res.data.msg;
+              Toast(msg);
+            }
+          });
+        }
+      },
+      updsubmit(){
+        let hjjkYqConsultRo = {
+          hjjkYqTripVos:JSON.parse(sessionStorage.getItem('yqlistsubmit')),
+          jqDistrictNm:sessionStorage.getItem('jqDistrictNm'),
+          districtNm:sessionStorage.getItem('districtNm'),
+          age: sessionStorage.getItem('age'),
+          catCd: "",
+          catNm: "",
+          cityCd: "",
+          cityNm: sessionStorage.getItem('cityNm'),
+          code: this.code,
+          fkxxOptionsA: sessionStorage.getItem('fkxxOptionsA'),
+          fkxxOptionsB: sessionStorage.getItem('fkxxOptionsB'),
+          fkxxOptionsBDesc: sessionStorage.getItem('fkxxOptionsBDesc'),
+          fkxxOptionsC: sessionStorage.getItem('fkxxOptionsC'),
+          fkxxOptionsCDesc: sessionStorage.getItem('fkxxOptionsCDesc'),
+          fkxxOptionsD: sessionStorage.getItem('fkxxOptionsD'),
+          fkxxOptionsDDesc: sessionStorage.getItem('fkxxOptionsDDesc'),
+          id: 0,
+          pastHistory: sessionStorage.getItem('pastHistory'),
+          phone: this.phone,
+          proviceCd: "",
+          proviceNm: sessionStorage.getItem('proviceNm'),
+          reportImg: sessionStorage.getItem('reportImg'),
+          sex: sessionStorage.getItem('sex'),
+          statCd: "",
+          statNm: "",
+          symOptionsEx: sessionStorage.getItem('symOptionsEx'),
+          symOptionsExTime: sessionStorage.getItem('symOptionsExTime'),
+          symOptionsFr: sessionStorage.getItem('symOptionsFr'),
+          symOptionsFrTime: sessionStorage.getItem('symOptionsFrTime'),
+          symOptionsFx: sessionStorage.getItem('symOptionsFx'),
+          symOptionsFxTime: sessionStorage.getItem('symOptionsFxTime'),
+          symOptionsKs: sessionStorage.getItem('symOptionsKs'),
+          symOptionsKsTime: sessionStorage.getItem('symOptionsKsTime'),
+          symOptionsOt: sessionStorage.getItem('symOptionsOt'),
+          symOptionsOtTime: sessionStorage.getItem('symOptionsOtTime'),
+          symOptionsXmqj: sessionStorage.getItem('symOptionsXmqj'),
+          symOptionsXmqjTime: sessionStorage.getItem('symOptionsXmqjTime'),
+          temp: sessionStorage.getItem('temp'),
+          /*tripCityCd: "",
+          tripCityNm: sessionStorage.getItem('tripCityNm'),
+          tripDesc: sessionStorage.getItem('tripDesc'),
+          tripEndTime: sessionStorage.getItem('tripEndTime'),
+          tripProviceCd: "",
+          tripProviceNm: sessionStorage.getItem('tripProviceNm'),
+          tripStartTime: sessionStorage.getItem('tripStartTime'),*/
+          userId: Number(localStorage.getItem('userId')),
+          visitingProcess: sessionStorage.getItem('visitingProcess'),
+          illnessDesc: sessionStorage.getItem('illnessDesc'),
+          jqProviceNm:sessionStorage.getItem('jqProviceNm'),
+          jqCityNm:sessionStorage.getItem('jqCityNm'),
+
+        };
+        getupdyqtable(hjjkYqConsultRo).then((res)=>{
+          if(res.data.code===0) {
+            this.$dialog.alert({
+              title: '修改成功',
+              message: '医生将会尽快回复您的咨询 请注意消息查收！',
+              confirmButtonText: '确 定',
+              confirmButtonColor: '#3FA998',
+            }).then(() => {
+              this.emptytable();
+              this.$router_({path: '/'});
+            }).catch(()=>{
+
+            });
+          }else {
+            let msg=res.data.msg;
+            Toast(msg);
+          }
+        })
+      },
+      tonext() {
+        if(this.issubmit){
+          Toast('请勿多次点击');
+        }else {
+          //let isupd=sessionStorage.getItem('istableupd');
+          if (this.isuserId) {   //已经登录了
+            this.tosubmit();
+          } else if (!this.code) {
+            Toast('请输入验证码');
+          }
+          /* else if(Boolean(isupd)){
+          this.updsubmit();
+        }*/
+          else {
+            this.tosubmit();
+          }
+        }
+      },
+      set_interval(second) {
+        let time = second;
+        let secondInterval = setInterval(() => {
+          if (time === 0) {
+            clearInterval(secondInterval);
+            this.second = '0';
+            this.iscode = true;
+          } else {
+            time--;
+            this.second = time
+          }
+        }, 1000)
+      },
+      //登录腾讯im获取秘钥
+      getUserSig() {
+        let userid=this.userId+'';
+        getSig(userid).then(res => {
+          this.userSig = res.data.data;
+          this.getIMBegin();
+        });
+      },
+      //登录im
+      getIMBegin() {
+        let userid=this.userId+'';
+        let promise = this.tim.login({
+          userID: userid, //登录的会员id
+          userSig: this.userSig
+        });
+        promise.then(imResponse => {
+          console.log("IM登录成功", imResponse);
+        })
+          .catch(function (imError) {
+            console.warn("login error:", imError); // 登录失败的相关信息
+          });
+      },
+    },
+    watch: {
+      //监听显示高度
+      showHeight:function() {
+        if(this.docmHeight > this.showHeight){
+          //隐藏
+          this.hideshow=false
+        }else{
+          //显示
+          this.hideshow=true
+        }
+      }
+    },
+    mounted() {
+      if(Boolean(sessionStorage.getItem('inApp'))){
+        this.isapp=false;
+      }
+      //监听事件
+      window.onresize = ()=>{
+        return(()=>{
+          this.showHeight = document.documentElement.clientHeight || document.body.clientHeight;
+        })()
+      }
+    }
+  }
+</script>
+<style>
+  @import url('../../../assets/less/vantstyle/toast.css');
+  @import url('../../../assets/less/vantstyle/dialog.css');
+  @import url('../../../assets/less/vantstyle/button.css');
+</style>
+<style scoped lang="less">
+  .fillphone {
+    padding-bottom: 1rem;
+    font-size: 0.3rem;
+    .filltop{
+      height: 0.9rem;
+      background: url("../../../assets/imgs/x_filltop.png");
+      background-size: 100% 0.9rem;
+      font-size: 0.32rem;
+      font-weight: bold;
+      color: white;
+      line-height: 0.9rem;
+      text-align: center;
+      margin-bottom: 0.9rem;
+    }
+    .filltip{
+      text-align: center;
+      margin: 0 auto;
+      color: #606060;
+      width: 6.5rem;
+      height: 0.4rem;
+    }
+
+    .filltitle {
+      margin-top: 0.54rem;
+      margin-left: 0.5rem;
+      width: 3rem;
+      height: 0.3rem;
+      font-weight: bold;
+      color: #767777;
+    }
+
+    .login_content {
+      margin: 1.3rem auto;
+      width: 6rem;
+      height: 2.3rem;
+
+      .l_phone {
+        margin-bottom: 0.8rem;
+        width: 6rem;
+        height: 0.8rem;
+        font-size: 0.32rem;
+        display: flex;
+        justify-content: flex-start;
+
+        .p_img {
+          margin: 0.2rem;
+          width: 0.31rem;
+          height: 0.37rem;
+
+          img {
+            width: 0.31rem;
+            height: 0.37rem;
+          }
+        }
+
+        .p_input {
+          padding-left: 0.25rem;
+          padding-top: 0.05rem;
+          width: 5.18rem;
+          height: 0.7rem;
+          border-bottom: 1px solid #D6D8D9;
+
+          input {
+            color: #a7a7aa;
+            width: 2.6rem;
+            height: 0.7rem;
+          }
+
+          input::-webkit-input-placeholder {
+            /* placeholder颜色  */
+            color: #C8C8CC;
+          }
+
+          span {
+            margin-left: 0.15rem;
+            white-space: nowrap;
+            color: #56B2AD;
+          }
+        }
+
+      }
+    }
+    .p_app{
+      margin:2rem auto 0;
+      width: 2.4rem;
+      height: 0.57rem;
+      img{
+        width: 2.4rem;
+        height: 0.57rem;
+      }
+    }
+    .p_tip{
+      width: 3.5rem;
+      height: 0.4rem;
+      text-align: center;
+      margin: 0.35rem auto;
+      color: #56B2AD;
+    }
+    .fillbtn {
+      position: fixed;
+      bottom: 6%;
+      width: 6.5rem;
+      height: 0.7rem;
+      display: flex;
+      justify-content: space-between;
+      // margin: 0.3rem auto 0;
+      left: 50%;
+      margin-left:-3.25rem;
+
+      .fillzx {
+        width: 3.1rem;
+        height: 0.72rem;
+        background: url("../../../assets/imgs/x_syb2.png") no-repeat;
+        background-size: 3.1rem 0.72rem;
+      }
+
+      .fillnext {
+        width: 3.1rem;
+        height: 0.72rem;
+        background: url("../../../assets/imgs/x_tj2.png") no-repeat;
+        background-size: 3.1rem 0.72rem;
+      }
+    }
+  }
+</style>

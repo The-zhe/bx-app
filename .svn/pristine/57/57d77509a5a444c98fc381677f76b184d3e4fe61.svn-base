@@ -1,0 +1,85 @@
+<template>
+    <div class="appoint_result_container">
+        <div class="result_info_container">
+            <div class="result_title">
+                <div class="title_img">
+                    <img src="../../assets/images/agree@1x.png" />
+                </div>
+                <div class="title_text">
+                    预约成功
+                </div>
+            </div>
+            <div class="result_mount">
+                您的挂号预约次数剩余1次
+            </div>
+            <div class="result_tip">
+                是否立即购买
+            </div>
+        </div>
+        <div class="result_choose_container">
+            <div class="cancel_container">
+                取消
+            </div>
+            <div class="buy_container">
+                立即购买
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+export default {
+};
+</script>
+
+<style scoped lang="less">
+.appoint_result_container{
+    width:602px;
+    height:407px;
+    background:rgba(255,255,255,1);
+    border-radius:16px;
+    .result_info_container{
+        height: 245px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        padding-top: 60px;
+        color: #333333;
+        font-size: 32px;
+        border-bottom: 1px solid #dcdcdc;
+        font-weight:bold;
+        .result_title{
+            display: flex;
+            align-items: center;
+            .title_text{
+                margin-left: 20px;
+            }
+        }
+        .result_mount{
+            margin-top: 59px;
+        }
+        .result_tip{
+            margin-top: 12px;
+        }
+    }
+    .result_choose_container{
+        display: flex;
+        .cancel_container{
+            height: 100px;
+            line-height: 100px;
+            color: #3587C3;
+            text-align: center;
+            border-right: 1px solid #dcdcdc;
+            flex: 1;
+        }
+        .buy_container{
+            height: 100px;
+            line-height: 100px;
+            color: #3587C3;
+            text-align: center;
+            flex: 1;
+        }
+
+    }
+}
+</style>

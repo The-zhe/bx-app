@@ -1,0 +1,470 @@
+// 2020/4/2 created by xtt
+<template>
+  <div class="practicePoints">
+    <!--<div class="top">
+      设置执业点
+    </div>-->
+    <van-popup v-model="showDutyPicker" position="bottom">
+      <van-picker
+        show-toolbar
+        :columns="Dutycolumns"
+        @cancel="showDutyPicker = false"
+        @confirm="onDutyConfirm"
+      />
+    </van-popup>
+    <div class="container" v-for="(item,index) in addlist">
+      <div class="content">
+        <div class="title" v-if="addlist.length===1">执业点</div>
+        <div class="title" v-else>第{{chineseNum[index].title}}执业点</div>
+        <div class="name">
+          <div class="text">
+            <input v-model="item.point" placeholder="请填写执业点" @input="hospitalChange(item,index)" />
+          </div>
+          <img
+            style="width:0.37rem;height: 0.37rem"
+            :class="doctorperinfo?'':hh2"
+            :src="doctorperinfo?nextIcon:selectIcon"
+            @click="deletepoint(index)"
+          />
+        </div>
+        <div class="pointcontent" v-if="listShow" :style="{'top':pointTop+'rem'}">
+          <div class="list">
+            <div
+              class="item"
+              @click="selectHospitalItem(itemh)"
+              v-for="itemh in hospitalItemList"
+            >{{itemh.name}}</div>
+          </div>
+          <div class="cancel" @click="cancelList">关闭</div>
+        </div>
+      </div>
+      <div class="content" @click="selectmajorfield(index)">
+        <div class="title">专业方向</div>
+        <div class="name">
+          <div class="text">{{item.marjorNm===''?'请选择您的专业方向':`${item.marjorNm}-${item.secmajorNm}`}}</div>
+          <img :src="selectIcon" />
+        </div>
+      </div>
+      <div class="content" @click="selectDepartment(index)">
+        <div class="title">科室</div>
+        <div class="name">
+          <div class="text">{{item.departNm===''?'请选择您的科室':`${item.departNm}-${item.secdepartNm}`}}</div>
+          <img :src="selectIcon" />
+        </div>
+      </div>
+      <div class="content" style="border-bottom: 0" @click="selectDuty(index)">
+        <div class="title">职务</div>
+        <div class="name">
+          <div class="text">{{item.duty===''?'请选择您的职务':item.duty}}</div>
+          <img :src="selectIcon" />
+        </div>
+      </div>
+    </div>
+    <div class="add" @click="addpoint" v-if="doctorperinfo">
+      <!-- 当页面为doctorperinfo不展示按钮 -->
+      添加执业点
+      <img src="../../../../assets/imgs/btn_grzx_wszyxx_add.png" />
+    </div>
+    <div class="fixbtn">
+      <div class="save" @click="tosubmit" v-if="doctorperinfo">
+        <!-- 当页面为doctorperinfo不展示按钮 -->
+        确定
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getCertifiHospitalList, getDutyItemList } from "../../../../api/apiz";
+import Toast from "vant/es/toast";
+
+export default {
+  name: "practicePoints",
+  data() {
+    return {
+      nextIcon: require("../../../../assets/imgs/btn_grzx_wszyxx_aadd.png"),
+      selectIcon: require("../../../../assets/imgs/btn_grzx_select.png"),
+      major: "", //专业方向
+      duty: "", //职务
+      dutyCd: "",
+      pointTitle: "执业点",
+      point: "", //执业点
+      pointId: "",
+      addlist: [
+        {
+          pointTitle: "第一执业点",
+          point: "",
+          pointId: "",
+          duty: "",
+          departNm: "",
+          departId: "",
+          secdepartNm: "",
+          secdepartId: "",
+          marjorNm: "",
+          marjorId: "",
+          secmajorNm: "",
+          secmajorId: ""
+        }
+      ],
+      listShow: false,
+      hospitalItemList: [],
+      dutyItemList: [], //职务list
+      showDutyPicker: false,
+      department: "", //科室
+      departmentId: "",
+      secondDepNm: "",
+      secondDepId: "",
+      pointTop: "",
+      activeIndex: 0,
+      chineseNum: [
+        {
+          num: 0,
+          title: "一"
+        },
+        {
+          num: 1,
+          title: "二"
+        },
+        {
+          num: 2,
+          title: "三"
+        },
+        {
+          num: 3,
+          title: "四"
+        },
+        {
+          num: 4,
+          title: "五"
+        }
+      ],
+      check: false,
+      doctorperinfo: true,
+      hh1: 'hh1',
+      hh2: 'hh2'
+    };
+  },
+  computed: {
+    Dutycolumns() {
+      if (this.dutyItemList.length) {
+        let array = [];
+        this.dutyItemList.forEach(item => {
+          array.push(item.nm);
+        });
+        return array;
+      } else {
+        return [];
+      }
+    }
+  },
+  methods: {
+    tosubmit() {
+      this.checkInfo();
+      if (this.addlist.length === 0) {
+        Toast("请填写执业点");
+      } else if (this.check) {
+        console.log(this.$route.query.id);
+        //判断来自哪一个上一级路由
+        if (this.$route.query.id) {
+          this.$router.push({ path: "/doctorperinfo" });
+        } else {
+          this.$router.push({ path: "/doctorinfolicensed" });
+        }
+      }
+    },
+    selectDuty(index) {
+      this.activeIndex = index;
+      this.showDutyPicker = true;
+    },
+    selectmajorfield(index) {
+      this.$router_({ name: "majorfield", query: { majorIndex: index } });
+    },
+    selectDepartment(index) {
+      this.$router_({
+        name: "selectDepartment",
+        query: { departIndex: index }
+      });
+    },
+    //选择职务
+    onDutyConfirm(val) {
+      this.addlist[this.activeIndex].duty = val;
+      this.addlist[this.activeIndex].dutyCd = this.dutyItemList.find(item => {
+        return item.nm == val;
+      }).cd;
+      this.showDutyPicker = false;
+      localStorage.setItem("addlist", JSON.stringify(this.addlist));
+    },
+    checkInfo() {
+      this.check = false;
+      if (this.addlist.length === 0) {
+        this.check = true;
+      } else {
+        // if(!doctorperinfo){
+        //   //判断当前作为组件还是页面使用 为false
+
+        // }
+        console.log('进行验证')
+        if (!this.addlist[this.addlist.length - 1].point) {
+          Toast("请填写执业点");
+        } else if (!this.addlist[this.addlist.length - 1].marjorNm) {
+          Toast("请选择专业方向");
+        } else if (!this.addlist[this.addlist.length - 1].departNm) {
+          Toast("请选择科室");
+        } else if (!this.addlist[this.addlist.length - 1].duty) {
+          Toast("请选择职务");
+        } else {
+          this.check = true;
+        }
+      }
+    },
+    addpoint() {
+      this.checkInfo();
+      if (this.check) {
+        console.log("展示");
+        this.addlist.push({
+          pointTitle: "",
+          point: "",
+          pointId: "",
+          duty: "",
+          departNm: "",
+          departId: "",
+          secdepartNm: "",
+          secdepartId: "",
+          marjorNm: "",
+          marjorId: "",
+          secmajorNm: "",
+          secmajorId: ""
+        });
+        localStorage.setItem("addlist", JSON.stringify(this.addlist));
+        console.log("addlist", this.addlist);
+      }
+    },
+    deletepoint(index) {
+      if (!this.doctorperinfo) {
+      } else {
+        this.addlist.splice(index, 1);
+        localStorage.setItem("addlist", JSON.stringify(this.addlist));
+        console.log("addlist2", this.addlist);
+      }
+    },
+    //输入执业点触发
+    hospitalChange(item, index) {
+      this.activeIndex = index;
+      if (index === 1) {
+        this.pointTop = 5.3;
+      } else if (index === 2) {
+        this.pointTop = 9.6;
+      } else if (index === 3) {
+        this.pointTop = 13.9;
+      } else if (index === 4) {
+        this.pointTop = 18.2;
+      } else if (index === 0) {
+        this.pointTop = 1;
+      }
+      this.$nextTick(() => {
+        if (!item.point) {
+          this.getCertifiHospitalListFun(this.point);
+        } else {
+          this.listShow = false;
+          this.hospitalItemList = [];
+        }
+      });
+    },
+    getDutylist() {
+      getDutyItemList().then(res => {
+        this.dutyItemList = res.data.data.list;
+      });
+    },
+    getCertifiHospitalListFun(name) {
+      getCertifiHospitalList(name).then(res => {
+        if (res.data.list.length > 0) {
+          this.hospitalItemList = res.data.list;
+          this.listShow = true;
+        } else {
+          this.listShow = false;
+        }
+      });
+    },
+    selectHospitalItem(itemh) {
+      this.addlist[this.activeIndex].point = itemh.name;
+      this.addlist[this.activeIndex].pointId = itemh.id;
+      this.listShow = false;
+      localStorage.setItem("addlist", JSON.stringify(this.addlist));
+    },
+    cancelList() {
+      this.listShow = false;
+    },
+    //判断是否为doctorperinfo页面，为doctorperinfo页面部分布局不显示
+    doctorperinfoSure() {
+      //console.log(this.$route.path);
+      //this.addpoint()
+      if (this.$route.path == "/doctorperinfo") {
+        //为真
+        if(localStorage.getItem('MajorInfo') || localStorage.getItem('addlist')){
+          //console.log('有数据不需要验证')        
+          //this.addpoint();
+        }else{
+          this.addlist = [];
+        }
+        // this.addpoint();
+        //console.log("真");
+        this.doctorperinfo = false;
+      }
+    }
+  },
+  mounted() {
+    this.getDutylist();
+    this.doctorperinfoSure();
+    //console.log('已经判断了是组件还是也买')
+    if (Boolean(localStorage.getItem("departmentInfo"))) {
+      // console.log("66666", this.department);
+      let departmentInfo = JSON.parse(localStorage.getItem("departmentInfo"));
+      this.department = departmentInfo.departmentName;
+      this.departmentId = departmentInfo.departmentId;
+      this.secondDepNm = departmentInfo.secondDepNm;
+      this.secondDepId = departmentInfo.secondDepId;
+    }
+    if (localStorage.getItem("addlist")) {
+      this.addlist = JSON.parse(localStorage.getItem("addlist"));
+    }
+  }
+};
+</script>
+
+<style scoped lang="less">
+  .hh2{
+    width: .15rem !important;
+    height: .15rem !important;
+  }
+.practicePoints {
+  padding-bottom: 1.5rem;
+  font-size: 0.3rem;
+
+  .top {
+    height: 0.88rem;
+    background: url("../../../../assets/imgs/x_filltop.png") no-repeat;
+    background-size: 100% 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.36rem;
+    color: #ffffff;
+  }
+
+  .add {
+    margin-left: 4.8rem;
+    margin-top: 0.3rem;
+    color: #717071;
+    width: 2.24rem;
+    height: 0.4rem;
+    display: flex;
+    justify-content: space-between;
+
+    img {
+      width: 0.4rem;
+      height: 0.4rem;
+    }
+  }
+
+  .pointcontent {
+    position: absolute;
+    z-index: 2;
+    top: 1rem;
+    right: 0.3rem;
+    border: 1px solid #bebdbf;
+    background-color: #ffffff;
+    border-radius: 0.12rem;
+
+    .list {
+      max-height: 3.5rem;
+      overflow: scroll;
+      width: 100%;
+
+      .item {
+        width: 100%;
+        height: 0.7rem;
+        line-height: 0.7rem;
+        box-sizing: border-box;
+        padding-left: 0.15rem;
+        border-bottom: 1px solid #bebdbf;
+      }
+    }
+
+    .cancel {
+      height: 0.6rem;
+      color: #6aacf7;
+      line-height: 0.6rem;
+      text-align: right;
+      padding-right: 0.3rem;
+      box-sizing: border-box;
+    }
+  }
+
+  .container {
+    border-bottom: 0.2rem solid #f3f0f3;
+  }
+
+  .content {
+    margin: 0 auto;
+    width: 6.9rem;
+    height: 1rem;
+    align-items: center;
+    border-bottom: 0.02rem solid #f3f0f3;
+    display: flex;
+    justify-content: space-between;
+
+    .title {
+      margin-left: 0.15rem;
+      color: #777777;
+      font-weight: bold;
+    }
+
+    .name {
+      color: #8e8e8e;
+      width: 5.2rem;
+      height: 0.6rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+
+      .text {
+        text-align: right;
+        width: 4.6rem;
+        height: 0.4rem;
+
+        input {
+          text-align: right;
+          width: 4.5rem;
+          height: 0.4rem;
+        }
+        input::-webkit-input-placeholder {
+          /* placeholder颜色  */
+          color: #8e8e8e;
+        }
+      }
+      img {
+        width: 0.16rem;
+        height: 0.13rem;
+      }
+    }
+  }
+  .fixbtn {
+    font-size: 0.32rem;
+    color: white;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    height: 1.2rem;
+    background: white;
+    .save {
+      line-height: 0.7rem;
+      text-align: center;
+      margin: 0.24rem auto;
+      width: 3rem;
+      height: 0.7rem;
+      background: url("../../../../assets/imgs/bg_grzx_brn_pre.png");
+      background-size: 3rem 0.7rem;
+    }
+  }
+}
+</style>

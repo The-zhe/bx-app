@@ -1,0 +1,266 @@
+// 2020/1/17 created by xtt
+<template>
+    <div class="orderInfo">
+      <div class="o_top">
+        <div class="o_top_img"></div>
+        <div class="o_top_right">
+          <div class="o_top_right_service">挂号服务</div>
+          <div class="o_top_right_price">会员价：¥68.00 ¥120.00</div>
+        </div>
+      </div>
+      <div class="o_info">
+        <div class="o_info_top">订单信息</div>
+        <div class="o_info_content">
+         <div class="o_info_content_text">就诊项目：<span>挂号服务</span></div>
+          <div class="o_info_content_text">
+            下单日期：<span>2019-12-27</span>
+          </div>
+          <div class="o_info_content_text">
+            订单编号：<span>JZ20191227000141</span>
+          </div>
+          <div class="o_info_content_text">
+            就&ensp;诊&ensp;人：<span>王娇娇  男  36    13732182995</span>
+          </div>
+          <div class="o_info_content_text">
+            服务费用：<span>58.00元</span>
+          </div>
+        </div>
+      </div>
+      <div class="o_seedoctor">
+        <div class="o_info_top">就医信息</div>
+        <div class="o_info_content">
+          <div class="o_info_content_text">医&emsp;&emsp;院：<span>宁波第一医院</span></div>
+          <div class="o_info_content_text">
+            就诊科室：<span>普通    普通内科</span>
+          </div>
+          <div class="o_info_content_text">
+            医&emsp;&emsp;生：<span>李建波</span>
+          </div>
+          <div class="o_info_content_text">
+            预约时间：<span>2019-12-27    上午</span>
+          </div>
+          <div class="o_info_content_text">
+            病情描述：<span>
+                                感冒发烧流鼻涕呕吐，头一阵一阵的头一阵一阵的
+                            </span>
+          </div>
+        </div>
+      </div>
+      <div class="o_datdcard">
+        <div class="o_info_top">资料卡证信息</div>
+        <div class="o_info_content_z">
+        <div class="o_info_content_text">医保卡号：<span>A20190004</span></div>
+        </div>
+        <div class="o_datacard_s">证件卡递送方式
+        <div class="o_datdcard_s_k">快递寄送</div>
+        <img src="../../assets/imgs/btn_da_next.png"/>
+        </div>
+        <div class="o_datdcard_address">
+          <div class="o_info_content_text">
+            寄送地址：<span>中山西2号恒隆中心11A</span>
+          </div>
+        </div>
+        <div class="o_datdcard_receive">
+          <div class="o_info_content_text">
+            收&ensp;件&ensp;人：<span>健康管家  18011484679</span>
+          </div>
+        </div>
+        <div class="o_datacard_s">证件卡递回方式
+          <div class="o_datdcard_s_k">服务点自取</div>
+          <img src="../../assets/imgs/btn_da_next.png"/>
+        </div>
+        <div class="o_datdcard_address">
+          <div class="o_info_content_text">
+            递回地址：<span>中山西2号恒隆中心11A</span>
+          </div>
+        </div>
+        <div class="o_datdcard_receive2">
+          <div class="o_info_content_text">
+            收&ensp;件&ensp;人：<span>健康管家  18011484679</span>
+          </div>
+        </div>
+      </div>
+      <div class="o_pay">
+        <div class="o_info_top">支付信息</div>
+        <div class="o_info_content">
+        <div class="o_info_content_text">
+          付款方式：<span>微信支付</span>
+        </div>
+        <div class="o_info_content_text">
+          预付定金：<span>¥68</span>
+        </div>
+        <div class="o_info_content_text">
+          优&emsp;&emsp;惠：<span>¥10</span>
+        </div>
+          <div class="o_info_content_text_b">
+            实付金额：<span>¥58</span>
+          </div>
+        </div>
+      </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "orderInfo"
+    }
+</script>
+
+<style scoped lang="less">
+.orderInfo{
+  width: 100%;
+  background: #F4F4F4;
+  padding-bottom: 20px;
+  .o_top{
+    width: 700px;
+    height: 162px;
+    margin: 20px auto;
+    border: 2px solid #E6E6E6;
+    border-radius: 20px;
+    background: white;
+    display: flex;
+    justify-content: flex-start;
+    .o_top_img{
+      margin-top: 30px;
+      margin-left: 20px;
+      width: 100px;
+      height: 100px;
+      background: #40b2a0;
+      border-radius: 50px;
+    }
+    .o_top_right{
+      margin-top: 35px;
+      margin-left: 30px;
+      font-size: 30px;
+      color: #777777;
+      .o_top_right_service{
+        width: 120px;
+        height: 28px;
+        font-weight: bold;
+      }
+      .o_top_right_price{
+        margin-top: 25px;
+        font-weight: normal;
+
+      }
+    }
+  }
+  .o_info_top{
+    color: #777777;
+    font-size: 30px;
+    font-weight: bold;
+    margin: 20px auto;
+    width: 660px;
+    height: 60px;
+    border-bottom: 2px solid #E3E3E5;
+  }
+  .o_info_content_z{
+    margin: 0 auto;
+    width: 660px;
+    height: 60px;
+    border-bottom: 2px solid #E3E3E5;
+    color: #A0A0A0;
+    font-size: 30px;
+    span{
+      color: #777777;
+    }
+  }
+  .o_info_content{
+    margin: 0 auto;
+    width: 660px;
+    height: auto;
+    color: #A0A0A0;
+    font-size: 30px;
+  }
+  .o_info_content_text{
+    margin-top: 15px;
+    span{
+      color: #777777;
+    }
+  }
+  .o_info_content_text_b{
+    color: #777777;
+    font-weight: bold;
+    margin-top: 15px;
+  }
+  .o_info{
+    width: 700px;
+    height: 380px;
+    margin: 20px auto;
+    border: 2px solid #E6E6E6;
+    border-radius: 20px;
+    background: white;
+  }
+  .o_seedoctor{
+    width: 700px;
+    height: auto;
+    padding-bottom: 20px;
+    margin: 20px auto;
+    border: 2px solid #E6E6E6;
+    border-radius: 20px;
+    background: white;
+  }
+  .o_datdcard{
+    width: 700px;
+    height: auto;
+    margin: 20px auto 0 auto;
+    border: 2px solid #E6E6E6;
+    border-radius: 20px;
+    background: white;
+    .o_datacard_s{
+      margin: 20px auto;
+      width: 660px;
+      height: 60px;
+      border-bottom: 2px dashed #E3E3E5;
+      color: #777777;
+      font-size: 30px;
+      font-weight: bold;
+      display: flex;
+      justify-content: space-between;
+      .o_datdcard_s_k{
+        width: 150px;
+        height: 30px;
+        text-align: right;
+        font-weight: normal;
+        margin-right: -240px;
+      }
+      img{
+        margin-top: 8px;
+        width: 18px;
+        height: 27px;
+      }
+    }
+    .o_datdcard_address{
+      margin: 20px auto;
+      width: 660px;
+      height: 60px;
+      border-bottom: 2px dashed #E3E3E5;
+      color: #A0A0A0;
+      font-size: 30px;
+    }
+    .o_datdcard_receive{
+      margin: 20px auto;
+      width: 660px;
+      height: 60px;
+      border-bottom: 2px solid #E3E3E5;
+      color: #A0A0A0;
+      font-size: 30px;
+    }
+    .o_datdcard_receive2{
+      margin: 20px auto;
+      width: 660px;
+      height: 60px;
+      color: #A0A0A0;
+      font-size: 30px;
+    }
+  }
+  .o_pay{
+    width: 700px;
+    height: 330px;
+    margin: 20px auto 0 auto;
+    border: 2px solid #E6E6E6;
+    border-radius: 20px;
+    background: white;
+  }
+}
+</style>

@@ -1,0 +1,356 @@
+<template>
+    <div class="doctorHomepage_container">
+        <van-dialog v-model="dialogShow" @confirm="dialogConfirm" confirm-button-color="#56B2AD" cancel-button-color="#999999" cancel-button-text="返回" confirm-button-text="去验证" show-confirm-button show-cancel-button>
+            <div class="dialog_text">
+                您未进行身份验证，请尽快验证
+            </div>
+        </van-dialog>
+        <div class="banner_container">
+            <van-swipe class="my-swipe" :autoplay="3000" indicator-color="white">
+                <van-swipe-item @click="tolbinfo(item)" :key="item.hjjkIndexImagesVo.id" v-for="item in bannerList">
+                    <img :src="item.hjjkIndexImagesVo.indexCarouselImgs"/>
+                </van-swipe-item>
+            </van-swipe>
+        </div>
+    <div class="wxnotice"><!--  @click="togginfo" -->
+      <img src="../../../assets/imgs/wx1_2.png" class="icon" />
+      <div class="bar" :style="{'margin-top':isIos?'-0.08rem':'-0.05rem'}">
+        <van-notice-bar color="#4F4F4F" background="#ffffff" :text="notice"></van-notice-bar>
+      </div>
+    </div>
+        <div class="consult" @click="jumpToFormConsult">
+            <div class="text">新冠肺炎咨询
+                <div class="number" v-if="pneumoniaNum>0">{{pneumoniaNum}}</div>
+            </div>
+        </div>
+        <div class="consult" @click="jumpToOneToOneConsult">            
+            <div class="text">一对一咨询
+                <div class="number" v-if="oneToOneNum>0">{{oneToOneNum}}</div>
+            </div>
+        </div>
+        <div class="heathinfo_container">
+            <div class="title">
+                <div class="bar"></div>
+                <div class="text">健康资讯</div>
+            </div>
+            <div class="list" v-for="item in healthInfoList">
+                <div class="item" @click="toinfo2(item)">
+                    <div class="text">
+                        <div class="item_title">{{item.hjjkHealthPreservationVo.title}}</div>
+                        <div class="item_info">
+                            <div class="time">{{item.hjjkHealthPreservationVo.crtTm|fromNowTime}}</div>
+                            <div class="view">
+                                <div class="icon">
+                                    <img src="@/assets/imgs/wxyq_2.png" />
+                                </div>
+                                <div class="num">
+                                    {{item.hjjkHealthPreservationVo.browse}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="img">
+                        <img  :src="item.hjjkHealthPreservationVo.imgUrl" />
+                    </div>
+                </div>
+            </div>
+                <div class="check_more">
+                    <img @click="tohealthinfo" src="@/assets/imgs/wxyq_4.png"/>
+                </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import moment from 'moment'
+import {getDoctorHomePageInfo,getNotReadNumber} from '../../../api/apiz'
+  import {getSig, getuserfree} from "../../../api";
+export default {
+name:"doctorHomepage",
+    beforeRouteEnter(to,from,next){
+    let hasLogin = Boolean(localStorage['doctorId'])
+    if(hasLogin){
+        next()
+    }else{
+        next('/doctorLogin')
+    }
+    },
+data(){
+    return{
+            isIos:false,
+            dialogShow:false,
+            notice:"",
+            bannerList:[],
+            healthInfoList:[],
+            identifier:'',   //用户id
+            userSig:'',
+            oneToOneNum:0,
+            pneumoniaNum:0
+    }
+},
+filters: {
+    fromNowTime: function(value) {
+      let array = moment(value)
+        .fromNow()
+        .split(" ");
+      array[0] = array[0] == "a" ? "1" : array[0] == "an" ? "1" : array[0] + "";
+      let EN = [
+        "minute",
+        "minutes",
+        "hour",
+        "hours",
+        "day",
+        "days",
+        "month",
+        "months",
+        "year",
+        "years"
+      ];
+      let CN = ["分钟", "小时", "天", "个月", "年"];
+      array[1] = CN[parseInt(EN.indexOf(array[1]) / 2)];
+       return array.length == 4
+        ? "几秒前"
+        : new Array(array[0], array[1]).join("") + "前";
+    }
+  },
+mounted(){
+    this.isIos=sessionStorage.getItem('phoneType')=='ios'
+    this.identifier=localStorage.getItem('doctorId')
+    this.$nextTick(()=>{
+        this.getUserSig()
+        this.getNotReadNumberFun()
+    })
+    this.getDoctorHomePageInfoFun()
+    /* 如果没认证 弹框 */
+    if(Number(localStorage.getItem('hasAuth'))==0){
+        this.dialogShow=true
+    }
+},
+methods:{
+    dialogConfirm(){
+        this.$router_({name:'CertificationInstruction'})
+    },
+    getDoctorHomePageInfoFun(){
+        getDoctorHomePageInfo().then((res)=>{
+            this.notice=res.data.data.hjjkNoticeDto.hjjkNoticeVo.notice
+            this.bannerList=res.data.data.hjjkIndexImagesDtoList
+            this.healthInfoList=res.data.data.hjjkHealthPreservationDtoList
+            this.oneToOneNum=res.data.data.oneToOneNum
+            this.pneumoniaNum=res.data.data.pneumoniaNum
+        })
+    },
+    jumpToFormConsult(){
+        if(Number(localStorage.getItem('hasAuth'))==0){
+            this.dialogShow=true
+        }
+        else if(Number(localStorage.getItem('hasAuth'))==2){
+            this.$router_({name:'formConsult'})
+        }
+    },
+    jumpToOneToOneConsult(){
+        if(Number(localStorage.getItem('hasAuth'))==0){
+            this.dialogShow=true
+        }
+        else if(Number(localStorage.getItem('hasAuth'))==2){
+            this.$router_({name:'myConsult'})
+        }
+    },
+    getNotReadNumberFun(){
+        getNotReadNumber().then(res=>{
+          sessionStorage.setItem('doctorunreadnum',res.data.data.msgNum);
+            console.log('doctorHomepage',res.data.data.msgNum);
+        })
+    },
+    tolbinfo(a){
+        this.$router_({ path:'/lbinfodetail',query:{id:a.hjjkIndexImagesVo.id} });
+    },
+    toinfo2(a){
+          sessionStorage.setItem("healthInfoId", a.hjjkHealthPreservationVo.id);
+          this.$router_({ path:'/yqinfodetail' });
+    },
+    tohealthinfo(){
+          this.$router_({ path:'/yqinfolist' });
+    },
+    //登录腾讯im获取秘钥
+      getUserSig(){
+        getSig(this.identifier).then(res=>{
+          this.userSig=res.data.data;
+          sessionStorage.setItem('doctorSig',this.userSig);
+          this.getIMBegin();
+        });
+      },
+      //登录im
+      getIMBegin() {
+        let promise = this.tim.login({
+          userID: this.identifier, //登录的会员id
+          userSig: this.userSig
+        });
+        promise.then(imResponse => {
+          console.log("IM登录成功",imResponse);
+        })
+          .catch(function (imError) {
+            console.warn("login error:", imError); // 登录失败的相关信息
+          });
+      },
+},
+
+
+};
+</script>
+<style scoped lang="less">
+.my-swipe .van-swipe-item {
+  height: 3.09rem;
+  img {
+    width: 100%;
+    height: 3.09rem;
+  }
+}
+</style>
+<style scoped lang="less">
+.doctorHomepage_container{
+    margin-top: 0.88rem;
+    .dialog_text{
+        color: #3FA998;
+        padding: 0.56rem 0 0.48rem;
+        text-align: center;
+    }
+  .wxnotice {
+    display: flex;
+    align-items: center;
+    padding-left: 0.17rem;
+    margin: 0.16rem auto 0.14rem;
+    overflow: hidden;
+    width: 7rem;
+    height: 0.55rem;
+    border-radius: 0.1rem;
+    box-sizing: border-box;
+    box-shadow: 0rem 0rem 0.1rem rgba(96, 96, 96, 0.32);
+    .icon {
+      width: 0.35rem;
+      height: 0.33rem;
+    }
+    .bar {
+      flex: 1;
+    }
+  }
+    .consult{
+        height: 1.41rem;
+        width: 6.36rem;
+        background: url('../../../assets/imgs/btn_yszy_health.png') no-repeat;
+        background-size: 100% 100%;
+        margin: 0 auto 0.26rem;
+        font-size: 0.3rem;
+        color: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .text{
+            position: relative;
+            .number{
+                right: -0.18rem;
+                top: -0.12rem;
+                background-color: #FB7F00;
+                font-size: 0.22rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                border-radius: 50%;
+                width:0.3rem;
+                height:0.3rem;
+                position: absolute;
+
+            }
+        }
+
+    }
+    .heathinfo_container{
+        margin: 0.4rem auto 0.41rem; 
+        box-shadow:0rem 0rem 0.1rem rgba(96, 96, 96, 0.32); 
+        width: 7rem;   
+        box-sizing: border-box;   
+        padding: 0 0.25rem 0.4rem;    
+        .title{
+            display: flex;
+            height: 1.13rem;
+            align-items: center;
+            justify-content: center;
+            border-bottom: 0.02rem solid #F6F6F6;
+            .bar{
+                width: 0.1rem;
+                height: 0.35rem;
+                background-color: #F58008;
+            }
+            .text{
+                margin-left: 0.36rem;
+                color: #51A89D;
+                font-size: 0.36rem;
+                letter-spacing: 0.2rem;
+                font-weight: bold;
+            }
+        }
+        .list{
+            padding-bottom: 0.32rem;
+            border-bottom: 0.01rem solid #F1EFF2;
+            .item{
+                height: 1.84rem;
+                box-sizing: border-box;
+                padding: 0.18rem 0 0.18rem 0.02rem;
+                display: flex;
+                justify-content: space-between;
+                .text{
+                    width: 4.2rem;
+                    margin-right: 0.2rem;
+                    display: flex;
+                    flex-direction: column;
+                    .item_title{
+                        color: #5D5D5D;
+                        font-size: 0.3rem;
+                    }
+                    .item_info{
+                        justify-content: space-between;
+                        margin-top: auto;
+                        display: flex;
+                        color: #828282;
+                        font-size: 0.24rem;
+                        .view{
+                            display: flex;
+                            align-items: center;
+                            .icon{
+                                margin-right: 0.07rem;
+                                img{
+                                    width:0.31rem;
+                                    height:0.21rem;
+                                }
+                            }
+                        }
+                    }
+                }
+                .img{
+                    img{
+                        width:2.22rem;
+                        height:1.47rem;                        
+                    }
+                }
+                &:not(:last-child){
+                    border-bottom: 0.02rem solid #FAF7FA;
+                }
+            }
+        }
+        .check_more{
+            margin-top: 0.36rem;
+            display: flex;
+            justify-content: center;
+            img{
+                width: 2.3rem;
+                height: 0.46rem;
+            }
+        }
+    }
+}
+</style>
+<style>
+@import url("../../../assets/less/vantstyle/swipe.css");
+@import url("../../../assets/less/vantstyle/notice_bar.css");
+@import url("../../../assets/less/vantstyle/button.css");
+@import url("../../../assets/less/vantstyle/dialog.css");
+</style>

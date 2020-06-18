@@ -1,0 +1,171 @@
+<template>
+  <div class="selectDepartment_container">
+    <!--     <div class="selected_hospital">
+          <img :src="locationIcon" />
+          {{hospital}}
+        </div> -->
+    <div class="department_container" :style="{'height':listHeight+'px'}">
+      <div class="department_list">
+        <div
+          class="department_item"
+          @click="changeDepartment(item,index)"
+          :key="item.id"
+          :class="{'active_item':departmentIndex==index}"
+          v-for="(item,index) in departmentList"
+        >{{item.name}}
+        </div>
+      </div>
+      <div class="project_list">
+        <div class="project_item" @click="SelectDepartment(item)" v-for="item in projectList">{{item.name}}</div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import {getDepartmentList} from '../../api/apiz'
+
+  export default {
+    components: {},
+    name: "selectDepartment",
+    data() {
+      return {
+        locationIcon: require("@/assets/imgs/icon_bjjy_xzyy_add.png"),
+        hospital: "宁波市第一医院",
+        hospitalId: "",
+        departmentIndex: 0,
+        departmentList: [],
+        projectList: [],
+        listHeight: 0,
+        pointdepartIndex: this.$route.query.departIndex,
+
+      };
+    },
+    created() {
+    },
+    computed: {},
+    watch: {},
+    mounted() {
+      let headerShow = Boolean(Number(sessionStorage.getItem('InApp')))
+      let headerHeight = headerShow ? 44 : 0;
+      this.listHeight = document.documentElement.clientHeight - headerHeight - 10;
+      /*  this.hospital=JSON.parse(sessionStorage.getItem('hospitalInfo')).hospitalName
+       this.hospitalId=JSON.parse(sessionStorage.getItem('hospitalInfo')).hospitalId */
+      /* this.$nextTick(()=>{ */
+      getDepartmentList(1, this.hospitalId).then(res => {
+        this.departmentList = res.data.list
+        this.getProjectListFun(res.data.list[0].id)
+      })
+      /* }) */
+      console.log(document.documentElement.clientHeight)
+    },
+    methods: {
+      changeDepartment(item, index) {
+        this.departmentIndex = index;
+        this.getProjectListFun(item.id)
+      },
+      SelectDepartment(item) {
+        let addlist = JSON.parse(localStorage.getItem('addlist'));
+          addlist[this.pointdepartIndex].departNm = this.departmentList[this.departmentIndex].name;
+          addlist[this.pointdepartIndex].departId = this.departmentList[this.departmentIndex].id;
+          addlist[this.pointdepartIndex].secdepartNm = item.name;
+          addlist[this.pointdepartIndex].secdepartId = item.id;
+        localStorage.setItem('addlist',JSON.stringify(addlist));
+          sessionStorage.setItem('secondDepId', item.id);
+        sessionStorage.setItem('secondDepNm', item.name);
+        sessionStorage.setItem('departmentInfo', JSON.stringify({
+          departmentName: this.departmentList[this.departmentIndex].name,
+          departmentId: this.departmentList[this.departmentIndex].id,
+          secondDepNm: item.name,
+          secondDepId: item.id,
+        }));
+        localStorage.setItem('departmentInfo', JSON.stringify({
+          departmentName: this.departmentList[this.departmentIndex].name,
+          departmentId: this.departmentList[this.departmentIndex].id,
+          secondDepNm: item.name,
+          secondDepId: item.id,
+        }));
+        this.$router.go(-1)
+      },
+      getProjectListFun(pid) {
+        getDepartmentList(0, pid).then((res) => {
+          this.projectList = res.data.list
+        })
+      }
+    }
+  };
+</script>
+
+<style lang="less" scope>
+  .selectDepartment_container {
+    padding-top: 0.2rem;
+    background-color: #f4f4f4;
+
+    .selected_hospital {
+      height: 1.1rem;
+      box-sizing: border-box;
+      padding-left: 0.26rem;
+      background-color: #ffffff;
+      display: flex;
+      align-items: center;
+      font-size: 0.3rem;
+      color: #777777;
+
+      img {
+        margin-right: 0.17rem;
+        height: 0.41rem;
+        width: 0.27rem;
+      }
+    }
+
+    .department_container {
+      display: flex;
+      font-size: 0.3rem;
+      color: #777777;
+
+      .department_list {
+        width: 2.8rem;
+        box-sizing: border-box;
+        overflow-y: scroll;
+
+        .department_item {
+          padding-left: 0.45rem;
+          background-color: #f5f5f5;
+          height: 1rem;
+          display: flex;
+          align-items: center;
+        }
+
+        .active_item {
+          background-color: #ffffff;
+          color: #40b2a0;
+          font-weight: bold;
+          position: relative;
+
+          &::after {
+            position: absolute;
+            height: 1rem;
+            width: 0.07rem;
+            left: 0;
+            top: 0;
+            background-color: #3eb4a1;
+            content: "";
+          }
+        }
+      }
+
+      .project_list {
+        width: 4.7rem;
+        background-color: #ffffff;
+        flex: 1;
+
+        .project_item {
+          padding-left: 0.34rem;
+          display: flex;
+          align-items: center;
+          height: 1rem;
+        }
+      }
+    }
+  }
+</style>

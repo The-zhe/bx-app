@@ -1,0 +1,18 @@
+import store from '../../vuex/store'
+import {getData,getListData} from '../utils/requestFunc'
+/* 获取非会员官网首页 */
+export function getHomePageData(){
+    return getData('/hjjk/index/list',{userid:store.state.userId})
+}
+export function getMedicalTeamData(memberId,catCd) {
+  return getData('/hjjk/myteam/list',{
+    memberId:memberId,
+    catCd:catCd
+  })
+}
+export function getMedicalInfo(id) {
+ return getData(`/hjjk/healthTeam/info/${id}`)
+}
+export function getSig(id) {
+  return getData('/hjjk/tencent/getUsersig',{identifier:id})
+}

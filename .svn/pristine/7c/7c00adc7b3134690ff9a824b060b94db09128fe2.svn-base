@@ -1,0 +1,228 @@
+<template>
+  <!-- 非会员首页顶部 -->
+  <div class="HeaderPart_container">
+    <!-- 用户信息 -->
+    <div class="background_container"></div>
+    <div class="userInfo_container">
+      <div class="avatar_container">
+        <img src="../../../assets/imgs/avatar.png" />
+      </div>
+      <div class="info_container">
+        <div class="greet_container">尊敬的&nbsp;{{memberInfo.name}}&nbsp;您好！</div>
+        <div class="bottom_container">
+          <span class="userType">游&nbsp;客</span>
+          <div class="appoint">立即预约专属健康管家</div>
+          <img src="../../../assets/imgs/right.png" />
+        </div>
+      </div>
+      <div class="become_member_container">
+        <div class="img_container">
+          <img src="../../../assets/imgs/become_member.png" />
+        </div>
+        <div class="text_container">成为会员</div>
+      </div>
+    </div>
+    <!-- 轮播图 -->
+    <div class="swiper_container">
+      <awesome-swiper :bannerImgList="bannerImgList"></awesome-swiper>
+    </div>
+    <!-- 公告 -->
+    <div class="noticeBar_container">
+      <div class="icon_container">
+        <img src="../../../assets/imgs/suona.png" />
+      </div>
+      <div class="text_container">公告:</div>
+      <div class="bar_container">
+        <notice-bar :NoticeList="NoticeList1"></notice-bar>
+      </div>
+    </div>
+    <!-- 模块 -->
+    <div class="module_container">
+      <div class="module_item" :key="index" v-for="(item,index) in moduleList">
+        <div class="item_icon">
+          <img :src="item.hjjkMainfunctionVo.imageUrl" />
+        </div>
+        <div class="item_title">
+          <div class="title">{{item.hjjkMainfunctionVo.chineseName}}</div>
+          <div class="subtitle">{{item.hjjkMainfunctionVo.englishName.toUpperCase()}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import AwesomeSwiper from "../../../components/AwesomeSwiper";
+import NoticeBar from "../../../components/NoticeBar";
+export default {
+  name: "HeaderPart",
+  components: { AwesomeSwiper, NoticeBar },
+  props: ["bannerImgListStr", "NoticeList", "moduleList", "memberInfo"],
+  computed: {
+    bannerImgList: function() {
+      return this.bannerImgListStr.split(";");
+    }
+  },
+  data() {
+    return {
+      NoticeList1: [
+        "倍熙杯东钱湖高尔夫邀请赛改期公告1",
+        "倍熙杯东钱湖高尔夫邀请赛改期公告2",
+        "倍熙杯东钱湖高尔夫邀请赛改期公告3"
+      ]
+    };
+  },
+  methods: {
+
+  },
+  mounted(){
+    
+  }
+};
+</script>
+
+<style scoped lang="less">
+@import "../../../../static/lessfunc.less";
+.HeaderPart_container {
+  .ptr();
+  .background_container {
+    z-index: -1;
+    .pta();
+    .h(400px);
+    .w(750px);
+    background-image: linear-gradient(to right, #008294, #00bfa7);
+    border-radius: 0 0 60% 60%;
+  }
+  .userInfo_container {
+    .bb();
+    .pdl(20px);
+    .h(170px);
+    .flex_y_center();
+    .fc(#ffffff);
+    .avatar_container {
+      img {
+        .h(100px);
+        .w(100px);
+      }
+    }
+    .info_container {
+      .mgl(20px);
+      .bottom_container {
+        .mgt(18px);
+        .flex_y_center();
+        .fs(26px);
+        .userType {
+          .tac();
+          .bgc(#f6a540);
+          .h(36px);
+          .lh(36px);
+          .w(120px);
+          .br(24px;);
+        }
+        .appoint {
+          .mgl(12px);
+        }
+        img {
+          .mgl(11px);
+          .h(22px);
+          .w(24px);
+        }
+      }
+    }
+    .become_member_container {
+      .mgl(auto);
+      .mgr(28px);
+      .flex_x_center();
+      .img_container {
+        img {
+          .h(46px);
+          .w(50px);
+        }
+      }
+      .text_container {
+        .mgt(13px);
+        .fs(26px;);
+      }
+    }
+  }
+  .swiper_container {
+    .h(340px);
+    .w(730px);
+    .br(8px);
+    .mgl(10px);
+  }
+  .noticeBar_container {
+    .bd(1Px, #eae8e8);
+    .br(16px);
+    .mgl(25px);
+    .w(700px);
+    .h(80px);
+    .bb();
+    .pdt(18px);
+    .pdl(14px);
+    display: flex;
+    overflow: hidden;
+    .icon_container {
+      .mgt(10px);
+      img {
+        .h(26px);
+        .w(28px);
+      }
+    }
+    .text_container {
+      .mgl(11px);
+      .fc(#f15a24);
+    }
+    .bar_container {
+      .mgl(11px);
+      .fc(#5d5d5d);
+      .swiper-slide {
+        .h(30px);
+      }
+    }
+  }
+  .module_container {
+    .mgt(25px);
+    .bb();
+    .pdlr(25px);
+    display: flex;
+    flex-wrap: wrap;
+    .module_item {
+      background: url("../../../assets/imgs/q.png") no-repeat;
+      background-size: 100% 100%;
+      .h(140px);
+      .w(340px);
+      .bb();
+      .flex_y_center();
+      .item_icon {
+        .mgl(30px);
+        img {
+          .w(70px);
+          .h(70px);
+        }
+      }
+      .item_title {
+        .mgl(10px);
+        .fc(#ffffff);
+        .title {
+          .fs(32px);
+          letter-spacing: 18px;
+        }
+        .subtitle {
+          .fs(20px);
+          letter-spacing: -2px;
+        }
+      }
+      &:nth-child(even) {
+        .mgl(20px);
+      }
+      &:nth-child(3) {
+        .mgt(20px);
+      }
+      &:nth-child(4) {
+        .mgt(20px);
+      }
+    }
+  }
+}
+</style>

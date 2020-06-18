@@ -1,0 +1,210 @@
+// 2020/4/2 created by xtt
+<template>
+  <div class="uploadCardBack">
+    <div class="title">身份证上传</div>
+    <div class="desc">请拍摄并上传您的身份证反面照片</div>
+    <div class="photo_container">
+      <input ref="fileUpload" accept="image/*" @change="fileChange" type="file" class="hidden" multiple="multiple"/>
+      <img class="book" :src="hasUploadReverse?idCardRlImgUrl:cardIcon"/>
+      <div class="photo_tip">证件仅用于本次认证，倍熙私医将严格保密</div>
+      <div class="bottom">
+        <img class="camera" :src="cameraIcon" />
+        <div class="text">拍摄身份证反面</div>
+      </div>
+    </div>
+    <div class="fixbtn">
+      <div class="btn back" @click="toback">上一步</div>
+      <div class="btn next" @click="tosubmit">提交</div>
+    </div>
+  </div>
+</template>
+
+<script>
+    import {getuploader} from "../../../../api";
+    import {editDoctorInfo} from "../../../../api/apiz";
+    import Toast from "vant/es/toast";
+
+    export default {
+        name: "uploadCardBack",
+        data(){
+          return{
+            cardIcon:require('@/assets/imgs/img_gybm_id_two.png'),
+            cameraIcon:require('@/assets/imgs/icon_yszc_photo.png'),
+            idCardRlImgUrl:"",
+            hasUploadReverse:false,
+            doctorId:''
+          }
+        },
+      mounted() {
+        if(localStorage.getItem('idotherCardRlImgUrl')){
+          let imgUrl=JSON.parse(localStorage.getItem('idotherCardRlImgUrl')).idCardRlImgUrl
+          if(imgUrl!=''){
+            this.idCardRlImgUrl=imgUrl
+            this.hasUploadReverse=true
+          }
+        }
+        this.getNatuveuserId();
+      },
+      methods:{
+        getBack(){
+          this.$bridge.callHandler("back", "", (res) => {
+          });
+        },
+        getNatuveuserId(){
+          this.$bridge.callHandler("getUserId", "", (res) => {
+            localStorage.setItem('doctorId',res);
+          });
+        },
+        fileChange(e){
+          let file = e.target.files[0]
+          let formData = new FormData()
+          formData.append('file',file)
+          getuploader(formData).then((res)=>{
+            this.idCardRlImgUrl=res.data.data
+            this.hasUploadReverse=true
+          })
+        },
+        toback(){
+          this.$router.go(-1);
+          localStorage.setItem('idotherCardRlImgUrl',JSON.stringify({idCardRlImgUrl:this.idCardRlImgUrl}))
+        },
+        tosubmit(){
+          localStorage.setItem('idotherCardRlImgUrl',JSON.stringify({idCardRlImgUrl:this.idCardRlImgUrl}))
+          if(!this.idCardRlImgUrl){
+            Toast('请上传身份证反面')
+          }else if((Boolean(Number(sessionStorage.getItem('InApp'))))){
+            let certImgUrl = JSON.parse(localStorage.getItem('certImgUrl'));
+            let idCardRlImgUrl = JSON.parse(localStorage.getItem('idCardRlImgUrl')).idCardRlImgUrl;
+            let card=JSON.parse(localStorage.getItem('idCardRlImgUrl')).idCardId;
+            let idotherCardRlImgUrl=JSON.parse(localStorage.getItem('idotherCardRlImgUrl')).idCardRlImgUrl;
+            let data={
+              userId:Number(localStorage.getItem('doctorId')),
+              card:card,
+              idCardGhImgUrl: idotherCardRlImgUrl,
+              idCardRlImgUrl: idCardRlImgUrl,
+              certImgUrl:certImgUrl.certImgUrl,
+              certNo: certImgUrl.certNo,
+            }
+            editDoctorInfo(data).then((res)=>{
+              console.log('idCarddddd',res);
+              if(res.data.code===0){
+                this.$dialog.alert({
+                  message: '认证信息已提交，审核结果将以APP 内消息或手机短信方式通知您！',
+                  confirmButtonText: '返回个人中心',
+                  confirmButtonColor: '#56B2AD'
+                }).then(() => {
+                  this.getBack();
+                });
+              }
+            })
+          } else {
+            this.$router.push({path:'/doctorlicensed'})
+          }
+        }
+      }
+    }
+</script>
+
+<style scoped lang="less">
+.uploadCardBack{
+  .title{
+    color: #767777;
+    font-size: 0.3rem;
+    font-weight: bold;
+    margin: 0.55rem 0 0.25rem 0.5rem;
+  }
+  .p_title{
+    color: #767777;
+    font-size: 0.3rem;
+    font-weight: bold;
+    margin: 0 0 0.25rem 0.5rem;
+    span{
+      color: #999999;
+      font-weight: normal;
+    }
+  }
+  .desc{
+    font-size: 0.3rem;
+    color: #999999;
+    margin-left: 0.5rem;
+  }
+  .photo_container{
+    border-radius: 0.08rem;
+    position: relative;
+    margin: 0.33rem auto 0 ;
+    box-sizing: border-box;
+    display:flex;
+    flex-direction: column;
+    align-items: center;
+    width: 6.5rem;
+    height: 3.6rem;
+    padding-top: 0.6rem;
+    box-shadow: 0 0 0.2rem rgb(236, 230, 230);
+    .book{
+      width: 2rem;
+      height: 1.17rem;
+    }
+    .hidden{
+      opacity: 0;
+      top: 0;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+    }
+    .photo_tip{
+      width: 100%;
+      text-align: center;
+      margin-top: 0.3rem;
+      padding-bottom: 0.3rem;
+      border-bottom: 0.01rem solid #F6F4F5;
+      color: #F4793B;
+      font-size: 0.26rem;
+    }
+    .bottom{
+      height: 1.04rem;
+      display: flex;
+      align-items: center;
+      .camera{
+        width:0.51rem;
+        height:0.45rem;
+      }
+      .text{
+        margin-left: 0.3rem;
+        color: #56B2AD;
+        font-size: 0.3rem;
+      }
+    }
+  }
+  .submitImg{
+    width: 5.11rem;
+    height: 0.85rem;
+    margin: 0.56rem auto 0;
+  }
+  .fixbtn{
+    width: 6.5rem;
+    position: fixed;
+    bottom: 0;
+    padding-left: 0.5rem;
+    height: 1.2rem;
+    display: flex;
+    justify-content: space-between;
+    .btn{
+      font-size: 0.32rem;
+      width: 3.1rem;
+      height: 0.7rem;
+      line-height: 0.7rem;
+      text-align: center;
+    }
+    .back{
+      color: #00A99D;
+      background: url("../../../../assets/imgs/bg_grzx_brn_nor.png");
+      background-size: 3.1rem 0.7rem;
+    }
+    .next{
+      color: white;
+      background: url("../../../../assets/imgs/bg_grzx_brn_pre.png");
+      background-size: 3.1rem 0.7rem;
+    }
+  }
+}
+</style>

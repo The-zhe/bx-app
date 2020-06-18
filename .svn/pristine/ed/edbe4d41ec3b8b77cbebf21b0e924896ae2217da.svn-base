@@ -1,0 +1,398 @@
+import Vue from 'vue'
+import Router from 'vue-router'
+import myArchives from '../views/myArchives/myArchives'
+import medicalRecord from '../views/myArchives/medicalRecord/medicalRecord'
+
+import privateArchives from '../views/myArchives/privateArchives/privateArchives'
+import diseaseCourse from '../views/myArchives/privateArchives/diseaseCourse/diseaseCourse'
+import consultRecord from '../views/myArchives/privateArchives/consultRecord/consultRecord'
+import diseaseDetail from '../views/diseaseDetail/diseaseDetail'
+
+import outpatientDetails from '../views/myArchives/medicalRecord/outpatientDetails/outpatientDetails'
+import prescriptionDetail from '../views/myArchives/medicalRecord/outpatientDetails/prescriptionDetail/prescriptionDetail'
+import checklistDetail from '../views/myArchives/medicalRecord/outpatientDetails/checklistDetail/checklistDetail'
+import inspectionDetail from '../views/myArchives/medicalRecord/outpatientDetails/inspectionDetail/inspectionDetail'
+import quickAppoint from '../views/quickAppoint/quickAppoint'
+import serviceExplain from '../views/serviceExplain/serviceExplain'
+import returnWay from '../views/returnWay/returnWay'
+import sendWay from '../views/sendWay/sendWay'
+import outpatientRegistrate from '../views/outpatientRegistrate/outpatientRegistrate'
+import healthInfo from '../views/healthInfo/healthInfo'
+import healthInfoDetail from '../views/healthInfoDetail/healthInfoDetail'
+import selectHospital from '../views/selectHospital/selectHospital'
+import selectDepartment from '../views/selectDepartment/selectDepartment'
+
+import medicalTeam from '../views/medicalTeam/medicalTeam'
+import doctorInfo from '../views/medicalTeam/doctorInfo'
+import stewardInfo from '../views/medicalTeam/stewardInfo'
+import nurseInfo from "../views/medicalTeam/nurseInfo"
+import consultWeb from "../views/medicalTeam/consultWeb";
+import testChart from "../views/medicalTeam/testChart"
+import managementDynamic from "../views/managementDynamic/managementDynamic"
+import managementAdvice from "../views/managementDynamic/managementAdvice/managementAdvice"
+import dynamicBar from "../views/managementDynamic/dynamicBar"
+import adviceHistory from "../views/managementDynamic/managementAdvice/adviceHistory"
+import adviceInfo from "../views/managementDynamic/managementAdvice/adviceInfo"
+import reportHistory from "../views/managementDynamic/managementReport/reportHistory"
+import reportCheckInfo from "../views/managementDynamic/managementReport/reportCheckInfo"
+import reportInspectInfo from "../views/managementDynamic/managementReport/reportInspectInfo"
+import pharmacyHistory from "../views/managementDynamic/pharmacyInfo/pharmacyHistory"
+import adjustMedical from "../views/managementDynamic/pharmacyInfo/adjustMedical"
+import indicatorInfo from "../views/managementDynamic/healthIndicator/indicatorInfo"
+import upIndicator from "../views/managementDynamic/healthIndicator/upIndicator"
+import addressManage from '../views/address/addressManage/addressManage'
+import addressAdd from '../views/address/addressAdd/addressAdd'
+import addressEdit from '../views/address/addressEdit/addressEdit'
+import orderList from "../views/orderList/orderList"
+import orderInfo from "../views/orderList/orderInfo"
+import serviceList from "../views/serviceList/serviceList"
+import serviceInfo from "../views/serviceList/serviceInfo"
+Vue.use(Router);
+export default new Router({
+  //mode: 'history',
+  mode: 'hash',
+  routes: [
+    {
+      name: 'myArchives',
+      path: '/myarchives',
+      component: myArchives,
+      meta: {
+        title: '我的档案'
+      }
+    },
+    {
+      name: 'privateArchives',
+      path: '/privatearchives',
+      component: privateArchives,
+      meta: {
+        title: '私医档案'
+      },
+      children: [
+        {
+          name: 'diseaseCourse',
+          path: '',
+          component: diseaseCourse,
+        },
+        {
+          name:'consultRecord',
+          path:'consultrecord',
+          component:consultRecord,
+        }
+      ]
+    },
+    {
+      name: 'diseaseDetail',
+      path: '/diseasedetail',
+      component: diseaseDetail,
+      meta: {
+        title: '病情详情'
+      }
+    },
+    {
+      name: 'medicalRecord',
+      path: '/medicalrecord',
+      component: medicalRecord,
+      meta: {
+        title: '就医记录'
+      }
+    },
+    {
+      name: 'outpatientDetails',
+      path: '/outpatientdetails',
+      component: outpatientDetails,
+      meta: {
+        title: '门诊详情'
+      }
+    },
+    {
+      name: 'prescriptionDetail',
+      path: '/prescriptiondetail',
+      component: prescriptionDetail,
+      meta: {
+        title: '处方详情'
+      }
+    },
+    {
+      name: 'checklistDetail',
+      path: '/checklistdetail',
+      component: checklistDetail,
+      meta: {
+        title: '检查单详情'
+      }
+    },
+    {
+      name: 'inspectionDetail',
+      path: '/inspectiondetail',
+      component: inspectionDetail,
+      meta: {
+        title: '检验单详情'
+      }
+    },
+    {
+      name: 'quickAppoint',
+      path: '/quickappoint',
+      component: quickAppoint,
+      meta: {
+        title: '一键预约'
+      }
+    },
+    {
+      name:'serviceExplain',
+      path:'/serviceexplain',
+      component: serviceExplain,
+    },
+    {
+      name:'sendWay',
+      path:'/sendway',
+      component: sendWay,
+      meta:{
+        title:'证件递交方式'
+      }
+    },
+    {
+      name:'returnWay',
+      path:'/returnway',
+      component: returnWay,
+      meta:{
+        title:'证件递还方式'
+      }
+    },
+    {
+      name:'selectHospital',
+      path:'/selecthospital',
+      component:selectHospital,
+      meta:{
+        title:'选择医院'
+      }
+    },
+    {
+      name:'selectDepartment',
+      path:'/selectdepartment',
+      component:selectDepartment,
+      meta:{
+        title:'选择科室'
+      }      
+    },
+    {
+      name: 'outpatientRegistrate',
+      path: '/outpatientregistrate',
+      component: outpatientRegistrate,
+      meta: {
+        title: '门诊挂号预约'
+      }
+    },
+    {
+      name: 'healthInfo',
+      path: '/healthinfo',
+      component: healthInfo,
+      meta: {
+        title: '健康资讯'
+      }
+    },
+    {
+      name: 'healthInfoDetail',
+      path: '/healthInfodetail',
+      component: healthInfoDetail,
+      meta: {
+        title: '健康资讯详情'
+      }
+    },
+    {
+      name: 'addressAdd',
+      path: '/addressadd',
+      component:addressAdd,
+      meta: {
+        title: '新增地址'
+      }
+    },
+    {
+      name: 'addressEdit',
+      path: '/addressedit',
+      component: addressEdit,
+      meta: {
+        title: '编辑地址'
+      }
+    },
+    {
+      name: 'addressManage',
+      path: '/addressmanage',
+      component: addressManage,
+      meta: {
+        title: '常用地址'
+      }
+    },
+    {
+      name: 'medicalTeam',
+      path: '/medicalteam',
+      component: medicalTeam,
+      meta: {
+        title: '我的医护团队',
+        background:1
+      }
+    },
+    {
+      name: 'doctorInfo',
+      path: '/doctorinfo',
+      component: doctorInfo,
+      meta: {
+        title: '医生详情'
+      }
+    },
+    {
+      name: 'stewardInfo',
+      path: '/stewardinfo',
+      component: stewardInfo,
+      meta: {
+        title: '管家详情'
+      }
+    },
+    {
+      name: 'nurseInfo',
+      path: '/nurseinfo',
+      component: nurseInfo,
+      meta: {
+        title: '护士详情'
+      }
+    },
+    {
+      name: 'consultWeb',
+      path: '/consultweb',
+      component: consultWeb,
+      meta: {
+        title: '咨询',
+        background:1
+      }
+    },
+    {
+      name:'testChart',
+      path:'/testchart',
+      component:testChart,
+      meta:{
+        title:'test'
+      }
+    },
+    {
+      name:'managementDynamic',
+      path:'/managementdynamic',
+      component:managementDynamic,
+      meta:{
+        title:'管理动态'
+      }
+    },
+    {
+      name:'dynamicBar',
+      path:'/dynamicbar',
+      component:dynamicBar,
+      meta:{
+        title:'管理动态'
+      }
+    },
+    {
+      name:'adviceHistory',
+      path:'/advicehistory',
+      component:adviceHistory,
+      meta:{
+        title:'管理建议历史记录',
+        hasSearch:1
+      }
+    },
+    {
+      name:'adviceInfo',
+      path:'/adviceinfo',
+      component:adviceInfo,
+      meta:{
+        title:'建议详情',
+        background:1
+      }
+    },
+    {
+      name:'reportHistory',
+      path:'/reporthistory',
+      component:reportHistory,
+      meta:{
+        title:'报告历史记录',
+        hasSearch:1
+      }
+    },
+    {
+      name:'reportCheckInfo',
+      path:'/reportcheckinfo',
+      component:reportCheckInfo,
+      meta:{
+        title:'检查单'
+      }
+    },
+    {
+      name:'reportInspectInfo',
+      path:'/reportinspectinfo',
+      component:reportInspectInfo,
+      meta:{
+        title:'检验单'
+      }
+    },
+    {
+      name:'pharmacyHistory',
+      path:'/pharmacyhistory',
+      component:pharmacyHistory,
+      meta:{
+        title:'用药历史记录'
+      }
+    },
+    {
+      name:'adjustMedical',
+      path:'/adjustmedical',
+      component:adjustMedical,
+      meta:{
+        title:'调整用药动态'
+      }
+    },
+    {
+      name:'indicatorInfo',
+      path:'/indicatorinfo',
+      component:indicatorInfo,
+      meta:{
+        title:'心率'
+      }
+    },
+    {
+      name:'upIndicator',
+      path:'/upindicator',
+      component:upIndicator,
+      meta:{
+        title:''
+      }
+    },
+    {
+      name:'orderList',
+      path:'/orderlist',
+      component:orderList,
+      meta:{
+        title:'订单详情'
+      }
+    },
+    {
+      name:'orderInfo',
+      path:'/orderinfo',
+      component:orderInfo,
+      meta:{
+        title:'订单详情'
+      }
+    },
+    {
+      name:'serviceList',
+      path:'/servicelist',
+      component:serviceList,
+      meta:{
+        title:'我的服务'
+      }
+    },
+    {
+      name:'serviceInfo',
+      path:'/serviceinfo',
+      component:serviceInfo,
+      meta:{
+        title:'服务单详情'
+      }
+    }
+  ]
+})

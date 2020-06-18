@@ -1,0 +1,256 @@
+<template>
+    <div class="specs_container">
+      <div class="specs_info">
+          <div class="specs_img">
+            <img :src="type_list[type].imgUrl" />
+          </div>
+          <div class="specs_text">
+              <div class="text_title">
+                {{name}}
+              </div>
+              <div class="text_stock">
+                价格 {{type_list[type].salePrice}}
+              </div>
+              <div class="text_info">
+                选择 规格
+              </div>
+          </div>
+      </div>
+      <div class="specs_choose">
+          <div class="specs_title">
+            规格
+          </div>
+          <div class="specs_item_container">
+            <div v-for="(item,index) in type_list" v-bind:key="item.id" class="_item" :class="type == index?'active':''" @click="choose_type(index,item.id)" >
+            {{ item.specNm }}
+            </div>
+          </div>
+      </div>
+      <div class="specs_mount">
+          <div class="specs_title">
+            数量
+          </div>
+          <div class="mount_choose">
+            <div class="mount_reduce" @click="reduce">—</div>
+            <div class="mount_show">{{ mount }}</div>
+            <div class="mount_add" @click="add">+</div>
+          </div>
+      </div>
+      <div class="button_container">
+        <button @click.stop="getBuy()">立即购买</button>
+      </div>
+    </div>
+</template>
+
+<script>
+export default {
+  data() {
+    return {
+      type:0,
+      typeId:'',
+      mount:1,
+      //isShow:1,
+      //type_list:[],
+//      type_list:[
+//        {
+//          label:1,
+//          title:'最低79.8元起',
+//          stock:'111',
+//          specs_title:'月卡',
+//          imgUrl:'http://img4.imgtn.bdimg.com/it/u=3276179142,1686381254&fm=26&gp=0.jpg'
+//        },
+//        {
+//          label:2,
+//          title:'最低79.3元起',
+//          stock:'222',
+//          specs_title:'季卡',
+//          imgUrl:'http://img3.imgtn.bdimg.com/it/u=3583433020,118316633&fm=26&gp=0.jpg'
+//        }
+//      ],
+    }
+  },
+  props:[
+    'type_list',
+    'idObj',
+    'name',
+
+  ],
+  mounted(){
+    if(this.type_list){
+      this.typeId = this.type_list[this.type].id
+    }
+  },
+
+methods:{
+  choose_type(index,id){
+    this.type = index;
+    this.typeId = id
+  },
+  reduce(){
+    if(this.mount>0){
+      this.mount-=1
+    }
+  },
+  add(){
+    this.mount+=1
+  },
+
+  getBuy(){
+      this.$emit('changeShow',0)
+    // let id = parseInt(this.idObj.id);
+    // let userId = this.idObj.userId;
+    // let url = '/hjjk/setMeal/buy';
+    // let data = {
+    //   id : id,
+    //   userId : userId,
+    //   quantity : this.mount,
+    //   specId: this.typeId
+    // };
+    // let response = (res) =>{
+    //   this.$toast('提交成功');
+    // };
+    // this.$store.state.getMoreDataPost(url,data,response);
+  }
+}
+}
+</script>
+
+<style scoped lang="less">
+.specs_container{
+  height: 722px;
+  background-color: #ffffff;
+  border-radius:16px 16px 0px 0px;
+  display: flex;
+  flex-direction: column;
+  padding: 0 32px 0 32px;
+  .specs_info{
+    position: relative;
+    display: flex;
+    padding-bottom: 40px;
+    height: 180px;
+    border-bottom: 1px solid rgba(237,237,237,1);
+    .specs_img{
+      position: absolute;
+      top:-40px;
+      border-radius:4px;
+      img{
+        width: 218px;
+        height: 220px;
+        border-radius:4px;
+      }
+    }
+    .specs_text{
+      display: flex;
+      flex-direction: column;
+      margin-left: 25px;
+      position: absolute;
+      top:55px;
+      left:218px;
+      .text_title{
+        color: #F45656;
+        font-size:32px;
+        font-weight:500;
+        font-family:PingFang SC;
+      }
+      .text_stock{
+        margin-top: 17px;
+        color: #969696;
+        font-size: 24px;
+      }
+      .text_info{
+        margin-top: 5px;
+        color: #646464;
+        font-size:24px;
+      }
+    }
+  }
+  .specs_choose{
+    margin-top: 39px;
+    padding-bottom: 24px;
+    border-bottom: 1px solid rgba(237,237,237,1);
+    .specs_title{
+    color:#646464;
+    font-size:28px;
+    }
+    .specs_item_container{
+      margin-top: 24px;
+      display: flex;
+      ._item{
+        width:120px;
+        height:64px;
+        background:rgba(248,248,248,1);
+        border-radius:8px;
+        font-size:28px;
+        text-align: center;
+        line-height: 64px;
+        margin-right: 24px;
+        color:rgba(100,100,100,1);
+        border: 1px solid rgba(248,248,248,1);
+      }
+      .active{
+        background:rgba(15,162,156,0.2);
+        border:1px solid rgba(15, 162, 156, 1);
+        color:rgba(15,162,156,1);
+      }
+    }
+  }
+  .specs_mount{
+    margin-top: 24px;
+    display: flex;
+    justify-content: space-between;
+    .specs_title{
+      margin-top: 15px;
+      color:#646464;
+      font-size:28px;
+    }
+    .mount_choose{
+      display: flex;
+      .mount_add{
+        width:62px;
+        height:32px;
+        padding-left: 2px;
+        padding-bottom: 33px;
+        background:rgba(248,248,248,1);
+        border-radius:0px 4px 4px 0px;
+        font-size: 80px;
+        line-height: 56px;
+        color: rgba(150,150,150,1);
+      }
+      .mount_show{
+        width:120px;
+        height:64px;
+        background:rgba(243,243,243,1);
+        border-radius:0px 4px 4px 0px;
+        line-height: 64px;
+        text-align: center;
+        font-size:32px;
+        margin-right: 2px;
+        color: #646464;
+      }
+      .mount_reduce{
+        width:50px;
+        padding-left: 14px;
+        height:64px;
+        background:rgba(248,248,248,1);
+        border-radius:0px 4px 4px 0px;
+        font-size: 35px;
+        font-weight: bold;
+        line-height: 64px;
+        color: rgba(150,150,150,1);
+        margin-right: 2px;
+      }
+    }
+  }
+  .button_container{
+    margin-top: 96px;
+    button{
+      width: 100%;
+      height:90px;
+      background:rgba(15,162,156,1);
+      border-radius:8px;
+      font-size: 32px;
+      color:rgba(255,255,255,1);
+    }
+  }
+}
+</style>

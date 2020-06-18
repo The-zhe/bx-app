@@ -1,0 +1,203 @@
+/*
+ * @Author: zzh 
+ * @Date: 2019-12-26 14:32:57 
+ * @Last Modified by: zzh
+ * @Last Modified time: 2020-04-27 16:09:50
+ */
+<template>
+  <div class="quickAppoint_container">
+    <div class="banner_container"></div>
+    <div class="tab_container">
+      <div
+        class="tab_item"
+        :class="{'active_tab':currentTabIndex==index}"
+        @click="changeTab(item,index)"
+        :key="item.title"
+        v-for="(item,index) in tabLists"
+      >
+        <div class="item_icon">
+          <img :src="currentTabIndex==index?item.ActiveUrl:item.iconUrl" />
+        </div>
+        <div class="item_title">{{item.title}}</div>
+      </div>
+    </div>
+    <div class="list_container">
+      <div class="list_item" @click="JumpToExplain(item)" :key="item.title" v-for="item in appointLists">
+        <div class="item_img">
+          <img :src="item.imgUrl" />
+        </div>
+        <div class="item_text">
+          <div class="item_title">{{item.secondCatNm}}</div>
+          <div class="item_times">{{`剩余次数 ${item.residueDegree}`}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getAppointList } from "@/api/apiz";
+export default {
+  components: {},
+  name: "quickAppoint",
+  props: [],
+  data() {
+    return {
+      currentTabIndex: 0,
+      currentTabCatCd: "80060.100",
+      tabLists: [
+        {
+          title: "就医服务",
+          iconUrl: require("../../assets/imgs/icon_yjyy_jyfw.png"),
+          ActiveUrl:require('../../assets/imgs/icon_yjyy_jyfw_pre.png'),
+          catCd: "80060.100"
+        },
+        {
+          title: "定制体检",
+          iconUrl: require("../../assets/imgs/icon_yjyy_custom.png"),
+          ActiveUrl:require('../../assets/imgs/icon_yjyy_custom_pre.png'),
+          catCd: "80060.102"
+        },
+        {
+          title: "便捷就医",
+          iconUrl: require("../../assets/imgs/icon_yjyy_medical.png"),
+          ActiveUrl:require('../../assets/imgs/icon_yjyy_medical_pre.png'),
+          catCd: "80060.101"
+        },
+
+        {
+          title: "名医直通",
+          iconUrl: require("../../assets/imgs/icon_yjyy_myzt.png"),
+          ActiveUrl:require('../../assets/imgs/icon_yjyy_myzt_pre.png'),
+          catCd: "80060.103"
+        }
+      ],
+      appointLists: []
+    };
+  },
+  beforeCreate(){
+  },
+  created() {},
+  computed: {},
+  watch: {
+    currentTabCatCd(newVal, oldVal) {
+      this.getAppointListFun(newVal);
+    }
+  },
+  mounted() {
+    this.getRouteType()
+    // this.registerFun()
+    this.getAppointListFun(this.currentTabCatCd);
+  },
+  methods: {
+    getAppointListFun(cd) {
+      getAppointList(4535481258038273, cd).then(res => {
+        this.appointLists = res.data.list;
+      });
+    },
+    changeTab(item, index) {
+      this.currentTabIndex = index;
+      this.currentTabCatCd = item.catCd;
+    },
+    registerFun() {
+      this.$bridge.registerHandler("changeTab", (data, responseCallback) => {
+        this.currentTabIndex = 2
+        this.currentTabCatCd = '80060.101'
+        this.$nextTick(()=>{
+          this.getAppointListFun(this.currentTabCatCd);
+        })
+      });
+    }, 
+    getRouteType(){
+      this.$bridge.registerHandler("getRouteType",(type) => {
+        if(type === '1'){
+          this.currentTabIndex = 2;
+          this.currentTabCatCd = "80060.101";
+        }
+      })
+    },
+    JumpToExplain(item){
+      this.$router_({name:'serviceExplain'})
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.quickAppoint_container {
+  background-color: #f4f4f4;
+  .banner_container {
+    height: 2rem;
+    width: 100%;
+    background: url("../../assets/imgs/img_yjyy_banner.png") no-repeat;
+    background-size: 100% 100%;
+  }
+  .tab_container {
+    background-color: #fff;
+    display: flex;
+    height: 1.46rem;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 0.08rem 0.66rem 0.21rem;
+    justify-content: space-between;
+    .tab_item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      .item_icon {
+        img {
+          height: 0.91rem;
+          width: 0.91rem;
+        }
+      }
+      .item_title {
+        margin-top: 0.1rem;
+        font-size: 0.26rem;
+        color: #606060;
+      }
+    }
+    .active_tab {
+      .item_title {
+        color: #048A83;
+        font-weight: bold;
+        font-size: 0.3rem;
+      }
+    }
+  }
+  .list_container {
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    .list_item {
+      display: flex;
+      margin-top: 0.25rem;
+      background-color: #fff;
+      height: 1.49rem;
+      width: 7.01rem;
+      align-items: center;
+      .item_img {
+        margin-left: 0.2rem;
+        img {
+          width: 2.13rem;
+          height: 1.23rem;
+        }
+      }
+      .item_text {
+        display: flex;
+        flex-direction: column;
+        justify-content: space-around;
+        margin-left: 0.27rem;
+        color: #777777;
+        .item_title {
+          font-size: 0.3rem;
+          font-weight: bold;
+        }
+        .item_times {
+          margin-top: 0.2rem;
+          font-size: 0.28rem;
+        }
+      }
+    }
+  }
+}
+</style>

@@ -1,0 +1,113 @@
+// 2020/1/7 created by xtt
+<template>
+  <div>
+    <canvas id="myChart" width="400" height="260"></canvas>
+  </div>
+</template>
+
+<script>
+    export default {
+      name: "testChart",
+      components: {},
+      data () {
+        return {
+          data:[{
+            day: '周一',
+            value: 300
+          }, {
+            day: '周二',
+            value: 400
+          }, {
+            day: '周三',
+            value: 350
+          }, {
+            day: '周四',
+            value: 500
+          }, {
+            day: '周五',
+            value: 490
+          }, {
+            day: '周六',
+            value: 600
+          }, {
+            day: '周日',
+            value: 900
+          }]
+
+        }
+      },
+
+      methods:{
+        drawChart(){
+          // Step 1: 创建 Chart 对象
+          const chart = new this.$F2.Chart({
+            id: 'myChart',
+            pixelRatio: window.devicePixelRatio // 指定分辨率
+          });
+
+          // Step 2: 载入数据源
+          chart.source(this.data, {
+            value: {
+              tickCount: 5,
+              min: 0
+            },
+            day: {
+              range: [ 0, 1 ]
+            }
+          });
+
+          // Step 3：创建图形语法，绘制柱状图，由 genre 和 sold 两个属性决定图形位置，genre 映射至 x 轴，sold 映射至 y 轴
+          /*chart.interval().position('genre*sold').color('genre');*/
+          chart.tooltip({
+            // showCrosshairs: true,
+            // showItemMarker: false,
+            // onShow: function onShow(ev) {
+            //   const items = ev.items;
+            //   items[0].name = null;
+            //   items[0].value = '$ ' + items[0].value;
+            // }
+            showCrosshairs: true,
+            alwaysShow: true,
+            onShow: function onShow(ev) {
+              const items = ev.items;
+
+              items[0].name = items[0].title;
+            }
+          });
+          chart.axis('day', {
+            label: function label(text, index, total) {
+              const textCfg = {};
+              if (index === 0) {
+                textCfg.textAlign = 'left';
+              } else if (index === total - 1) {
+                textCfg.textAlign = 'right';
+              }
+              return textCfg;
+            }
+          });
+          chart.axis('value', {
+           position:'right'
+          });
+          chart.line().position('day*value');
+          chart.point().position('day*value').style({
+            stroke: '#fff',
+            lineWidth: 1
+          });
+
+          // Step 4: 渲染图表
+          chart.render();
+        }
+      },
+      mounted() {
+        this.$nextTick(()=>{
+          this.drawChart();
+        });
+
+      }
+
+    }
+</script>
+
+<style scoped>
+
+</style>

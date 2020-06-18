@@ -1,0 +1,60 @@
+<template>
+  <div class="header_container">
+      <div class="content">
+          <div class="backTo" @click="backToPrevPage">
+              <img :src="backToImg"/>
+          </div>
+          <div class="title">
+              {{$route.meta.title}}
+          </div>
+          <div class="menu">
+              <img :src="menuImg"/>
+          </div>
+      </div>
+  </div>
+</template>
+
+<script>
+export default {
+    name:'headerBar',
+    data(){
+        return{
+            backToImg:require('../assets/imgs/return_white.png'),
+            menuImg:require('../assets/imgs/spinner_white.png')
+        }
+    },
+    methods:{
+        backToPrevPage(){
+            this.$router.go(-1)
+        }
+    }
+}
+</script>
+
+<style lang="less" scope>
+.header_container{
+    height: 128px;
+    width: 100%;
+    box-sizing: border-box;
+    padding-top: 40px;
+    background-color: #008B84;
+    .content{
+        height: 88px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        
+        .backTo{
+            margin-left: 18px;
+        }
+        .title{
+            font-size: 36px;
+            color: #ffffff;
+            font-weight: 600;
+        }
+        .menu{
+            margin-right: 22px;
+        }  
+    }
+}
+</style>

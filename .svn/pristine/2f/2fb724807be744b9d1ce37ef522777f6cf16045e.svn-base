@@ -1,0 +1,675 @@
+<template>
+  <div class="wxhome">
+    <div class="wxhomeback"></div>
+    <div class="wxhomeconsult" @click="toconsult">
+      <div class="wx_c_one">新冠肺炎筛查免费咨询</div>
+      <div class="wx_c_two">助力复工复学防控 减轻医院门诊压力</div>
+      <div class="wx_c_three"></div>
+      <div class="wx_c_four">超千名医生公益服务</div>
+      <div class="wx_c_four">发热 咳嗽实时咨询 减少出行</div>
+      <div class="wx_c_btn"></div>
+    </div>
+    <div class="wxhomeslow" @click="toslowtype"></div>
+    <div class="wxhomesendmedical" @click="toDoorsMedicine"></div>
+   <!-- <div class="heathinfo_container">
+      <div class="title"></div>
+      <div class="list">
+        <div class="item" v-for="item in wxinfo.healthPreservationList" @click="toinfo2(item)">
+          <div class="text">
+            <div class="item_title">{{item.title}}</div>
+            <div class="item_info">
+              <div class="time">{{item.crtTm|fromNowTime}}</div>
+              <div class="view">
+                <div class="icon">
+                  <img src="@/assets/imgs/wxyq_2.png"/>
+                </div>
+                <div class="num">{{item.browse}}</div>
+              </div>
+            </div>
+          </div>
+          <div class="img">
+            <img :src="item.imgUrl"/>
+          </div>
+        </div>
+      </div>
+      <div class="check_more">
+        <img @click="tohealthinfo" src="@/assets/imgs/wxyq_4.png"/>
+      </div>
+    </div>-->
+
+    <div class="wxyqinfotitle">
+      <div class="g_title"></div>
+      <div class="g_text">新</div>
+      <div class="g_text">闻</div>
+      <div class="g_text">资</div>
+      <div class="g_text">讯</div>
+    </div>
+    <div class="wxyqinfo">
+      <div class="wxyqimg" @click="toyqinfo(yqid)"><img :src="bigImgUrl"></div>
+      <div class="wxyqdetail" @click="toyqinfo(yqid)">
+        <div>
+          <div class="wxyq_o">{{yqtitle}}</div>
+          <div class="wxyqd_time">
+            <div>{{yqcrtTm|fromNowTime}}</div>
+            <div class="eye">{{yqbrowse}}</div>
+          </div>
+        </div>
+      </div>
+      <div class="wxyqdetailcontent" v-for="item in newhealthPreservationList" @click="toinfo2(item)">
+        <div class="wxyqd_info">
+          <div class="wxyq_t">{{item.title}}</div>
+          <div class="wxyqd_time2">
+            <div>{{item.crtTm|fromNowTime}}</div>
+            <div class="eye">{{item.browse}}</div>
+          </div>
+        </div>
+        <div class="wxqyd_img"><img :src="item.imgUrl"></div>
+      </div>
+      <div class="check_more">
+        <img @click="tohealthinfo" src="@/assets/imgs/wxyq_4.png"/>
+      </div>
+    </div>
+    <div class="copyRight">
+      <div class="top">COPY RIGHT 宁波百护佳健康管理有限公司 版权所有</div>
+      <div class="bottom">浙ICP备16032948号-1</div>
+    </div>
+  </div>
+</template>
+
+<script>
+  import moment from "moment";
+  import {getYqinfo, getlbinfo, getisyqtable, getSig, getwxuserunreadnum} from "../../api/index";
+
+  export default {
+    name: "wxhome",
+    filters: {
+      fromNowTime: function (value) {
+        let array = moment(value)
+          .fromNow()
+          .split(" ");
+        array[0] = array[0] == "a" ? "1" : array[0] == "an" ? "1" : array[0] + "";
+        let EN = [
+          "minute",
+          "minutes",
+          "hour",
+          "hours",
+          "day",
+          "days",
+          "month",
+          "months",
+          "year",
+          "years"
+        ];
+        let CN = ["分钟", "小时", "天", "个月", "年"];
+        array[1] = CN[parseInt(EN.indexOf(array[1]) / 2)];
+        return array.length == 4
+          ? "几秒前"
+          : new Array(array[0], array[1]).join("") + "前";
+      }
+    },
+    data() {
+      return {
+        isIos: false,
+        reporttime: moment()
+          .subtract(1, "days")
+          .format("YYYY-MM-DD"), //报道时间
+        isshow: true,
+        doctorimg: require("../../assets/imgs/x_docimg.png"),
+        isqg: true,
+        labaimg: require("../../assets/imgs/wx1_2.png"),
+        wxinfo: {},
+        notice: "",
+        lblist: [],
+        healthTeamList: [],
+        doctorSayImg: "",
+        healthPreservationList: [],
+        newhealthPreservationList: [],
+        healthInfoList: [],
+        gdlist: [],
+        sszxInfo: {},
+        identifier: '',   //用户id
+        userSig: '',
+        bigImgUrl:'',  //新闻大图
+        yqid:'',   //新闻大图id
+        yqtitle:'',//新闻标题
+        yqbrowse:'',//新闻阅读量
+        yqtype:'',//
+        yqcrtTm:'',
+      };
+    },
+    methods: {
+      toJump() {
+        this.$router_({path: '/filljump'});
+      },
+      //实时资讯跳转
+      tossnews(id) {
+        this.$router_({path: "/yqinfodetail", query: {healthInfoId: id}});
+      },
+      getinfo() {
+        getYqinfo().then(res => {
+          this.sszxInfo = {
+            sszxId: res.data.data.sszxId,
+            sszxTime: res.data.data.sszxTime,
+            sszxTitle: res.data.data.sszxTitle
+          };
+          this.wxinfo = res.data.data;
+          this.healthPreservationList = res.data.data.healthPreservationList;
+          this.bigImgUrl=this.healthPreservationList[0].bigImgUrl;
+          this.yqid=this.healthPreservationList[0].id;
+          this.yqtitle=this.healthPreservationList[0].title;
+          this.yqbrowse=this.healthPreservationList[0].browse;
+          this.yqtype=this.healthPreservationList[0].type;
+          this.yqcrtTm=this.healthPreservationList[0].crtTm;
+          this.newhealthPreservationList = this.healthPreservationList.concat();
+          this.newhealthPreservationList.shift();
+        });
+      },
+      jumpToIframePage(url, title) {
+        this.$router_({name: 'iframePage', params: {type: 0, url, title}})
+      },
+      toDoorsMedicine() {
+        this.$router_({name: 'doorsMedicine'})
+      },
+      //慢病咨询
+      toslowtype() {
+        this.$router_({path: "/slowtype"});
+      },
+      toinfo2(a) {
+        if (a.id != '') {
+          if (a.type == 1) {
+            this.$router.push({path: '/iframePage', params: {type: 0}, query: {id: a.id}})
+          } else {
+            this.$router_({path: "/yqinfodetail", query: {healthInfoId: a.id}});
+          }
+        }
+      },
+      toyqinfo(a) {
+        if (a!= '') {
+          if (this.yqtype== 1) {
+            this.$router.push({path: '/iframePage', params: {type: 0}, query: {id: a}})
+          } else {
+            this.$router_({path: "/yqinfodetail", query: {healthInfoId: a}});
+          }
+        }
+        /*sessionStorage.setItem("healthInfoId", a);
+        this.$router_({path: "/yqinfodetail"});*/
+      },
+      toconsult() {
+        let userId = localStorage.getItem('userId');
+        if (Boolean(userId)) {
+          getisyqtable(Number(userId)).then((res) => {
+            if (res.data.data === '0') {
+              this.$router_({path: "/filljump"});
+            } else {
+              this.$dialog.alert({
+                title: '提示',
+                message: '疫情期间为每位患者免费提供一次新冠肺炎咨询表提交机会，你的机会已用完，可下载APP与医生进行更多咨询交流',
+                confirmButtonText: '确 定',
+                confirmButtonColor: '#3FA998',
+              }).then(() => {
+              }).catch(() => {
+              });
+            }
+          });
+        } else {
+          this.$router_({path: "/filljump"});
+        }
+      },
+      tohealthinfo() {
+        this.$router_({path: "/yqinfolist"});
+      },
+      toDoorsMedicine(){
+        this.$router_({name:'doorsMedicine'})
+      },
+      //用户未读数
+      getuserunreadnum() {
+        let userId = sessionStorage.getItem("userId");
+        getwxuserunreadnum(userId).then(res => {
+          this.resetSetItem("wxunread", res.data.data.msgNum);
+          console.log("3333", res.data.data.msgNum);
+        });
+        // this.set_interval();
+      },
+      set_interval() {
+        //clearInterval(secondInterval);
+        let secondInterval = setInterval(() => {
+          setTimeout(() => {
+            console.log("num");
+            this.getuserunreadnum();
+          }, 500000);
+        }, 500000);
+      },
+      emptytable() {
+        localStorage.setItem('symOptionsFr', 'false');
+        localStorage.setItem('symOptionsKs', 'false');
+        localStorage.setItem('symOptionsXmqj', 'false');
+        localStorage.setItem('symOptionsFlst', 'false');
+        localStorage.setItem('symOptionsFx', 'false');
+        localStorage.setItem('symOptionsExot', 'false');
+        localStorage.removeItem('nickname');
+        localStorage.removeItem('symOptionsOt');
+        localStorage.removeItem('symOptionsExTime');
+        localStorage.removeItem('symOptionsOtTime');
+        localStorage.removeItem('districtNm');
+        localStorage.removeItem('istableupd');
+        localStorage.removeItem('birthday');
+        localStorage.removeItem('cityNm');
+        localStorage.removeItem('code');
+        localStorage.removeItem('fkxxOptionsA');
+        localStorage.removeItem('fkxxOptionsB');
+        localStorage.removeItem('fkxxOptionsBDesc');
+        localStorage.removeItem('fkxxOptionsC');
+        localStorage.removeItem('fkxxOptionsCDesc');
+        localStorage.removeItem('fkxxOptionsD');
+        localStorage.removeItem('fkxxOptionsDDesc');
+
+        localStorage.removeItem('illnessDesc');
+        localStorage.removeItem('jqCityNm');
+        localStorage.removeItem('jqProviceNm');
+        localStorage.removeItem('name');
+        localStorage.removeItem('pastHistory');
+
+        localStorage.removeItem('phone');
+        localStorage.removeItem('proviceNm');
+        localStorage.removeItem('reportImg');
+        localStorage.removeItem('sex');
+        localStorage.removeItem('statNm');
+
+        //localStorage.removeItem('symOptionsExot');
+        localStorage.removeItem('symOptionsExotTime');
+        //localStorage.removeItem('symOptionsFlst');
+        localStorage.removeItem('symOptionsFlstTime');
+        //localStorage.removeItem('symOptionsFr');
+        localStorage.removeItem('symOptionsEx');
+
+        localStorage.removeItem('symOptionsFrTime');
+        // localStorage.removeItem('symOptionsFx');
+        localStorage.removeItem('symOptionsFxTime');
+        //localStorage.removeItem('symOptionsKs');
+        localStorage.removeItem('symOptionsKsTime');
+
+        // localStorage.removeItem('symOptionsXmqj');
+        localStorage.removeItem('symOptionsXmqjTime');
+        localStorage.removeItem('temp');
+        localStorage.removeItem('tripCityNm');
+        localStorage.removeItem('tripDesc');
+
+        localStorage.removeItem('tripEndTime');
+        localStorage.removeItem('tripProviceNm');
+        localStorage.removeItem('tripStartTime');
+        localStorage.removeItem('visitingProcess');
+
+      },
+      //登录腾讯im获取秘钥
+      getUserSig() {
+        getSig(this.identifier).then(res => {
+          this.userSig = res.data.data;
+          sessionStorage.setItem('userSig', this.userSig);
+          this.getIMBegin();
+        });
+      },
+      //登录im
+      getIMBegin() {
+        let promise = this.tim.login({
+          userID: this.identifier, //登录的会员id
+          userSig: this.userSig
+        });
+        promise.then(imResponse => {
+          console.log("IM登录成功", imResponse);
+        })
+          .catch(function (imError) {
+            console.warn("login error:", imError); // 登录失败的相关信息
+          });
+      },
+    },
+    mounted() {
+      this.isIos = sessionStorage.getItem('phoneType') == 'ios'
+      this.identifier = localStorage.getItem('userId');
+      this.$store.commit('setHeaderTitle', '倍熙私医')
+      this.$nextTick(() => {
+        this.getinfo();
+        this.getuserunreadnum();
+        this.emptytable();
+      });
+      if(Boolean(Number(sessionStorage.getItem('inApp')))){
+
+      }else {
+        this.getUserSig();
+      }
+     /* let type = sessionStorage.getItem('phoneType');
+      if (type === 'ios') {
+        sessionStorage.setItem('inApp', "1");
+      }*/
+
+    }
+  };
+</script>
+
+<style scoped lang="less">
+  .wxhome {
+    margin-top: 0.88rem;
+    width: 100%;
+
+    .wxhomeback {
+      height: 5rem;
+      background: url("../../assets/imgs/wx_t_back.png") no-repeat;
+      background-size: 100% 5rem;
+    }
+
+    .wxhomeconsult {
+      border-radius: 0.16rem;
+      margin: -1.6rem auto 0;
+      width: 6.9rem;
+      height: 4.8rem;
+      box-shadow: 0 0 0.1rem 0.05rem #e1e1e1;
+      background: #FFFFFF;
+      color: #C98455;
+      font-size: 0.3rem;
+
+      .wx_c_one {
+        padding-top: 0.48rem;
+        margin: 0 0 0 1.35rem;
+        width: 4rem;
+        height: 0.5rem;
+        background: url("../../assets/imgs/wx_c_one.png") no-repeat 0 0.48rem;
+        background-size: 0.43rem 0.43rem;
+        font-size: 0.36rem;
+        padding-left: 0.7rem;
+      }
+
+      .wx_c_two {
+        text-align: center;
+        margin: 0.2rem auto 0.34rem;
+        color: #606060;
+        font-size: 0.28rem;
+        width: 5rem;
+        height: 0.3rem;
+      }
+
+      .wx_c_three {
+        margin: 0 auto 0.40rem;
+        width: 6rem;
+        height: 0.02rem;
+        background: #D4D2D5;
+      }
+
+      .wx_c_four {
+        margin: 0.24rem 0 0 1.14rem;
+        width: 5rem;
+        height: 0.36rem;
+        background: url("../../assets/imgs/wx_c_four.png") no-repeat;
+        background-size: 0.35rem 0.36rem;
+        padding-left: 0.75rem;
+      }
+
+      .wx_c_btn {
+        margin: 0.48rem auto 0;
+        width: 5rem;
+        height: 0.66rem;
+        background: url("../../assets/imgs/wx_c_btn.png") no-repeat;
+        background-size: 5rem 0.66rem;
+      }
+    }
+
+    .wxhomeslow {
+      margin: 0.35rem auto 0.2rem;
+      width: 6.9rem;
+      height: 1.5rem;
+      background: url("../../assets/imgs/wx_c_slow.png") no-repeat;
+      background-size: 6.9rem 1.5rem;
+    }
+
+    .wxhomesendmedical {
+      margin: 0 auto;
+      width: 6.9rem;
+      height: 1.5rem;
+      background: url("../../assets/imgs/wx_c_sendmedical.png") no-repeat;
+      background-size: 6.9rem 1.5rem;
+    }
+
+    .heathinfo_container {
+      //flex: 1;
+      width: 6.9rem;
+      margin: 0.3rem auto;
+      box-shadow: 0rem 0rem 0.2rem rgba(96, 96, 96, 0.32);
+      border-radius: 0.16rem;
+      box-sizing: border-box;
+      padding: 0 0 0.4rem;
+
+      .title {
+        background: url("../../assets/imgs/img_home_zx_one.png");
+        background-size: 100% 100%;
+        height: 1.8rem;
+
+        .bar {
+          width: 0.1rem;
+          height: 0.35rem;
+          background-color: #f58008;
+        }
+
+        .text {
+          margin-left: 0.36rem;
+          color: #51a89d;
+          font-size: 0.36rem;
+          letter-spacing: 0.2rem;
+          font-weight: bold;
+        }
+      }
+
+      .list {
+        margin-top: -0.45rem;
+        background-color: #ffffff;
+        border-radius: 0.14rem;
+        padding: 0 0.25rem 0.32rem;
+        border-bottom: 0.02rem solid #E7E4E7;
+
+        .item {
+          height: 1.84rem;
+          box-sizing: border-box;
+          padding: 0.18rem 0 0.18rem 0.02rem;
+          display: flex;
+          justify-content: space-between;
+
+          .text {
+            width: 4.2rem;
+            margin-right: 0.2rem;
+            display: flex;
+            flex-direction: column;
+
+            .item_title {
+              color: #5d5d5d;
+              font-size: 0.28rem;
+            }
+
+            .item_info {
+              justify-content: space-between;
+              margin-top: auto;
+              display: flex;
+              color: #828282;
+              font-size: 0.24rem;
+
+              .view {
+                display: flex;
+                align-items: center;
+
+                .icon {
+                  margin-right: 0.07rem;
+
+                  img {
+                    width: 0.31rem;
+                    height: 0.21rem;
+                  }
+                }
+              }
+            }
+          }
+
+          .img {
+            img {
+              width: 2.22rem;
+              height: 1.47rem;
+            }
+          }
+
+          &:not(:last-child) {
+            border-bottom: 0.02rem solid #E7E4E7;
+          }
+        }
+      }
+
+      .check_more {
+        margin-top: 0.36rem;
+        display: flex;
+        justify-content: center;
+
+        img {
+          width: 2.3rem;
+          height: 0.46rem;
+        }
+      }
+    }
+    .wxyqinfotitle{
+      width: 2.9rem;
+      height: 0.4rem;
+      margin: 0.5rem auto 0.3rem;
+      display: flex;
+      justify-content: flex-start;
+      .g_title{
+        margin-top: 0.08rem;
+        width: 0.09rem;
+        height: 0.36rem;
+        background: #01919C;
+      }
+      .g_text{
+        color: #606060;
+        font-size: 0.36rem;
+        font-weight: bold;
+        margin-left: 0.3rem;
+      }
+    }
+    .wxyqinfo {
+      margin: 0 auto 0.3rem;
+      box-shadow: 0 0 0.1rem 0.05rem #e1e1e1;
+      border-radius: 0.16rem;
+      overflow: hidden;
+      width: 6.9rem;
+      height: 11.9rem;
+      font-size: 0.3rem;
+      color: #5D5D5D;
+
+      .wxyqimg {
+        width: 6.9rem;
+        height: 3.2rem;
+
+        img {
+          width: 6.9rem;
+          height: 3.2rem;
+        }
+      }
+
+      .wxyqdetail {
+        margin: 0.28rem auto 0;
+        width: 6.5rem;
+        height: 1.4rem;
+        border-bottom: 0.02rem solid #F8F8FA;
+
+
+        .wxyq_o {
+          width: 6.5rem;
+          height: 0.9rem;
+          margin: 0 auto;
+          display: -webkit-box;
+          -webkit-box-orient: vertical;
+          -webkit-line-clamp: 2;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+
+        .wxyqd_time {
+          margin: 0.1rem auto 0;
+          width: 6.5rem;
+          font-size: 0.24rem;
+          color: #828282;
+          display: flex;
+          justify-content: space-between;
+        }
+      }
+      .eye {
+        width: 0.5rem;
+        height: 0.4rem;
+        background: url("../../assets/imgs/wxyq_2.png") no-repeat 0 0.08rem;
+        background-size: 0.3rem 0.2rem;
+        padding-left: 0.4rem;
+      }
+      .wxyqdetailcontent{
+        margin: 0.28rem auto 0;
+        width: 6.5rem;
+        height: 1.7rem;
+        border-bottom: 0.02rem solid #F8F8FA;
+        display: flex;
+        justify-content: space-between;
+        .wxyqd_info{
+          width: 4.1rem;
+          height: 1.5rem;
+          .wxyq_t{
+            width: 4.2rem;
+            //height: 0.9rem;
+            font-size: 0.3rem;
+            color: #5D5D5D;
+            display: -webkit-box;
+            -webkit-box-orient: vertical;
+            -webkit-line-clamp: 2;
+            overflow: hidden;
+            text-overflow: ellipsis;
+          }
+          .wxyqd_time2{
+            margin: 0.4rem auto 0;
+            width: 4.2rem;
+            font-size: 0.24rem;
+            color: #828282;
+            display: flex;
+            justify-content: space-between;
+          }
+        }
+        .wxqyd_img{
+          width: 2.2rem;
+          height: 1.46rem;
+          img{
+            width: 2.2rem;
+            height: 1.46rem;
+          }
+        }
+      }
+      .check_more {
+        margin-top: 0.36rem;
+        display: flex;
+        justify-content: center;
+
+        img {
+          width: 2.3rem;
+          height: 0.46rem;
+        }
+      }
+    }
+
+    .copyRight {
+      height: 0.95rem;
+      width: 100%;
+      background: url('../../assets/imgs/img_sy_module_four.png');
+      background-size: 100% 100%;
+      box-sizing: border-box;
+      padding-top: 0.15rem;
+      font-size: 0.24rem;
+      color: #ffffff;
+
+      .top {
+        text-align: center;
+      }
+
+      .bottom {
+
+        text-align: center;
+      }
+    }
+  }
+</style>

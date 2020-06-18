@@ -1,0 +1,28 @@
+<template>
+  <div class="CopyRight_container">COPYRIGHT@2018上海百护佳健康管理有限公司&nbsp;版权所有</div>
+</template>
+
+<script>
+export default {
+  name: "CopyRight",
+  data() {
+    return {};
+  },
+
+  mounted() {}
+};
+</script>
+
+<style lang="less" scoped>
+@import "../../static/lessfunc.less";
+.CopyRight_container {
+    .mgb(100px);
+  .h(100px);
+  .lh(100px);
+  .bb();
+  .fs(22px);
+  .fc(#ffffff);
+  .tac();
+  background-image: linear-gradient(to right, #008294, #00bfa7);
+}
+</style>

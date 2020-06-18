@@ -1,0 +1,108 @@
+<template>
+  <div class="product_common c_gray">
+    <div v-for="item in productLists" :key="item.id" class="product_item flex_start_top" @click="goDetails(item.id,pageType)">
+      <img class="item_img" :src="item.imgUrl">
+      <div class="item_right">
+        <div class="c_black">{{ item.name }}</div>
+        <div class="overflow item_spec fs_24">{{ item.subTitle }}</div>
+        <div class="fs_32 item_price c_red">{{ item.salePrice }}</div>
+        <div class="item_count fs_24" v-if="pageType != 1">剩{{item.residue}}次</div>
+        <button v-if="pageType == 1" class="item_btn c_white fs_28">购买</button>
+        <div v-else class="btn_items">
+          <button v-if="item.residue >= 1" class="btn_ btn_buy">购买</button>
+          <button v-if="item.residue >= 1" class="btn_ btn_invite" @click.stop="goService(item.id)">预约</button>
+
+          <button v-if="item.residue < 1" class="item_btn c_white fs_28">购买</button>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script>
+  export default {
+    components: {}, name: 'productCommon',
+    data () {
+      return {
+
+      }
+    },
+    props:[
+      'productLists',
+      'pageType' //1是套餐 2是服务
+    ],
+    mounted(){
+
+    },
+    methods:{
+      goDetails(id,type){
+        this.$router.push({name:'InfoCommon',query:{pId:id,pType:type}});
+      },
+      goService(id){
+        this.$router.push({name:'appointment',query:{pId:id}});
+      }
+    }
+
+  }
+</script>
+
+<!-- Add "scoped" attribute to limit CSS to this component only -->
+<style scoped lang="less">
+  .product_common{
+    .product_item{
+      background-color: #ffffff;
+      border-radius: 5px;
+      margin-bottom: 16px;
+      position: relative;
+
+      .item_right{
+        padding-top: 20px;
+      }
+      .item_img{
+        width: 280px;
+        height: 228px;
+        margin-right: 24px;
+      }
+      .item_spec{
+        max-width: 351px;
+        margin-bottom: 16px;
+      }
+      .item_btn{
+        width:140px;
+        height:58px;
+        background:#0FA29C;
+        border-radius:40px 8px 8px 0px;
+        position: absolute;
+        bottom: 0;
+        right:0;
+      }
+      .item_count{
+        position: absolute;
+        bottom: 13px;
+        left: 304px;
+      }
+      .btn_items{
+        position: absolute;
+        bottom: 0;
+        right:0;
+        font-size:0;
+
+        .btn_{
+          width:140px;
+          height:58px;
+          font-size:28px;
+          color: #ffffff;
+        }
+        .btn_buy{
+          background:#FFBD83;
+          border-radius:40px 0px 0px 0px;
+        }
+        .btn_invite{
+          background:#0FA29C;
+          border-radius:0 8px 8px 0px;
+        }
+      }
+    }
+  }
+</style>

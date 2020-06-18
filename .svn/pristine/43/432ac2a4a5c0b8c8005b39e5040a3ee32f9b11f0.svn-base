@@ -1,0 +1,96 @@
+// 2020/1/8 created by xtt
+<template>
+  <div class="symptomsFeel">
+    <div class="time_select_box">
+      <time-select></time-select>
+      <time-select></time-select>
+    </div>
+    <div class="health_state">
+      <div class="state_card" v-for="item in healtState">
+        <div class="staet_top">
+          <span class="weight">腹痛，加剧
+            <span v-show="item.new == true" class="new_tag">新</span> 
+          </span>
+          <span>2019/08/11 10:20</span>
+        </div>
+        <div class="state_bottom">
+          <span class="state_bottom_border">昨晚开始腹泻，伴有呕吐,没有发烧,该怎么…</span>
+          <span>昨晚开始腹泻，伴有呕吐,没有发烧,该怎么…</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import timeSelect from "../../../components/timeSelect.vue";
+export default {
+  name: "symptomsFeel",
+  components: { timeSelect },
+  data() {
+    return {
+      healtState:[
+        {new: true},
+        {new: false},
+        {new: false}
+      ]
+    };
+  }
+};
+</script>
+
+<style scoped lang="less">
+.symptomsFeel {
+  box-shadow: 0 2px 12px 0 rgba(0,0,0,1);
+  background-color: #fff;
+  margin-top: .1rem;
+  .time_select_box {
+    display: flex;
+    justify-content: space-between;
+    background-color: #fff;
+  }
+  .health_state {
+    padding: .1rem .2rem;
+    //border-radius: .5rem;
+    .state_card {
+      margin: .2rem 0;
+      border: 2px solid #eee;
+      background-color: #fff;
+      font-size: 0.3rem;
+      color: #777777FF;
+      padding: .1rem .2rem;
+      border-radius: .09rem;
+      box-shadow: 0 2px 12px 0 rgba(0,0,0,.1);
+      .staet_top {
+        padding-bottom: 0.2rem;
+        display: flex;
+        justify-content: space-between;
+        border-bottom: 1px dotted #eee;
+        .weight{
+          font-weight: 550;
+          color: #5D5D5D;
+        }
+        .new_tag{
+          padding: .04rem .1rem;
+          font-size: .08rem;
+          // line-height: .2rem;
+          border-radius: 50%;
+          background-color: #FF7B57;
+        }
+      }
+      .state_bottom {
+        font-size: 0.3rem;
+        display: flex;
+        flex-direction: column;
+        span{
+          padding: .2rem 0;
+        }
+        .state_bottom_border{
+          border-bottom: 1px dotted #eee;
+        }
+
+      }
+    }
+  }
+}
+</style>

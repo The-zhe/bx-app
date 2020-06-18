@@ -1,0 +1,284 @@
+<template>
+  <div class="consultRecord_container">
+    <div class="search_container">
+      <div class="time start_time">
+        {{startTime==''?'开始时间':startTime}}
+        <calendar
+          title
+          style="opacity:0;position:absolute; left:2px; top:-2px; width:114px;height:15px"
+          v-model="startTime"
+        ></calendar>
+        <img src="@/assets/imgs/btn_da_time.png" />
+      </div>
+      <div class="crossbar"></div>
+      <div class="time end_time">
+        {{endTime==''?'结束时间':endTime}}
+        <calendar
+          title
+          style="opacity:0; position:absolute; left:4px; top:-2px; width:114px;height:15px"
+          v-model="endTime"
+        ></calendar>
+        <img src="@/assets/imgs/btn_da_time.png" />
+      </div>
+      <div class="search_button" @click="searchList">确定</div>
+    </div>
+    <div class="record_container">
+      <div class="item" v-for="item in consultList">
+        <div class="item_header">
+          <div class="img">
+            <img :src="item.doctorAvatar" />
+            <div class="tag">{{item.tagName}}</div>
+          </div>
+          <div class="text">
+            <div class="name">{{item.name}}</div>
+            <div class="rank">{{item.name}}</div>
+          </div>
+          <div class="right">
+            <div class="top">
+              <div class="consult_date">{{item.date}}</div>
+              <div class="arrow" v-if="item.catCd=='0'">
+                <img src="@/assets/imgs/btn_da_next.png" />
+              </div>
+            </div>
+            <div class="bottom">
+            <div class="chat_time" v-if="item.catCd!='0'">
+              {{item.talkTime}}”
+            </div>
+            <div class="type">
+              <img :src="item.type=='0'?textTypeIcon:item.type=='1'?phoneTypeIcon:videoTypeIcon" />
+            </div>
+            </div>
+          </div>
+        </div>
+        <div class="consult_info" v-if="item.type=='0'">
+          <div class="label">资讯内容：</div>
+          <div class="consult_text">{{item.consultMsg}}</div>
+        </div>
+        <div class="newest_response" v-if="item.type=='0'">
+          <div class="header">
+            <div class="label">最新回复：</div>
+            <div class="response_time">{{item.responseDate}}</div>
+          </div>
+          <div class="response_text">{{item.responseMsg}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { Group, Calendar } from "vux";
+import { getConsultList } from '@/api/apiz';
+export default {
+  components: { Group, Calendar },
+  name: "consultRecord",
+  data() {
+    return {
+      phoneTypeIcon: require("@/assets/imgs/icon_syda_call.png"),
+      videoTypeIcon: require("@/assets/imgs/icon_syda_video.png"),
+      textTypeIcon: require("@/assets/imgs/icon_syda_graphic.png"),
+      startTime: "",
+      endTime: "",
+      consultList: []
+    };
+  },
+  created() {},
+  computed: {
+    fixedStartTime() {
+      return this.startTime + " 00:00:00";
+    },
+    fixedEndTime() {
+      return this.endTime + " 23:59:59";
+    }
+  },
+  watch: {},
+  mounted() {
+    this.getConsultListFun();
+  },
+  methods: {
+    searchList() {},
+    getConsultListFun() {
+      getConsultList(this.fixedStartTime, this.fixedEndTime).then(res => {
+        this.consultList=res.data.records
+      });
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.consultRecord_container {
+  font-weight: 400;
+  .search_container {
+    display: flex;
+    padding: 32px 25px;
+    box-sizing: border-box;
+    align-items: center;
+    .time {
+      height: 61px;
+      width: 251px;
+      line-height: 61px;
+      background-color: #ffffff;
+      color: #40b2a0;
+      font-size: 30px;
+      border-radius: 25px;
+      padding-left: 20px;
+      box-sizing: border-box;
+      position: relative;
+      img {
+        position: absolute;
+        width: 33px;
+        top: 14px;
+        right: 20px;
+      }
+    }
+    .start_time {
+    }
+    .crossbar {
+      margin-left: 9px;
+      margin-right: 8px;
+      height: 2px;
+      width: 25px;
+      background-color: #3eb4a1;
+    }
+    .end_time {
+    }
+    .search_button {
+      margin-left: 16px;
+      font-size: 30px;
+      color: #ffffff;
+      background-color: #3eb4a1;
+      line-height: 61px;
+      text-align: center;
+      border-radius: 25px;
+      width: 141px;
+      height: 61px;
+    }
+  }
+  .record_container {
+    padding-bottom: 25px;
+    .item {
+      border-radius: 14px;
+      box-shadow: 0 0 5px #a9a9a9;
+      margin: 0 auto;
+      width: 700px;
+      box-sizing: border-box;
+      background-color: #fff;
+      padding:  0 20px;
+      .item_header {
+        height: 168px;
+        display: flex;
+        align-items: center;
+        .img {
+          position: relative;
+          img {
+            width: 122px;
+            height: 122px;
+          }
+          .tag {
+            color: #fff;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            position: absolute;
+            bottom: -10px;
+            width: 131px;
+            height: 44px;
+            background: url("../../../../assets/imgs/advice2.png") no-repeat;
+            background-size: 100% 100%;
+          }
+        }
+        .text {
+          margin-left: 30px;
+          font-size: 30px;
+          .name {
+            color: #5b5b5b;
+            font-weight: 600;
+          }
+          .rank {
+            color: #777777;
+            font-weight: 400;
+          }
+        }
+        .right {
+          margin-left: auto;
+          display: flex;
+          flex-direction: column;
+
+          .top {
+            align-items: center;
+            display: flex;
+            .consult_date {
+              color: #777777;
+              font-size: 30px;
+            }
+            .arrow {
+              margin-left: 18px;
+              img {
+                width: 15px;
+                height: 27px;
+              }
+            }
+          }
+          .bottom{
+            margin-top: 18px;
+            display: flex;
+            align-items: center;
+              margin-left: auto;
+            .chat_time{
+
+              margin-right: 30px;
+              font-size: 30px;
+              color: #777777;
+            }
+                      .type {
+            align-self: flex-end;
+            img {
+              width: 52px;
+            }
+          }
+          }
+        }
+      }
+      .consult_info {
+        border-top: 2px solid #EAEBEC;
+        border-bottom: 2px solid #EAEBEC;
+        padding: 23px 8px 30px;
+        font-size: 28px;
+          font-weight: 400;
+        .label{
+          color: #777777;
+          font-weight: 600;
+        }
+        .consult_text{
+          color: #999999;
+        }
+      }
+      .newest_response {
+        padding: 24px 8px 43px;
+        .header {
+          color: #777777;
+          display: flex;
+          align-items: center;
+          .label {
+            font-weight: 600;
+            font-size: 28px;
+          }
+          .response_time {
+            margin-left: auto;
+            font-size: 30px;
+          }
+        }
+        .response_text {
+          color: #999999;
+          font-size: 26px;
+        }
+      }
+      &:not(:last-child){
+        margin-bottom: 25px;
+      }
+    }
+  }
+}
+</style>

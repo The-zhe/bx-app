@@ -1,0 +1,237 @@
+// 2020/1/9 created by xtt
+<template>
+    <div class="reportHistory">
+      <search-popup ref="pop" @confirm="searchList" :typeList="typeList" :typeTitle="typeTitle"></search-popup>
+        <div class="a_report" v-for="item in reportList">
+          <div class="r_top">
+            <div class="r_title">{{item.name}}</div>
+            <div class="a_gt"><img src="../../../assets/imgs/btn_da_next.png"></div>
+          </div>
+          <div class="r_content">
+            <div class="r_div">检查日期：{{item.time}}</div>
+            <div class="r_div">医疗机构：{{item.hospName}}</div>
+            <div class="r_div1">医生建议：{{item.msg}}</div>
+          </div>
+        </div>
+    </div>
+</template>
+
+<script>
+  import searchPopup from "../../../components/searchPopup";
+  import {getReportList} from '../../../api/index'
+  import moment from "moment"
+    export default {
+        name: "reportHistory",
+      components:{searchPopup},
+       data(){
+          return {
+            typeList: ["检查报告", "检验报告"],
+            typeTitle: "报告类型",
+            timeshow:false,
+            exitshow:false,
+            adviceindex:0,
+            show: false,
+            rtime: moment().format('YYYY-MM-DD HH:mm'),
+            reportList:[],
+          }
+       },
+      methods:{
+        getInfo(){
+          getReportList(4535481258038273,1,'4').then(res=>{
+            this.reportList=res.data.list;
+          })
+        },
+        showSearchPopup() {
+          this.$refs["pop"].showPop();
+        },
+        searchList(val){
+          let memberId='4535481258038273';
+          getReportList(memberId,1,'4',val.startTime,val.endTime,val.val).then(res=>{
+            this.reportList=res.data.list;
+          })
+        },
+      },
+      mounted() {
+          this.getInfo();
+      }
+    }
+</script>
+<style lang="less">
+  .reportHistory {
+    .van-popup--top {
+      top: 150px !important;
+      //height: 650px !important;
+    }
+  }
+</style>
+<style scoped lang="less">
+.reportHistory{
+  width: 100%;
+  height: 100%;
+  background: #F4F4F4;
+  .a_empty{
+    width: 100px;
+    height: 20px;
+    background: #f6a540;
+  }
+    .a_report{
+      width: 700px;
+      height: 330px;
+      margin: 20px auto;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 0 8px #bebcbc;
+      .r_top{
+        margin: 0 auto;
+        width: 650px;
+        height: 90px;
+        border-bottom: 1px solid #CDCDCD;
+        display: flex;
+        justify-content: space-between;
+        .r_title{
+          margin-top: 30px;
+          margin-left: 10px;
+          color: #40B2A0;
+          font-size: 28px;
+          font-weight: bold;
+        }
+        .a_gt{
+          margin-top: 35px;
+          margin-right: 10px;
+          width: 15px;
+          height: 27px;
+          img{
+            width: 15px;
+            height: 27px;
+          }
+        }
+      }
+      .r_content{
+        margin:0 auto;
+        width: 650px;
+        height: 200px;
+        color: #777777;
+        font-size: 28px;
+        /*margin: 20px auto;*/
+        /*width: 640px;*/
+        /*height: 70px;*/
+        /*color: #969696;*/
+        /*font-size: 28px;*/
+        /*display: -webkit-box;*/
+        /*-webkit-box-orient: vertical;*/
+        /*-webkit-line-clamp: 2;*/
+        /*overflow: hidden;*/
+        /*text-overflow: ellipsis;*/
+        .r_div{
+          margin-left: 10px;
+          margin-top: 20px;
+          width: 640px;
+          height: 60px;
+          border-bottom: 1px dashed #CDCDCD;
+          overflow: hidden;
+          text-overflow:ellipsis;
+          white-space: nowrap;
+        }
+        .r_div1{
+          margin-left: 10px;
+          margin-top: 20px;
+          width: 640px;
+          height: 50px;
+          overflow: hidden;
+          text-overflow:ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+  }
+  .s_title{
+    width: 700px;
+    margin: 30px auto;
+    font-size: 30px;
+    color: #5B5B5B;
+    font-weight: bold;
+  }
+  .s_solid{
+    margin: 30px auto;
+    width: 700px;
+    height: 20px;
+    background: #f4f4f4;
+  }
+  .s_smallsolid{
+    margin: 30px auto;
+    width: 700px;
+    height: 2px;
+    background: #f4f4f4;
+  }
+  .s_timetitle{
+    width: 700px;
+    margin: 30px auto;
+    font-size: 30px;
+    color: #5B5B5B;
+    font-weight: bold;
+  }
+  .s_timeselect{
+    width: 700px;
+    margin: 30px auto;
+    height: 65px;
+    display: flex;
+    justify-content: space-between;
+    .s_input{
+      text-align: center;
+      width: 320px;
+      height: 60px;
+      line-height: 60px;
+      background: #F4F4F4;
+      border-radius: 30px;
+    }
+  }
+  .s_adviceselect{
+    width: 700px;
+    height: 85px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    .s_div{
+      width: 320px;
+      height: 80px;
+      line-height: 80px;
+      text-align: center;
+      background: #f4f4f4;
+    }
+    .s_selectdiv{
+      width: 320px;
+      height: 80px;
+      line-height: 80px;
+      text-align: center;
+      background: #c4f3eb;
+      .exitshow{
+        width: 60px;
+        height: 60px;
+        margin-left: 260px;
+        margin-top:-60px;
+        img{
+          width: 60px;
+          height: 60px;
+        }
+      }
+    }
+
+  }
+  .s-btn1{
+    position: absolute;
+    right: 170px;
+    img{
+      width: 150px;
+      height: 70px;
+    }
+  }
+  .s-btn2{
+    position: absolute;
+    right: 20px;
+    img{
+      width: 150px;
+      height: 70px;
+    }
+  }
+}
+</style>

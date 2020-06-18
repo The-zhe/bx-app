@@ -1,0 +1,164 @@
+// 2020/1/15 created by xtt
+<template>
+    <div class="upIndicator">
+      <div class="u_top">
+        上传每日指标，让医生管家更好的进行管理。
+      </div>
+      <div class="u_indicator">
+        <div class="u_indicator_name">
+          <div class="u_indicator_name_text">指标名称：</div>
+          <div class="u_indicator_name_inp">
+          <input class="u_indicator_name_input" placeholder="请选择指标名称"/>
+            <div class="u_triangle"></div>
+        </div>
+        </div>
+        <div class="u_indicator_name">
+          <div class="u_indicator_name_text">选择图标：</div>
+        </div>
+      </div>
+      <div class="u_inspect">
+        <div class="u_inspect_result">
+          <div class="u_inspect_result_text">检测结果：</div>
+          <div class="u_inspect_result_inp">
+            <input class="u_inspect_result_input" placeholder="请输入检测结果"/>
+          </div>
+        </div>
+        <div class="u_inspect_result">
+          <div class="u_inspect_result_text">检测单位：</div>
+          <div class="u_inspect_result_inp">
+            <input class="u_inspect_result_input" placeholder="请选择检测单位"/>
+            <div class="u_triangle"></div>
+          </div>
+        </div>
+        <div class="u_inspect_result">
+          <div class="u_inspect_result_text">正常范围：</div>
+          <div class="u_inspect_result_inp_samll">
+            <input class="u_inspect_result_input_small" placeholder="请输入最小值"/>
+           <!-- <input class="u_inspect_result_input_small" placeholder="请输入最大值"/>-->
+          </div>
+          <div class="u_inspect_result_inp_samll_bl">~</div>
+          <div class="u_inspect_result_inp_samll">
+            <input class="u_inspect_result_input_small" placeholder="请输入最大值"/>
+          </div>
+        </div>
+        <div class="u_inspect_btn">保存</div>
+      </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "upIndicator",
+      data(){
+          return{
+
+          }
+      }
+    }
+</script>
+
+<style scoped lang="less">
+.upIndicator{
+  width: 100%;
+  color: #606060;
+  font-size: 28px;
+  .u_top{
+    width: 100%;
+    height: 100px;
+    background: #F4F4F4;
+    line-height: 100px;
+    text-align: center;
+  }
+  .u_triangle{
+    height: 0px;
+    width: 0px;
+    z-index: 1;/*这个与后面的空心三角形有关*/
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-top: 20px solid #3EB4A1;
+  }
+  .u_indicator{
+    width: 100%;
+    height: 365px;
+    background: white;
+    .u_indicator_name{
+      margin: 0 auto;
+      width: 590px;
+      height:150px;
+      display: flex;
+      justify-content: space-between;
+      .u_indicator_name_text{
+        margin-top: 80px;
+      }
+    .u_indicator_name_inp{
+      margin-top: 80px;
+      width: 430px;
+      height: 50px;
+      border-bottom: 1px solid #DFDFDF;
+      display: flex;
+      justify-content: space-between;
+      .u_indicator_name_input{
+        margin-left: 10px;
+        width: 300px;
+        height: 40px;
+      }
+     }
+    }
+    .u_indicator_img{
+
+    }
+  }
+  .u_inspect{
+    width: 100%;
+    height: 700px;
+    margin-top: 20px;
+    background: white;
+    .u_inspect_result{
+      margin: 0 auto;
+      width: 590px;
+      height:150px;
+      display: flex;
+      justify-content: space-between;
+      .u_inspect_result_text{
+        margin-top: 80px;
+      }
+      .u_inspect_result_inp{
+        margin-top: 80px;
+        width: 430px;
+        height: 50px;
+        border-bottom: 1px solid #DFDFDF;
+        display: flex;
+        justify-content: space-between;
+        .u_inspect_result_input{
+          margin-left: 10px;
+          width: 300px;
+          height: 40px;
+        }
+      }
+      .u_inspect_result_inp_samll_bl{
+        margin-top: 80px;
+      }
+      .u_inspect_result_inp_samll{
+        margin-top: 80px;
+        width: 195px;
+        height: 50px;
+        border-bottom: 1px solid #DFDFDF;
+      }
+      .u_inspect_result_input_small{
+        margin-left: 10px;
+      }
+    }
+    .u_inspect_btn{
+      margin: 150px auto 0 auto;
+      width: 300px;
+      height: 60px;
+      background: #3EB4A1;
+      border-radius: 60px;
+      font-size: 30px;
+      color: white;
+      line-height: 60px;
+      text-align: center;
+    }
+  }
+}
+</style>

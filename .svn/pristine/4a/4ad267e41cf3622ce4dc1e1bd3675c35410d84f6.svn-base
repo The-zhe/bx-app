@@ -1,0 +1,74 @@
+<template>
+    <div class="CertificationInstruction_container">
+        <img class="header_img" src="@/assets/imgs/img_yszc_identity.png"/>
+        <div class="title">认证需要您上传</div>
+        <div class="need_item">
+            <div class="radius"></div>
+            <div class="text">身份证</div>
+        </div>
+        <div class="need_item">
+            <div class="radius"></div>
+            <div class="text">医师执业证</div>
+        </div>
+        <img class="button_img" @click="jumpToBaseData" src="@/assets/imgs/btn_yszc_verify_start.png"/>
+    </div>
+</template>
+
+<script>
+export default {
+name:"CertificationInstruction",
+data(){
+    return{
+
+    }
+},
+methods:{
+    jumpToBaseData(){
+        sessionStorage.setItem('withoutPhone','1')
+        this.$router_({name:'baseData'})
+    }
+},
+
+
+};
+</script>
+
+<style scoped lang="less">
+.CertificationInstruction_container{
+    padding: 0.3rem 0.3rem 0;
+    .header_img{
+        width: 6.9rem;
+        height: 3rem;
+    }
+    .title{
+        margin-top: 0.54rem;
+        margin-bottom: 0.5rem;
+        margin-left: 0.07rem;
+        font-size: 0.36rem;
+        color: #777777;
+        font-weight: bold;
+    }
+    .need_item{
+        margin-bottom: 0.42rem;
+        margin-left: 0.11rem;
+        display: flex;
+        align-items: center;
+        .radius{
+            width: 0.16rem;
+            height: 0.16rem;
+            border-radius: 50%;
+            background-color: #58B2AA;
+        }
+        .text{
+            margin-left: 0.25rem;
+            font-size: 0.3rem;
+            color: #777777;
+        }
+    }
+    .button_img{
+        margin: 0.18rem auto 0;    
+        width: 6.11rem;
+        height: 0.97rem;
+    }
+}
+</style>

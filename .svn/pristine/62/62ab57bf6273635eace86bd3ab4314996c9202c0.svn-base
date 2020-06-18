@@ -1,0 +1,268 @@
+<template>
+  <div class="workAttestation_container">
+    <div class="top">
+      上传执业证书
+    </div>
+    <div class="form_item rankNum">
+      <div class="label">请输入执业证书编号</div>
+      <div class="input">
+        <input type="text" v-model.trim="rankNum" placeholder="请输入您的执业医师证书编号"/>
+      </div>
+      <div class="error_tip" v-if="rankNumError"><img src="../../../../assets/imgs/icon_gybm_tips.png"/>信息未填写</div>
+    </div>
+    <div class="title">执业证书上传</div>
+    <div class="desc">请拍摄并上传医师执业证第二页</div>
+    <div class="photo_container">
+      <input ref="fileUpload" accept="image/*" @change="fileChange" type="file" class="hidden" multiple="multiple"/>
+      <img class="book" :src="hasUpload?certImgUrl:bookIcon"/>
+      <div class="photo_tip">证件仅用于本次认证，倍熙私医将严格保密</div>
+      <div class="bottom">
+        <img class="camera" :src="cameraIcon"/>
+        <div class="text">拍摄医师执业证第二页</div>
+      </div>
+    </div>
+    <div class="yhrz" @click="jumpClick">稍后认证 跳过 <img src="../../../../assets/imgs/btn_gybm_skip.png"/></div>
+    <div class="button_container">
+      <img :src="prevIcon" class="prevIcon" @click="prevClick"/>
+      <img :src="nextIcon" class="nextIcon" @click="nextClick"/>
+    </div>
+  </div>
+</template>
+
+<script>
+  import {getuploader} from '../../../../api/index'
+
+  export default {
+    name: "workAttestation",
+    data() {
+      return {
+        pageIcon: require('@/assets/imgs/xfill1.png'),
+        barIcon: require('@/assets/imgs/xfill3_2.png'),
+        bookIcon: require('@/assets/imgs/img_yszc_id.png'),
+        prevIcon: require('@/assets/imgs/x_syb.png'),
+        nextIcon: require('@/assets/imgs/x_xyb2.png'),
+        cameraIcon: require('@/assets/imgs/icon_yszc_photo.png'),
+        hasUpload: false,
+        certImgUrl: "",
+        rankNumError: false,
+        rankNum: '',
+      }
+    },
+    mounted() {
+      if (sessionStorage.getItem('certImgUrl')) {
+        let imgUrl = JSON.parse(sessionStorage.getItem('certImgUrl'))
+        this.rankNum = imgUrl.certNo
+        if (imgUrl.certImgUrl != '') {
+          this.certImgUrl = imgUrl.certImgUrl
+          this.hasUpload = true
+        }
+      }
+    },
+    methods: {
+      fileChange(e) {
+        let file = e.target.files[0]
+        let formData = new FormData()
+        formData.append('file', file)
+        getuploader(formData).then((res) => {
+          this.certImgUrl = res.data.data
+          this.hasUpload = true
+        })
+      },
+      prevClick() {
+        this.$router.go(-1)
+        sessionStorage.setItem('certImgUrl', JSON.stringify({certImgUrl: this.certImgUrl, certNo: this.rankNum}))
+      },
+      nextClick() {
+        this.rankNumError = this.rankNum === ''
+        this.$nextTick(() => {
+          if (!this.rankNumError) {
+            sessionStorage.setItem('certImgUrl', JSON.stringify({certImgUrl: this.certImgUrl, certNo: this.rankNum}))
+            this.$router_({name: 'statusAttestation'})
+          }
+        })
+
+      },
+      jumpClick(){
+        this.$router_({name: 'statusAttestation'});
+      }
+    },
+
+
+  };
+</script>
+
+<style scoped lang="less">
+  .workAttestation_container {
+    padding-bottom: 1rem;
+
+    .top {
+      height: 0.88rem;
+      background: url('../../../../assets/imgs/x_filltop.png') no-repeat;
+      background-size: 100% 100%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.32rem;
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    .form_item {
+      margin: 0.9rem auto 0;
+      width: 6.9rem;
+      height: 2.4rem;
+      box-sizing: border-box;
+      padding: 0 0.22rem;
+      border-bottom: 0.02rem solid #FBF8FB;
+
+      .label {
+        font-size: 0.3rem;
+        color: #767777;
+        font-weight: bold;
+        margin-right: 0.3rem;
+      }
+
+      .error_tip {
+        margin-top: 0.1rem;
+        font-size: 0.26rem;
+        color: #F15A24;
+        display: flex;
+        justify-content: flex-start;
+        /*position: absolute;
+        bottom: -0.35rem;*/
+
+        img {
+          padding-top: 0.05rem;
+          width: 0.29rem;
+          height: 0.28rem;
+          margin-right: 0.12rem;
+        }
+      }
+
+      .input {
+        margin-top: 0.25rem;
+        flex: 1;
+        font-size: 0.3rem;
+        position: relative;
+        border: 1px solid #D4D2D3;
+        height: 0.56rem;
+        color: #777777;
+        display: flex;
+        align-items: center;
+        padding-left: 0.18rem;
+        border-radius: 0.08rem;
+
+        input {
+          font-size: 0.3rem;
+          flex: 0.98
+        }
+      }
+    }
+
+    .title {
+      color: #767777;
+      font-size: 0.3rem;
+      font-weight: bold;
+      margin: 0.5rem 0 0.22rem 0.5rem;
+    }
+
+    .desc {
+      font-size: 0.3rem;
+      color: #999999;
+      margin-left: 0.5rem;
+    }
+
+    .photo_container {
+      margin: 0.33rem auto 0;
+      box-sizing: border-box;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      width: 6.5rem;
+      height: 4.12rem;
+      padding-top: 0.56rem;
+      position: relative;
+      box-shadow: 0 0 0.5rem rgb(236, 230, 230);
+
+      .hidden {
+        opacity: 0;
+        top: 0;
+        position: absolute;
+        width: 100%;
+        height: 100%;
+      }
+
+      .book {
+        width: 2.51rem;
+        height: 1.55rem;
+      }
+
+      .photo_tip {
+        width: 100%;
+        text-align: center;
+        margin-top: 0.43rem;
+        padding-bottom: 0.26rem;
+        border-bottom: 0.01rem solid #F6F4F5;
+        color: #F4793B;
+        font-size: 0.26rem;
+      }
+
+      .bottom {
+        height: 1.04rem;
+        display: flex;
+        align-items: center;
+
+        .camera {
+          width: 0.51rem;
+          height: 0.45rem;
+        }
+
+        .text {
+          margin-left: 0.3rem;
+          color: #56B2AD;
+          font-size: 0.3rem;
+        }
+      }
+    }
+
+    .yhrz {
+      margin-top: 0.32rem;
+      margin-left: 4.5rem;
+      color: #56B2AD;
+      font-size: 0.32rem;
+      width: 2.5rem;
+      height: 0.4rem;
+      display: flex;
+      justify-content: space-between;
+      img{
+        padding-top: 0.15rem;
+        width: 0.29rem;
+        height: 0.21rem;
+      }
+    }
+
+    .button_container {
+      padding-top: 0.24rem;
+      height: 0.96rem;
+      position: fixed;
+      bottom: 0;
+      display: flex;
+      background: white;
+      img {
+        width: 3.09rem;
+        height: 0.7rem;
+      }
+
+      .prevIcon {
+        margin-left: 0.46rem;
+      }
+
+      .nextIcon {
+        margin-left: .38rem;
+      }
+    }
+  }
+</style>
+<style>
+  @import url("../../../../assets/less/vantstyle/picker.css");
+</style>

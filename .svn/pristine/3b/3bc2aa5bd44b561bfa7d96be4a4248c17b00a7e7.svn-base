@@ -1,0 +1,37 @@
+<template>
+  <div id="app">
+    <header-bar></header-bar>
+    <router-view></router-view>
+  </div>
+</template>
+
+<script>
+import HeaderBar from './components/header'
+  export default {
+    components: {HeaderBar},
+    name: 'App',
+    data(){
+        return{
+          login: this.$store.state.token
+        }
+    },
+    created(){
+
+    },
+    computed:{
+    },
+    watch:{
+
+    },
+    mounted(){
+      
+    },
+    methods:{
+
+    }
+}
+</script>
+
+<style lang="less">
+
+ </style>

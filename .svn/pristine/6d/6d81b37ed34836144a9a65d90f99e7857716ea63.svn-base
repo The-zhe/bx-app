@@ -1,0 +1,177 @@
+<template>
+    <div class="userConsult_container">
+        <div class="tab_container">
+            <div class="tab_item" @click="activeTabIndex=0" :class="{'active_item':activeTabIndex==0}">
+                <div class="text">新冠肺炎咨询</div>
+                <img v-show="activeTabIndex==0" src="@/assets/imgs/img_xgzx_new.png"/>
+            </div>
+            <div class="tab_item" @click="activeTabIndex=1" :class="{'active_item':activeTabIndex==1}">
+                <div class="text">慢病咨询</div>
+                <img v-show="activeTabIndex==1" src="@/assets/imgs/img_xgzx_new.png"/>
+            </div>
+        </div>
+        <div class="consult_list">
+            <div class="consult_item" v-for="item in activeTabIndex==0?leftList:rightList">
+                <div class="consult_time">
+                    {{item.sendDate}}
+                </div>
+                <div class="consult_content">
+                    <div class="top">
+                        <div class="title">
+                            咨询详情
+                        </div>
+                        <div class="hasReply" v-if="item.isReplay=='1'">
+                            <img src="@/assets/imgs/icon_wdzx_new.png"/>
+                            有一条新回复
+                        </div>
+                        <div class="arrow">
+                            <img src="@/assets/imgs/btn_grzx_next.png"/>
+                        </div>
+                    </div>
+                    <div class="info">
+                        {{item.msg}}
+                    </div>
+                    <div class="rest_times">
+                        剩余{{item.number}}次追问
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import {getUserConsultList} from '../../../../api/apiz'
+export default {
+name:"userConsult",
+data(){
+    return{
+        activeTabIndex:0,
+        leftPageNum:1,
+        rightPageNum:1,
+        leftList:[],
+        rightList:[]
+    }
+},
+beforeRouteEnter(to,from,next){
+let hasLogin = Boolean(localStorage['userId'])
+if(hasLogin){
+    next()
+}else{
+    next('/userlogin')
+}
+},
+methods:{
+    getUserConsultListFun(pageNum,type){
+        getUserConsultList(pageNum,type).then((res)=>{
+            if(type=='0'){
+                this.leftList=this.leftList.concat(res.data)
+                this.leftPageNum++
+            }else{
+                this.rightList=this.rightList.concat(res.data.list)
+                this.rightPageNum++
+            }
+        })
+    }
+},
+mounted(){
+    this.getUserConsultListFun(this.leftPageNum,'0')
+    this.getUserConsultListFun(this.rightPageNum,'1')
+}
+
+};
+</script>
+
+<style scoped lang="less">
+.userConsult_container{
+    margin-top: -1px;
+    .tab_container{
+        display: flex;
+        height: 0.94rem;
+        width: 100%;
+        .tab_item{
+            background-color: #E7E7E7;
+            color: #606060;
+            font-size: 0.32rem;
+            width: 50%;
+            display: flex;
+            align-items: center;
+            position: relative;
+            justify-content: center;
+            .text{
+
+            }
+            img{
+                bottom: -0.22rem;
+                position: absolute;
+                height: 0.4rem;
+                width: 0.64rem;
+            }
+        }
+        .active_item{
+            color: #ffffff;
+            background: url('../../../../assets/imgs/img_wdzx_options_pre.png') no-repeat;
+            background-size: 100% 100%;
+        }
+    }
+    .consult_list{
+        font-size: 0.28rem;
+        .consult_item{
+            .consult_time{
+                height: 1.04rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                color: #777777;
+            }
+            .consult_content{
+                box-shadow: 0rem 0rem 0.1rem rgba(96, 96, 96, 0.32);
+                box-sizing: border-box;
+                padding: 0 0.25rem;
+                width: 7.01rem;
+                margin: 0 auto;
+                .top{
+                    height: 0.67rem;
+                    display: flex;
+                    align-items: center;
+                    .title{
+                        color: #56B2AD;
+                        font-weight: 600;
+                    }
+                    display: flex;
+                    .hasReply{
+                        margin-left: 2.3rem;
+                        align-items: center;
+                        display: flex;
+                        color: #F48003;
+                        img{
+                            margin-right: 0.15rem;
+                            width: 0.71rem;
+                            height: 0.29rem;
+                        }
+                    }
+                    .arrow{
+                        margin-left: auto;
+                        img{
+                            width:0.18rem;
+                            height:0.31rem;                            
+                        }
+                    }
+                }
+                .info{
+                    color: #767777;
+                    font-size: 0.3rem;
+                    padding: 0.16rem 0 0.23rem;
+                    border-bottom: 1px solid #FCF9FC;
+                }
+                .rest_times{
+                    height: 0.61rem;
+                    line-height: 0.61rem;
+                    text-align: right;
+                    color: #56B2AD;
+                }
+            }
+        }
+    }
+}
+</style>

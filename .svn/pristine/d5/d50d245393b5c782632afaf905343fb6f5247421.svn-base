@@ -1,0 +1,164 @@
+/*
+ * @Author: zzh 
+ * @Date: 2019-12-26 14:33:03 
+ * @Last Modified by: zzh
+ * @Last Modified time: 2020-01-16 10:23:20
+ */
+
+<template>
+  <div class="checkList_container" v-if="checkList.length">
+    <div class="list_container">
+      <div
+        class="item"
+        @click="JumpToDetailPage(item,index)"
+        :key="item.id"
+        v-for="(item,index) in fixedList"
+      >
+        <div class="item_head">
+          <div class="item_title">{{`${item.name}检查报告`}}</div>
+          <div class="item_next">
+            <img src="@/assets/imgs/btn_da_next.png" />
+          </div>
+        </div>
+        <div class="item_info">
+          <div class="info_date">
+            <div class="info_title">检查日期：</div>
+            <div class="info_text">{{item.date}}</div>
+          </div>
+          <div class="info_item">
+            <div class="info_title">检查项目：</div>
+            <div class="info_text">{{item.name}}</div>
+          </div>
+          <div class="info_place">
+            <div class="info_title">医疗机构：</div>
+            <div class="info_text">{{item.hospName}}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="showMore_container" v-if="checkList.length>2" @click="changeShowMore">
+      <div class="text">{{showMore?'收回':'展开'}}</div>
+      <div class="arrow">
+        <img :src="showMore?upArrowIconUrl:downArrwoIconUrl" />
+      </div>
+    </div>
+  </div>
+</template>
+
+<script>
+import { getCheckList } from "@/api/index";
+export default {
+  components: {},
+  name: "checkList",
+  props: ["opcId"],
+  data() {
+    return {
+      showMore: false,
+      upArrowIconUrl: require("@/assets/imgs/btn_da_recovery.png"),
+      downArrwoIconUrl: require("@/assets/imgs/btn_da_return.png"),
+      checkList: []
+    };
+  },
+  created() {},
+  computed: {
+    fixedList() {
+      return this.showMore ? this.checkList : this.checkList.slice(0, 2);
+    }
+  },
+  watch: {},
+  mounted() {
+    this.getCheckListFunc();
+  },
+  methods: {
+    changeShowMore() {
+      this.showMore = !this.showMore;
+    },
+    JumpToDetailPage(item,index) {
+      this.$router_({ name: "checklistDetail" ,params:{id:item.id}});
+    },
+    getCheckListFunc() {
+      getCheckList(this.opcId).then(res => {
+        this.checkList = res.data.list;
+      });
+    }
+  }
+};
+</script>
+
+<style lang="less" scope>
+.checkList_container {
+  width: 661px;
+
+  border-top: none;
+  margin: 0 auto 0;
+  .list_container {
+    border: 2px solid #e1e1e1;
+    .item {
+      padding: 0 23px;
+      .item_head {
+        display: flex;
+        font-size: 28px;
+        color: #40b2a0;
+        display: flex;
+        height: 84px;
+        align-items: center;
+        font-weight: 600;
+        box-sizing: border-box;
+
+        border-bottom: 2px solid #e5e5e5;
+        .item_title {
+        }
+        .item_next {
+          margin-left: auto;
+          img {
+            height: 27px;
+          }
+        }
+      }
+      .item_info {
+        font-size: 28px;
+        color: #777777;
+        div {
+          display: flex;
+        }
+        .info_date {
+          height: 58px;
+          line-height: 58px;
+        }
+        .info_item {
+          height: 58px;
+          line-height: 58px;
+
+          border-top: 2px dashed #dadada;
+        }
+        .info_place {
+          .info_title {
+            white-space: nowrap;
+          }
+          box-sizing: border-box;
+          padding: 15px 0;
+          border-top: 2px dashed #dadada;
+        }
+      }
+      &:not(:first-child) {
+        border-top: 21px solid #f4f4f4;
+      }
+    }
+  }
+  .showMore_container {
+    display: flex;
+    font-size: 28px;
+    color: #40b2a0;
+    font-weight: 600;
+    align-items: center;
+    justify-content: center;
+    margin-top: 29px;
+    .arrow {
+      margin-left: 18px;
+      img {
+        width: 27px;
+      }
+    }
+  }
+}
+</style>

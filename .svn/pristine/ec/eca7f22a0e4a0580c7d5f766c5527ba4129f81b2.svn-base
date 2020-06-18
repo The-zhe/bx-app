@@ -1,0 +1,129 @@
+<template>
+  <div class="userforget">
+    <div class="f_top"><img src="../../../../assets/imgs/xlogin7.png"></div>
+    <div class="login_content">
+      <div class="phone"><input placeholder="请输入手机号" type="number" pattern="\d*" v-model="phone"/></div>
+      <div class="phone"><input placeholder="请输入验证码" type="number" pattern="\d*" v-model="code"/>
+        <span @click="tocheck" v-show="iscode">获取验证码</span>
+        <span v-show="!iscode">重新发送{{second}}s</span>
+      </div>
+      <div class="phone"><input placeholder="请输入新密码" v-model="mimanew"/></div>
+      <div class="phone"><input placeholder="请确认密码" v-model="mimaconfirm"/></div>
+    </div>
+    <div class="loginbtn" @click="toconfirm"></div>
+  </div>
+</template>
+
+<script>
+  import {getlogincode, getresetpwd} from "../../../../api";
+  import Toast from "vant/es/toast";
+  export default {
+    name: "userforget",
+    data() {
+      return {
+        phone: '',
+        code: '',
+        mimanew: '',
+        mimaconfirm: '',
+        iscode:true,
+        second:'',
+        type:'',
+      }
+    },
+    methods:{
+      tocheck(){
+        if(!this.phone){
+          Toast('请输入手机号');
+        }else if(this.phone&&this.phone.length!==11){
+          Toast('请输入正确的手机号');
+        }else {
+          this.iscode=false;
+          getlogincode(this.phone).then((res)=>{
+            this.second='60';
+            this.set_interval(this.second);
+          });
+        }
+      },
+      toconfirm(){
+          let phone=this.phone;
+          let code=this.code;
+          let newPwd=this.mimanew;
+          let roleType=this.type;
+         if(this.mimanew!=this.mimaconfirm){
+           Toast('两次密码不一样');
+         }else if(!this.phone){
+           Toast('请输入手机号');
+         }else if(!this.code){
+           Toast('请输入验证码');
+         }else {
+           let isD=Boolean(localStorage.getItem('isDoctor'));
+           if(isD){
+             getresetpwd(phone,code,newPwd,'1').then((res)=>{
+               console.log('重置密码了',res);
+             })
+           }else {
+             getresetpwd(phone,code,newPwd,'0').then((res)=>{
+               console.log('重置密码了',res);
+             })
+           }
+
+         }
+      }
+    },
+    mounted() {
+      if(this.$route.query.type==='doctor'){
+        this.type='1';
+      }else{
+        this.type='0';
+      }
+    }
+  }
+</script>
+<style>
+  @import url('../../../../assets/less/vantstyle/toast.css');
+</style>
+<style scoped lang="less">
+  .userforget {
+    .f_top {
+      margin: 0 auto;
+      padding-top: 1.3rem;
+      width: 1.61rem;
+      height: 1.51rem;
+
+      img {
+        width: 1.61rem;
+        height: 1.51rem;
+      }
+    }
+    .login_content{
+      margin: 0.3rem auto;
+      width: 6.1rem;
+      height: 5.4rem;
+      .phone{
+        margin-top:0.48rem;
+        padding-left: 0.4rem;
+        width: 5.7rem;
+        height: 0.97rem;
+        border-radius: 0.5rem;
+        background: #F7F4F8;
+        font-size: 0.32rem;
+        input{
+          margin-top: 0.26rem;
+          background:#F7F4F8;
+          width: 3.5rem;
+        }
+        span{
+          white-space: nowrap;
+          color: #56B2AD;
+        }
+      }
+    }
+    .loginbtn{
+      margin: 0.5rem auto;
+      width: 6.1rem;
+      height: 0.97rem;
+      background: url("../../../../assets/imgs/xlogin8.png");
+      background-size: 6.1rem 0.97rem;
+    }
+  }
+</style>

@@ -1,0 +1,44 @@
+<template>
+  <div id="app">
+    <header-bar @showSearchEvent="showSearch"></header-bar>
+    <router-view ref="view"></router-view>
+  </div>
+</template>
+
+<script>
+import HeaderBar from './components/header'
+  export default {
+    components: {HeaderBar},
+    name: 'App',
+    data(){
+        return{
+          login: this.$store.state.token
+        }
+    },
+    created(){
+
+    },
+    computed:{
+    },
+    watch:{
+
+    },
+    mounted(){
+      sessionStorage.setItem('routerFlag',0)
+    },
+    methods:{
+      showSearch(){
+        this.$refs['view'].test()
+      }
+    },
+    destroyed(){
+      sessionStorage.removeItem('routerFlag')
+    }
+}
+</script>
+
+<style lang="less">
+#app{
+  background: #F4F4F4;
+}
+ </style>

@@ -1,0 +1,499 @@
+<template>
+    <div class="home">
+      <!-- 头部 -->
+      <div class="header">
+        <div class="header_icon_container">
+          <div class="header_logo">
+
+          </div>
+          <div class="header_menu_button">
+
+          </div>
+        </div>
+        <div class="header_banner_container">
+
+        </div>
+      </div>
+      <!-- 公告 -->
+      <div class="ad_container">
+        <div class="ad_text">
+          公告：
+        </div>
+        <van-notice-bar
+          color="#5d5d5d"
+          background="#F5F6F8"
+        >
+          给人鬼ner你儿女跟日尼尔你个肯让顾客呢人看过你坑口那个人可能给客人看过你狂热尼尔你国内高i
+        </van-notice-bar>
+      </div>
+      <!-- 四大模块 -->
+      <div class="four_grid_container">
+        <div class="grid_item" v-for="item in homeInfo.fourGridLists">
+          <div class="item_icon">
+            <img :src="item.iconUrl"/>
+          </div>
+          <div class="item_text">
+            <div class="item_title">
+              {{item.GridTitle}}
+            </div>
+            <div class="item_titleforEN">
+              {{item.TitleForEn}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 便捷就医 -->
+      <div class="hot_services_container">
+        <div class="hot_services_title">
+          <div class="title_icon"></div>
+          <div class="title_text">便捷就医</div>
+          <div class="title_bias"></div>
+          <div class="title_textforEN">HOT SERVICES</div>
+        </div>
+        <div class="services_item_box">
+          <div class="item" v-for="item in homeInfo.hotServicesLists">
+            <div class="item_icon_box">
+              <img :src="item.iconUrl"/>
+            </div>
+            <div class="item_title">
+              {{item.itemTitle}}
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- 广告图 -->
+      <div class="pic_ad_container">
+        <div class="first_pic"></div>
+        <div class="second_pic"></div>
+      </div>
+
+      <div class="content fs_24">
+
+        <div class="title_ flex_between">
+          <div class="fs_40 fw_600">热门产品</div>
+          <div class="c_gray_2 fs_28">更多</div>
+        </div>
+
+        <div class="part_ flex_between">
+          <div class="part_item c_gray_2" v-for="item in homeInfo.productLists">
+            <div class="img_border">
+              <img class="item_img" :src="item.imgUrl">
+              <div class="item_number c_white">{{ item.number }}人已预约</div>
+              <div class="item_title ali_center c_white">{{ item.title }}</div>
+            </div>
+
+            <div class="item_spec">
+              <div class="item_name c_black fs_32">{{ item.name }}</div>
+              <div class="item_subName overflow_2">{{ item.subName }}</div>
+              <div class="item_price">
+                <font class="c_red">￥{{ item.priceNow }}</font>
+                <font class="price_past fs_20">￥{{ item.pricePast }}</font>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="title_ flex_between">
+          <div class="fs_40 fw_600">健康资讯</div>
+          <div class="c_gray_2 fs_28">更多</div>
+        </div>
+
+        <div class="part_">
+          <div class="news_item" v-for="item in homeInfo.newsLists">
+            <img class="news_img" :src="item.imgUrl">
+          </div>
+        </div>
+      </div>
+<!--      <div class="show_btn class1" @click="getObj"> click me !!!!!</div>-->
+    </div>
+</template>
+
+<script>
+    class Person{
+        constructor(name,age){
+            this.name = name;
+            this.age = age;
+        }
+
+        WriteDocument(){
+            console.log("我的名字叫" + this.name+"今年"+this.age+"岁了")
+        }
+    }
+
+    class newPerson extends Person{
+        constructor(name, age, color) {
+            super(name, age); // 调用父类的constructor(x, y)
+            this.color = color;
+        }
+        WriteColor(){
+            super.WriteDocument() ; // 调用父类方法
+
+            console.log('this color is'+ this.color+' '+this.name+' ' + this.age)
+        }
+    }
+
+    class lastPerson extends newPerson{
+        constructor (name,age,color,sex){
+            super(name,age,color);
+            this.sex = sex;
+        };
+        WriteSex(){
+            super.WriteColor();
+            console.log('this color is'+ this.color+' '+this.name+' ' + this.age+' ' + this.sex)
+        }
+    }
+
+
+
+    export default {
+        name: "home",
+        data(){
+            return{
+                value5:'',
+                objFn:{},
+                homeInfo:{
+                    fourGridLists:[
+                      {
+                        iconUrl:'',
+                        GridTitle:'私人医生',
+                        TitleForEn:'Prvivate doctor'
+                      },
+                      {
+                        iconUrl:'',
+                        GridTitle:'健康管理',
+                        TitleForEn:'Family healthcare'
+                      },
+                      {
+                        iconUrl:'',
+                        GridTitle:'大病顾问',
+                        TitleForEn:'Family healthcare'
+                      },
+                      {
+                        iconUrl:'',
+                        GridTitle:'海外医疗',
+                        TitleForEn:'Overseas medine'
+                      },
+                    ],
+                    hotServicesLists:[
+                      {
+                        iconUrl:'',
+                        itemTitle:'医护到家'
+                      },
+                      {
+                        iconUrl:'',
+                        itemTitle:'术后医护'
+                      },
+                      {
+                        iconUrl:'',
+                        itemTitle:'肿瘤康养'
+                      },
+                      {
+                        iconUrl:'',
+                        itemTitle:'老人照护'
+                      },
+                      {
+                        iconUrl:'',
+                        itemTitle:'无忧陪诊'
+                      },
+                      {
+                        iconUrl:'',
+                        itemTitle:'代开检查单'
+                      },
+                      {
+                        iconUrl:'',
+                        itemTitle:'代配送药'
+                      },
+                      {
+                        iconUrl:'',
+                        itemTitle:'报告解读'
+                      },                      
+                    ],
+                    productLists:[{
+                        name:'青春期额面正畸',
+                        subName:'3大服务.银牌会员3大服务. 银牌3大服务.银牌会员3大服务. 银牌',
+                        priceNow:'100/期',
+                        pricePast:'1000/期',
+                        imgUrl: require('../../assets/images/item_img@2x.png'),
+                        title:'暑期特惠',
+                        number:'1232'
+                    },{
+                        name:'青春期额面正畸',
+                        subName:'3大服务.银牌会员3大服务. 银牌',
+                        priceNow:'100/期',
+                        pricePast:'1000/期',
+                        imgUrl: require('../../assets/images/item_img@2x.png'),
+                        title:'暑期特惠',
+                        number:'1232'
+                    }],
+                    newsLists:[{
+                        imgUrl: require('../../assets/images/news_1@2x.png')
+                    },{
+                        imgUrl: require('../../assets/images/news_1@2x.png')
+                    }]
+                }
+            }
+        },
+        mounted(){
+            let newObj = new lastPerson('jane','16','red','女');
+            this.objFn = newObj;
+        },
+        methods:{
+          getObj(){
+              this.objFn.WriteSex();
+          }
+        }
+    }
+</script>
+
+<style scoped lang="less">
+  .home{
+    .header{
+      .header_icon_container{
+        padding: 10px 30px 10px 30px;
+        display: flex;
+        justify-content: space-between;
+        .header_logo{
+          height: 64px;
+          width: 100px;
+          background: burlywood;
+        }
+        .header_menu_button{
+          width: 46px;
+          height: 34px;
+          margin-top: 20px;
+          background-color: aqua;
+        }
+      }
+      .header_banner_container{
+        height: 310px;
+        background-color: aqua;
+      }
+    }
+    .ad_container{
+      padding: 0 0 0 20px;
+      display: flex;
+      align-items: center;
+      .ad_text{
+        font-size:26px;
+        color: #f15a24;
+        font-weight: bold;
+      }
+    }
+    .four_grid_container{
+      display: flex;
+      padding: 0 15px;
+      background-color: aqua;
+      flex-direction:row;
+      flex-wrap:wrap;
+      .grid_item{
+        width: 346px;
+        height: 146px;
+        background-color: #f15a24;
+        margin:5px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        .item_icon{
+          height: 64px;
+          width: 64px;
+          img{
+
+          }
+        }
+        .item_text{
+          margin-left: 20px;
+          font-size: 30px;
+          color: #ffffff;
+          .item_titleforEN{
+            font-size: 20px;
+            margin-top: 10px;
+          }
+        }
+      }
+    }
+    .hot_services_container{
+      .hot_services_title{
+        padding: 48px 0 24px 18px;
+        display: flex;
+        align-items: center;
+        border-bottom: 1px solid #b3b3b3;
+        .title_icon{
+          height: 32px;
+          width: 18px;
+          background-color: #f15a24;
+        }
+        .title_text{
+          font-size: 30px;
+          color: #5d5d5d;
+          margin-left: 24px;
+        }
+        .title_bias{
+          margin-left: 20px;
+        }
+        .title_textforEN{
+          font-size: 25px;
+          color: #EF7d59;
+          font-weight: bold;
+        }
+      }
+      .services_item_box{
+        display: flex;
+        flex-wrap: wrap;
+        flex-direction:row;
+        justify-content: space-between;
+        padding: 0 54px 72px 54px;
+        .item{
+          margin-top: 54px;
+          width: 140px;
+          display: flex;
+          flex-direction: column;
+          justify-content: center;
+          align-items: center;
+          .item_icon_box{
+            height: 64px;
+            width: 64px;
+            img{
+
+            }
+          }
+          .item_title{
+            margin-top: 20px;
+            font-size: 20px;
+            color: #000000;
+          }
+        }
+      }
+    }
+
+    .pic_ad_container{
+      .first_pic{
+        height: 320px;
+        width: 100%;
+        background-color: antiquewhite;
+      }
+      .second_pic{
+        height: 293px;
+        width: 100%;
+        background-color: #f15a24;
+      }
+    }
+    .content{
+      padding: 0 32px;
+
+      .title_{
+        padding: 40px 0 24px 0;
+      }
+      .news_item{
+        margin-bottom: 24px;
+        .news_img{
+          width: 686px;
+          height: 360px;
+        }
+      }
+      .part_item{
+        width: 336px;
+        margin-bottom: 24px;
+
+        .img_border{
+          position: relative;
+
+          .item_number{
+            position: absolute;
+            bottom: 10px;
+            left: 10px;
+            z-index: 2;
+            padding: 4px 10px;
+            font-size: 16px;
+            border-radius: 50px;
+            background-color: rgba(0,0,0,0.3);
+          }
+          .item_title{
+            width:128px;
+            height:48px;
+            line-height:48px;
+            background:rgba(248,76,78,1);
+            border-radius:8px 8px 8px 30px;
+            position: absolute;
+            top: 0;
+            right: 0;
+            z-index: 2;
+          }
+        }
+        .item_spec{
+          padding: 0 24px 24px 24px;
+          border-radius: 10px;
+        }
+        .item_img{
+          width: 336px;
+          height: 246px;
+          border-radius: 10px;
+        }
+        .item_name{
+          padding: 16px 0 14px 0;
+        }
+        .item_subName{
+          margin-bottom: 27px;
+          max-width: 279px;
+        }
+        .price_past{
+          text-decoration: line-through;
+          margin-left: 10px;
+        }
+      }
+    }
+  }
+
+
+  .c_red{
+    color: red;
+  }
+  .c_color(@color){
+    color:@color
+  }
+  .show_btn{
+    .c_color(green)
+  }
+  .mixin(@a) when (linghtness(@a) > 50%){
+    font-size: 20px;
+  }
+  .mixin (@a) when (lightness(@a) < 50%) {
+    font-size: 30px;
+  }
+  .mixin (@a) {
+    color: @a;
+  }
+  .class1 {
+    .mixin(#000000)
+  }
+  .class2 {
+    .mixin(#555)
+  }
+</style>
+<style>
+.van-notice-bar {
+  position: relative;
+  display: -webkit-box;
+  display: -webkit-flex;
+  display: flex;
+  -webkit-box-align: center;
+  -webkit-align-items: center;
+  align-items: center;
+  height: 80px;
+  padding: 0;
+  color: #ed6a0c;
+  font-size: 26px;
+  line-height: 48px;
+  width: 650px;
+  background-color: #fffbe8;
+}
+.van-notice-bar__wrap {
+  position: relative;
+  -webkit-box-flex: 1;
+  -webkit-flex: 1;
+  flex: 1;
+  height: 48px;
+  width: 650px;
+  padding-top: 5px;
+  overflow: hidden;
+}
+</style>
